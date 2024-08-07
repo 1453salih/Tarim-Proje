@@ -18,4 +18,9 @@ public class AuthController {
     public LoginResponse login(@RequestBody LoginRequest request) {
         return userService.login(request);
     }
+
+    @PostMapping("/signup")
+    public LoginResponse signup(@RequestBody LoginRequest request) {
+        return userService.signup(request);
+    }
 }

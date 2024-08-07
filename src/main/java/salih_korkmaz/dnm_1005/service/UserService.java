@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
 @Service
 public class UserService {
 
@@ -26,4 +25,17 @@ public class UserService {
             return new LoginResponse("Login failed");
         }
     }
+
+    public LoginResponse signup(LoginRequest request) {
+        if (userRepository.findByUser(request.getUser()).isPresent()) {
+            return new LoginResponse("User already exists");
+        } else {
+            User newUser = new User();
+            newUser.setUser(request.getUser());
+            newUser.setPassword(request.getPassword());
+            userRepository.save(newUser);
+            return new LoginResponse("Signup successful");
+        }
+    }
 }
+
