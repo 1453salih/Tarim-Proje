@@ -1,24 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, List, ListItem, ListItemText, Box } from '@mui/material';
+import { Container, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
 const LandList = () => {
     const [lands, setLands] = useState([]);
 
     useEffect(() => {
         fetch('http://localhost:8080/lands')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (Array.isArray(data)) {
-                    setLands(data);
-                } else {
-                    console.error('Expected an array but got:', data);
-                }
-            })
+            .then(response => response.json())
+            .then(data => setLands(data))
             .catch(error => console.error('Error fetching lands:', error));
     }, []);
 
@@ -28,16 +17,32 @@ const LandList = () => {
                 <Typography variant="h4" component="h2" gutterBottom>
                     Lands List
                 </Typography>
-                <List>
-                    {lands.map((land) => (
-                        <ListItem key={land.id}>
-                            <ListItemText
-                                primary={land.name}
-                                secondary={`Size: ${land.landSize} hectares, City: ${land.city}, District: ${land.district}, Village: ${land.village || 'N/A'}`}
-                            />
-                        </ListItem>
-                    ))}
-                </List>
+                <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 650 }} aria-label="lands table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Name</TableCell>
+                                <TableCell align="right">Size (hectares)</TableCell>
+                                <TableCell align="right">City</TableCell>
+                                <TableCell align="right">District</TableCell>
+                                <TableCell align="right">Village</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {lands.map((land) => (
+                                <TableRow key={land.id}>
+                                    <TableCell component="th" scope="row">
+                                        {land.name}
+                                    </TableCell>
+                                    <TableCell align="right">{land.landSize}</TableCell>
+                                    <TableCell align="right">{land.city}</TableCell>
+                                    <TableCell align="right">{land.district}</TableCell>
+                                    <TableCell align="right">{land.village || 'N/A'}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </Box>
         </Container>
     );

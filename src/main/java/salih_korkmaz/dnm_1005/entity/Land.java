@@ -1,6 +1,7 @@
 package salih_korkmaz.dnm_1005.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -14,10 +15,6 @@ public class Land {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    User user;
 
     @Column(nullable = false, length = 50)
     String name;
@@ -33,5 +30,8 @@ public class Land {
 
     String village;
 
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
+    private User user;
 }
