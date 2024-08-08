@@ -17,13 +17,18 @@ function Login() {
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:8080/auth/login', { user, password });
-            if (response.data.message === 'Login successful') {
+            if (response.status === 200) {
+                const data = response.data;
+                localStorage.setItem('token', data.token); // JWT token'ı localStorage'da sakla
+                localStorage.setItem('userId', data.userId);
+                setError('');
                 navigate('/home');
             } else {
                 setError('Invalid credentials');
             }
         } catch (error) {
             setError('An error occurred');
+            console.error('Error:', error);
         }
     };
 

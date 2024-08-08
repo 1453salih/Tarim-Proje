@@ -1,41 +1,44 @@
 package salih_korkmaz.dnm_1005.service;
 
-
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 import salih_korkmaz.dnm_1005.dto.LoginRequest;
 import salih_korkmaz.dnm_1005.dto.LoginResponse;
 import salih_korkmaz.dnm_1005.entity.User;
 import salih_korkmaz.dnm_1005.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import salih_korkmaz.dnm_1005.util.JwtUtil;
 
-import java.util.Optional;
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
 
-    public LoginResponse login(LoginRequest request) {
-        Optional<User> userOptional = userRepository.findByUser(request.getUser());
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
-        if (userOptional.isPresent() && userOptional.get().getPassword().equals(request.getPassword())) {
-            return new LoginResponse("Login successful");
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    public LoginResponse login(LoginRequest request) {
+        User user = userRepository.findByUser(request.getUser())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            String token = jwtUtil.generateToken(user.getUser());
+            return new LoginResponse(token, user.getId());
         } else {
-            return new LoginResponse("Login failed");
+            throw new RuntimeException("Invalid credentials");
         }
     }
 
     public LoginResponse signup(LoginRequest request) {
-        if (userRepository.findByUser(request.getUser()).isPresent()) {
-            return new LoginResponse("User already exists");
-        } else {
-            User newUser = new User();
-            newUser.setUser(request.getUser());
-            newUser.setPassword(request.getPassword());
-            userRepository.save(newUser);
-            return new LoginResponse("Signup successful");
-        }
+        User user = new User();
+        user.setUser(request.getUser());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        userRepository.save(user);
+        String token = jwtUtil.generateToken(user.getUser());
+        return new LoginResponse(token, user.getId());
     }
 }
-

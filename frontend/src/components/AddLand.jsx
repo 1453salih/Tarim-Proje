@@ -1,24 +1,22 @@
-import React, {useState, useEffect} from 'react';
-import {TextField, Button, Container, Typography, Box, MenuItem, FormControl, InputLabel, Select} from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { TextField, Button, Container, Typography, Box, MenuItem, FormControl, InputLabel, Select } from '@mui/material';
 import ilIlceData from '../Data/il-ilce.json';
 import koylerData from '../Data/koyler.json';
 
 function AddLand() {
-    const [landName, setLandName] = useState();
-    const [landSize, setLandSize] = useState();
-    const [selectedIl, setSelectedIl] = useState();
-    const [selectedIlce, setSelectedIlce] = useState();
-    const [selectedKoy, setSelectedKoy] = useState();
+    const [landName, setLandName] = useState('');
+    const [landSize, setLandSize] = useState('');
+    const [selectedIl, setSelectedIl] = useState('');
+    const [selectedIlce, setSelectedIlce] = useState('');
+    const [selectedKoy, setSelectedKoy] = useState('');
     const [ilceler, setIlceler] = useState([]);
     const [koyler, setKoyler] = useState([]);
 
     useEffect(() => {
         if (selectedIl) {
             const ilceList = ilIlceData
-                .filter(item => item.il.localeCompare(selectedIl, undefined, {sensitivity: 'base'}) === 0)
+                .filter(item => item.il.localeCompare(selectedIl, undefined, { sensitivity: 'base' }) === 0)
                 .map(item => item.ilce);
-            console.log('Selected İl:', selectedIl);
-            console.log('İlçeler:', ilceList);
             setIlceler(ilceList);
             setSelectedIlce('');
             setKoyler([]);
@@ -29,50 +27,52 @@ function AddLand() {
     useEffect(() => {
         if (selectedIlce) {
             const koyList = koylerData
-                .filter(item => item.il.localeCompare(selectedIl, undefined, {sensitivity: 'base'}) === 0 && item.ilce.localeCompare(selectedIlce, undefined, {sensitivity: 'base'}) === 0)
+                .filter(item => item.il.localeCompare(selectedIl, undefined, { sensitivity: 'base' }) === 0 && item.ilce.localeCompare(selectedIlce, undefined, { sensitivity: 'base' }) === 0)
                 .map(item => item.mahalle_koy);
-            console.log('Selected İl:', selectedIl);
-            console.log('Selected İlçe:', selectedIlce);
-            console.log('Köyler:', koyList);
             setKoyler(koyList);
             setSelectedKoy('');
         } else {
             setKoyler([]);
         }
     }, [selectedIlce, selectedIl]);
-    //!Verilerin Formdan alındığı alan
+
     const handleAddLand = async (e) => {
         e.preventDefault();
+        const userId = localStorage.getItem('userId'); // Kullanıcı ID'sini yerel depodan al
         const newLand = {
-            landName,
-            landSize: parseFloat(landSize),
-            selectedIl,
-            selectedIlce,
-            selectedKoy
+            name: landName,
+            landSize: parseInt(landSize),
+            city: selectedIl,
+            district: selectedIlce,
+            village: selectedKoy,
+            userId: parseInt(userId) // User ID'yi ekliyoruz
         };
+
         try {
             const response = await fetch('http://localhost:8080/lands', {
-                method: "POST",
+                method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify({newLand}),
+                body: JSON.stringify(newLand),
             });
             if (response.ok) {
-                console.log("Land saved successfully");
-                // Form temizlenir
+                console.log('Land saved successfully!');
+                // Formu temizle
                 setLandName('');
                 setLandSize('');
                 setSelectedIl('');
-                setSelectedKoy('');
                 setSelectedIlce('');
+                setSelectedKoy('');
             } else {
-                console.error('Failed to save the Land')
+                console.error('Failed to save the Land.');
             }
         } catch (error) {
-            console.error('error', error);
+            console.error('Error:', error);
         }
     };
+
     return (
         <Container maxWidth="sm">
             <Box component="form" onSubmit={handleAddLand} sx={{ mt: 3 }}>
