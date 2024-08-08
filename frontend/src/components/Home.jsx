@@ -17,7 +17,7 @@ import card3 from '../assets/card3.jpg';
 // import card6 from '../assets/card6.png';
 
 const cards = [
-    { title: 'Arazi Ekle', description: '', link: '/link1',button:'Arazi Ekle',image:card1},
+    { title: 'Arazi Ekle', description: '', link: '/add-land',button:'Arazi Ekle',image:card1},
     { title: 'Arazilerim', description: '',button:'Arazilerimi Görüntüle', link: '/link2',image:card2,},
     { title: 'Veriminizi Degerlendiriniz',button:'Verim Degerlendir', link: '/degerlendirme',image:card3 },
     { title: 'Card 4', description: 'Description 4', link: '/link4',image:'' },
@@ -29,10 +29,10 @@ function Home() {
     return (
         <Container>
             <Typography variant="h2" component="div" gutterBottom>
-                Welcome to Home Page
+               Menü
             </Typography>
             <Typography variant="body1" component="p">
-                This is the main page of your application.
+
             </Typography>
             <Grid container spacing={4} sx={{ marginTop: 2 }}>
                 {cards.map((card, index) => (

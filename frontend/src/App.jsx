@@ -9,6 +9,9 @@ import Settings from './components/Settings';
 import Contact from './components/Contact';
 import Signup from './components/Signup';
 import Login from './components/Login';
+import LandList from './components/LandList';
+
+import './App.css';
 
 
 function App() {
@@ -25,6 +28,7 @@ function App() {
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/land-list" element={<LandList/>} />
             </Routes>
         </Router>
     );

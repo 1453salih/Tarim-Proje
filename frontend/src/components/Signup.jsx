@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { TextField, Button, Container, Typography, Box, Alert } from '@mui/material';
 
 function Signup() {
     const [user, setUser] = useState('');
@@ -27,22 +28,48 @@ function Signup() {
     };
 
     return (
-        <div>
-            <h2>Signup</h2>
-            <form onSubmit={handleSignup}>
-                <div>
-                    <label>Username:</label>
-                    <input type="text" value={user} onChange={(e) => setUser(e.target.value)} />
-                </div>
-                <div>
-                    <label>Password:</label>
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                </div>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                {message && <p style={{ color: 'green' }}>{message}</p>}
-                <button type="submit">Signup</button>
-            </form>
-        </div>
+        <Container maxWidth="sm">
+            <Box component="form" onSubmit={handleSignup} sx={{ mt: 3 }}>
+                <Typography variant="h4" component="h2" gutterBottom>
+                    Signup
+                </Typography>
+                <TextField
+                    fullWidth
+                    label="Username"
+                    variant="outlined"
+                    margin="normal"
+                    value={user}
+                    onChange={(e) => setUser(e.target.value)}
+                />
+                <TextField
+                    fullWidth
+                    label="Password"
+                    type="password"
+                    variant="outlined"
+                    margin="normal"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+                {/* Additional input fields for future use */}
+                <TextField
+                    fullWidth
+                    label="Email"
+                    variant="outlined"
+                    margin="normal"
+                />
+                <TextField
+                    fullWidth
+                    label="Phone Number"
+                    variant="outlined"
+                    margin="normal"
+                />
+                {error && <Alert severity="error">{error}</Alert>}
+                {message && <Alert severity="success">{message}</Alert>}
+                <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+                    Signup
+                </Button>
+            </Box>
+        </Container>
     );
 }
 
