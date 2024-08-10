@@ -12,15 +12,15 @@ import { Link } from 'react-router-dom';
 import card1 from '../assets/card1.jpg';
 import card2 from '../assets/card2.jpg';
 import card3 from '../assets/card3.jpg';
-// import card4 from '../assets/card4.png';
+import card4 from '../assets/card4.jpg';
 // import card5 from '../assets/card5.png';
 // import card6 from '../assets/card6.png';
 
 const cards = [
     { title: 'Arazi Ekle', description: '', link: '/add-land',button:'Arazi Ekle',image:card1},
-    { title: 'Arazilerim', description: '',button:'Arazilerimi Görüntüle', link: '/link2',image:card2,},
+    { title: 'Arazilerim', description: '',button:'Arazilerimi Görüntüle', link: '/land-list',image:card2,},
     { title: 'Veriminizi Degerlendiriniz',button:'Verim Degerlendir', link: '/degerlendirme',image:card3 },
-    { title: 'Card 4', description: 'Description 4', link: '/link4',image:'' },
+    { title: 'Ekim Yap', description: '',button:'Ekim Yap',link: '/planting',image:card4},
     { title: 'Card 5', description: 'Description 5', link: '/link5',image:'' },
     { title: 'Card 6', description: 'Description 6', link: '/link6',image:'' },
 ];

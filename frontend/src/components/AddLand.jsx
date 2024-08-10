@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Container, Typography, Box, MenuItem, FormControl, InputLabel, Select } from '@mui/material';
+import { TextField, Button, Container, Typography, Box, MenuItem, FormControl, InputLabel, Select, Snackbar, Alert } from '@mui/material';
 import ilIlceData from '../Data/il-ilce.json';
 import koylerData from '../Data/koyler.json';
-import axios from 'axios';  // axios'u ekliyoruz
-
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function AddLand() {
     const [landName, setLandName] = useState('');
@@ -13,6 +13,10 @@ function AddLand() {
     const [selectedKoy, setSelectedKoy] = useState('');
     const [ilceler, setIlceler] = useState([]);
     const [koyler, setKoyler] = useState([]);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (selectedIl) {
@@ -40,8 +44,17 @@ function AddLand() {
 
     const handleAddLand = async (e) => {
         e.preventDefault();
-        const userId = localStorage.getItem('userId'); // Kullanıcı ID'sini yerel depodan al
-        const token = axios.defaults.headers.common['Authorization']?.split(' ')[1]; // Token'ı alıyoruz
+
+        // Boş alan kontrolü (köy hariç)
+        if (!landName || !landSize || !selectedIl || !selectedIlce) {
+            setSnackbarMessage('Please fill in all the required fields.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
+            return;
+        }
+
+        const userId = localStorage.getItem('userId');
+        const token = axios.defaults.headers.common['Authorization']?.split(' ')[1];
 
         if (!token) {
             console.error('Token bulunamadı.');
@@ -53,8 +66,8 @@ function AddLand() {
             landSize: parseInt(landSize),
             city: selectedIl,
             district: selectedIlce,
-            village: selectedKoy,
-            user: { id: parseInt(userId) } // User nesnesini oluşturuyoruz
+            village: selectedKoy || '', // Köy seçilmediyse boş string olarak geçiyoruz
+            user: { id: parseInt(userId) }
         };
 
         try {
@@ -62,26 +75,35 @@ function AddLand() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // Doğru token'ı ekliyoruz
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(newLand),
             });
             if (response.ok) {
-                console.log('Land saved successfully!');
-                // Formu temizle
+                setSnackbarMessage('Land saved successfully!');
+                setSnackbarSeverity('success');
+                setOpenSnackbar(true);
+                setTimeout(() => navigate('/land-list'), 3000);
                 setLandName('');
                 setLandSize('');
                 setSelectedIl('');
                 setSelectedIlce('');
                 setSelectedKoy('');
             } else {
-                console.error('Failed to save the Land.');
+                setSnackbarMessage('Failed to save the Land.');
+                setSnackbarSeverity('error');
+                setOpenSnackbar(true);
             }
         } catch (error) {
-            console.error('Error:', error);
+            setSnackbarMessage('Error: ' + error.message);
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
         }
     };
 
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
+    };
 
     return (
         <Container maxWidth="sm">
@@ -143,6 +165,16 @@ function AddLand() {
                     Add Land
                 </Button>
             </Box>
+
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={3000}
+                onClose={handleCloseSnackbar}
+            >
+                <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </Container>
     );
 }

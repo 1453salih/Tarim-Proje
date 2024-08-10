@@ -35,6 +35,11 @@ public class LandService {
     public List<LandDTO> getAllLands() {
         return landRepository.findAll().stream().map(this::convertToDto).collect(Collectors.toList());
     }
+    public LandDTO getLandById(Long id) {
+        Land land = landRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Land not found"));
+        return convertToDto(land);
+    }
 
     private LandDTO convertToDto(Land land) {
         LandDTO landDto = new LandDTO();

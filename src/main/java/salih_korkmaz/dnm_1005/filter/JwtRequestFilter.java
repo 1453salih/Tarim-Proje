@@ -32,6 +32,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         final String authorizationHeader = request.getHeader("Authorization");
 
+        // Login endpoint'ini filtrelemeden önce kontrol et
+        if (request.getServletPath().equals("/auth/login")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         String username = null;
         String jwt = null;
 
@@ -54,4 +60,5 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
         chain.doFilter(request, response);
     }
+
 }

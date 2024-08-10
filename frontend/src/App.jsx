@@ -10,9 +10,9 @@ import Contact from './components/Contact';
 import Signup from './components/Signup';
 import Login from './components/Login';
 import LandList from './components/LandList';
+import LandDetails from './components/LandDetails';
 
 import './App.css';
-
 
 function App() {
     return (
@@ -28,7 +28,8 @@ function App() {
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/land-list" element={<LandList/>} />
+                <Route path="/land-list" element={<LandList />} />
+                <Route path="/lands/detail/:id" element={<LandDetails />} /> {/* Dinamik Route */}
             </Routes>
         </Router>
     );

@@ -40,4 +40,11 @@ public class LandController {
     public List<LandDTO> getAllLands() {
         return landService.getAllLands();
     }
+
+    @GetMapping("/detail/{id}")
+    public LandDTO getLandById(@PathVariable Long id) {
+        return landService.getLandById(id);
+    }
+
+
 }

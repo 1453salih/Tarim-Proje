@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Container, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const LandList = () => {
     const [lands, setLands] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch('http://localhost:8080/lands')
@@ -10,6 +12,14 @@ const LandList = () => {
             .then(data => setLands(data))
             .catch(error => console.error('Error fetching lands:', error));
     }, []);
+
+    const handleEdit = (id) => {
+        navigate(`/lands/edit/${id}`);
+    };
+
+    const handleDetail = (id) => {
+        navigate(`/lands/detail/${id}`);
+    };
 
     return (
         <Container maxWidth="md">
@@ -26,6 +36,7 @@ const LandList = () => {
                                 <TableCell align="right">City</TableCell>
                                 <TableCell align="right">District</TableCell>
                                 <TableCell align="right">Village</TableCell>
+                                <TableCell align="right">Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -38,6 +49,14 @@ const LandList = () => {
                                     <TableCell align="right">{land.city}</TableCell>
                                     <TableCell align="right">{land.district}</TableCell>
                                     <TableCell align="right">{land.village || 'N/A'}</TableCell>
+                                    <TableCell align="right">
+                                        <Button variant="contained" color="primary" onClick={() => handleEdit(land.id)}>
+                                            Düzenle
+                                        </Button>
+                                        <Button variant="outlined" color="secondary" onClick={() => handleDetail(land.id)} sx={{ ml: 2 }}>
+                                            Detay
+                                        </Button>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
