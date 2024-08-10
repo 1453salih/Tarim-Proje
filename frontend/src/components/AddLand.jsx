@@ -45,9 +45,9 @@ function AddLand() {
     const handleAddLand = async (e) => {
         e.preventDefault();
 
-        // Boş alan kontrolü (köy hariç)
+        // Boş alan kontrolü
         if (!landName || !landSize || !selectedIl || !selectedIlce) {
-            setSnackbarMessage('Please fill in all the required fields.');
+            setSnackbarMessage('Please fill in all the fields.');
             setSnackbarSeverity('error');
             setOpenSnackbar(true);
             return;
@@ -66,7 +66,7 @@ function AddLand() {
             landSize: parseInt(landSize),
             city: selectedIl,
             district: selectedIlce,
-            village: selectedKoy || '', // Köy seçilmediyse boş string olarak geçiyoruz
+            village: selectedKoy,
             user: { id: parseInt(userId) }
         };
 

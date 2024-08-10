@@ -1,7 +1,10 @@
 package salih_korkmaz.dnm_1005.service;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import salih_korkmaz.dnm_1005.dto.LandDTO;
 import salih_korkmaz.dnm_1005.entity.Land;
 import salih_korkmaz.dnm_1005.entity.User;
@@ -40,6 +43,30 @@ public class LandService {
                 .orElseThrow(() -> new RuntimeException("Land not found"));
         return convertToDto(land);
     }
+
+    public Land updateLand(@PathVariable Long id, @Valid @RequestBody LandDTO landDto) {
+        // Verilen id ile mevcut araziyi bulur
+        Land existingLand = landRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Land not found"));
+
+        // Mevcut araziyi günceller
+        existingLand.setName(landDto.getName());
+        existingLand.setLandSize(landDto.getLandSize());
+        existingLand.setCity(landDto.getCity());
+        existingLand.setDistrict(landDto.getDistrict());
+        existingLand.setVillage(landDto.getVillage());
+
+        // Güncellenen kullanıcı bilgisi varsa, kullanıcıyı bulur ve set eder
+        if (landDto.getUserId() != null) {
+            User user = userRepository.findById(landDto.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            existingLand.setUser(user);
+        }
+
+        // Güncellenen araziyi kaydeder ve döndürür
+        return landRepository.save(existingLand);
+    }
+
 
     private LandDTO convertToDto(Land land) {
         LandDTO landDto = new LandDTO();

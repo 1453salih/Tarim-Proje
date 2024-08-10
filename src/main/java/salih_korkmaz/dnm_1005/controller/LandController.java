@@ -46,5 +46,10 @@ public class LandController {
         return landService.getLandById(id);
     }
 
+    @PutMapping("/update/{id}")
+    public Land updateLand(@PathVariable Long id, @RequestBody LandDTO landDto) {
+        // LandService'i kullanarak araziyi güncelle
+        return landService.updateLand(id, landDto);
+    }
 
 }
