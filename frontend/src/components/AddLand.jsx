@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { TextField, Button, Container, Typography, Box, MenuItem, FormControl, InputLabel, Select } from '@mui/material';
 import ilIlceData from '../Data/il-ilce.json';
 import koylerData from '../Data/koyler.json';
+import axios from 'axios';  // axios'u ekliyoruz
+
 
 function AddLand() {
     const [landName, setLandName] = useState('');
@@ -39,13 +41,20 @@ function AddLand() {
     const handleAddLand = async (e) => {
         e.preventDefault();
         const userId = localStorage.getItem('userId'); // Kullanıcı ID'sini yerel depodan al
+        const token = axios.defaults.headers.common['Authorization']?.split(' ')[1]; // Token'ı alıyoruz
+
+        if (!token) {
+            console.error('Token bulunamadı.');
+            return;
+        }
+
         const newLand = {
             name: landName,
             landSize: parseInt(landSize),
             city: selectedIl,
             district: selectedIlce,
             village: selectedKoy,
-            userId: parseInt(userId) // User ID'yi ekliyoruz
+            user: { id: parseInt(userId) } // User nesnesini oluşturuyoruz
         };
 
         try {
@@ -53,7 +62,7 @@ function AddLand() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}` // Doğru token'ı ekliyoruz
                 },
                 body: JSON.stringify(newLand),
             });
@@ -72,6 +81,7 @@ function AddLand() {
             console.error('Error:', error);
         }
     };
+
 
     return (
         <Container maxWidth="sm">

@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import salih_korkmaz.dnm_1005.dto.LandDTO;
 import salih_korkmaz.dnm_1005.entity.Land;
+import salih_korkmaz.dnm_1005.entity.User;
 import salih_korkmaz.dnm_1005.repository.LandRepository;
+import salih_korkmaz.dnm_1005.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +17,18 @@ public class LandService {
     @Autowired
     private LandRepository landRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public Land saveLand(Land land) {
+        // Kullanıcıyı userId ile bul
+        User user = userRepository.findById(land.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Land nesnesine User'ı set et
+        land.setUser(user);
+
+        // Land'ı kaydet
         return landRepository.save(land);
     }
 
@@ -31,6 +44,7 @@ public class LandService {
         landDto.setCity(land.getCity());
         landDto.setDistrict(land.getDistrict());
         landDto.setVillage(land.getVillage());
+        landDto.setUserId(land.getUser().getId());
         return landDto;
     }
 }

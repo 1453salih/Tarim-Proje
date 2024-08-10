@@ -19,7 +19,8 @@ function Login() {
             const response = await axios.post('http://localhost:8080/auth/login', { user, password });
             if (response.status === 200) {
                 const data = response.data;
-                localStorage.setItem('token', data.token); // JWT token'ı localStorage'da sakla
+                // JWT token'ı artık Authorization başlığında göndereceğiz, localStorage'a kaydetmeye gerek yok
+                axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
                 localStorage.setItem('userId', data.userId);
                 setError('');
                 navigate('/home');
