@@ -100,7 +100,7 @@ const Navbar = () => {
                             key="home"
                             onClick={handleCloseNavMenu}
                             sx={{ my: 2, color: 'white', display: 'block' }}
-                            component={Link} to="/"
+                            component={Link} to="/home"
                         >
                             Home
                         </Button>

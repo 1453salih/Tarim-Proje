@@ -74,7 +74,10 @@ const LandDetails = () => {
                 .filter(item => item.il.localeCompare(land.city, undefined, { sensitivity: 'base' }) === 0)
                 .map(item => item.ilce);
             setIlceler(ilceList);
-            setLand(prevState => ({ ...prevState, district: '', village: '' }));
+
+            if (!ilceList.includes(land.district)) {
+                setLand(prevState => ({ ...prevState, district: '', village: '' }));
+            }
         }
     }, [land?.city]);
 
@@ -84,11 +87,16 @@ const LandDetails = () => {
                 .filter(item => item.il.localeCompare(land.city, undefined, { sensitivity: 'base' }) === 0 && item.ilce.localeCompare(land.district, undefined, { sensitivity: 'base' }) === 0)
                 .map(item => item.mahalle_koy);
             setKoyler(koyList);
-            setLand(prevState => ({ ...prevState, village: '' }));
+
+            if (!koyList.includes(land.village)) {
+                setLand(prevState => ({ ...prevState, village: '' }));
+            }
         } else {
             setKoyler([]);
         }
     }, [land?.district]);
+
+
 
     if (!land) {
         return <Typography>Loading...</Typography>;
