@@ -41,10 +41,11 @@ const Navbar = () => {
                     <Typography
                         variant="h6"
                         noWrap
-                        component="div"
-                        sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
+                        component={Link} // Burada Typography'yi Link bileşeni olarak değiştiriyoruz
+                        to="/home" // Yönlendirmek istediğiniz URL
+                        sx={{ mr: 2, display: { xs: 'none', md: 'flex' }, textDecoration: 'none', color: 'inherit' }} // Link'teki varsayılan stilleri kaldırmak için
                     >
-                        My Application
+                        Ekim Rehberi
                     </Typography>
 
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -93,7 +94,7 @@ const Navbar = () => {
                         component="div"
                         sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
                     >
-                        My Application
+                        Ekim Rehberi
                     </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         <Button
@@ -164,6 +165,7 @@ const Navbar = () => {
                 </Toolbar>
             </Container>
         </AppBar>
+
     );
 };
 export default Navbar;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {Container, Typography, Box, Paper, Button, TextField, MenuItem, FormControl, InputLabel, Select, Snackbar, Alert} from '@mui/material';
+import {Container, Typography, Box, Paper, Button, TextField, MenuItem, FormControl, InputLabel, Select, Snackbar, Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
 import {useNavigate, useParams} from 'react-router-dom';
 import ilIlceData from '../Data/il-ilce.json';
 import koylerData from '../Data/koyler.json';
@@ -13,6 +13,7 @@ const LandDetails = () => {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const navigate = useNavigate();
 
     const handleEditToggle = () => {
@@ -43,8 +44,41 @@ const LandDetails = () => {
             });
     };
 
+    const handleDelete = () => {
+        fetch(`http://localhost:8080/lands/delete/${id}`, {
+            method: 'DELETE',
+        })
+            .then(response => {
+                if (response.ok) {
+                    setSnackbarMessage('Land deleted successfully!');
+                    setSnackbarSeverity('success');
+                    setOpenSnackbar(true);
+                    setOpenDeleteDialog(false);
+                    navigate('/lands'); // Silme işleminden sonra kullanıcıyı liste sayfasına yönlendir
+                } else {
+                    setSnackbarMessage('Failed to delete the Land.');
+                    setSnackbarSeverity('error');
+                    setOpenSnackbar(true);
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting land:', error);
+                setSnackbarMessage('Failed to delete the Land.');
+                setSnackbarSeverity('error');
+                setOpenSnackbar(true);
+            });
+    };
+
     const handleCloseSnackbar = () => {
         setOpenSnackbar(false);
+    };
+
+    const handleOpenDeleteDialog = () => {
+        setOpenDeleteDialog(true);
+    };
+
+    const handleCloseDeleteDialog = () => {
+        setOpenDeleteDialog(false);
     };
 
     useEffect(() => {
@@ -95,8 +129,6 @@ const LandDetails = () => {
             setKoyler([]);
         }
     }, [land?.district]);
-
-
 
     if (!land) {
         return <Typography>Loading...</Typography>;
@@ -195,9 +227,14 @@ const LandDetails = () => {
                             </Button>
                         </>
                     ) : (
-                        <Button variant="contained" color="primary" onClick={handleEditToggle}>
-                            Düzenle
-                        </Button>
+                        <>
+                            <Button variant="contained" color="primary" onClick={handleEditToggle}>
+                                Düzenle
+                            </Button>
+                            <Button variant="contained" color="error" onClick={handleOpenDeleteDialog} sx={{ marginLeft: 2 }}>
+                                Sil
+                            </Button>
+                        </>
                     )}
                 </Box>
             </Box>
@@ -206,11 +243,35 @@ const LandDetails = () => {
                 open={openSnackbar}
                 autoHideDuration={3000}
                 onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
                 <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
                     {snackbarMessage}
                 </Alert>
             </Snackbar>
+
+            {/* Silme Onay Modalı */}
+            <Dialog
+                open={openDeleteDialog}
+                onClose={handleCloseDeleteDialog}
+                aria-labelledby="delete-dialog-title"
+                aria-describedby="delete-dialog-description"
+            >
+                <DialogTitle id="delete-dialog-title">Silmek istediğinizden emin misiniz?</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="delete-dialog-description">
+                        Bu işlem geri alınamaz. Silmek istediğinizden emin misiniz?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDeleteDialog} color="primary">
+                        İptal
+                    </Button>
+                    <Button onClick={handleDelete} color="error" autoFocus>
+                        Sil
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 };

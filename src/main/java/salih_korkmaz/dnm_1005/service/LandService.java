@@ -45,11 +45,12 @@ public class LandService {
     }
 
     public Land updateLand(@PathVariable Long id, @Valid @RequestBody LandDTO landDto) {
-        // Verilen id ile mevcut araziyi bulur
+        //verilen id ile veritabanından  mevcut araziyi bulmaya çalışır
         Land existingLand = landRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Land not found"));
+                .orElseThrow(() -> new RuntimeException("Land not found")); //Eğer arazi bulunamazsa, "Land not found" (Arazi bulunamadı) şeklinde bir hata fırlatılır.
 
-        // Mevcut araziyi günceller
+        //? Bu kısımda, LandDTO nesnesinden gelen yeni veriler, mevcut arazi nesnesine (existingLand) set edilir.
+        //? Böylece, güncellenmesi gereken bilgiler (isim, arazi boyutu, şehir, ilçe, köy) güncellenir.
         existingLand.setName(landDto.getName());
         existingLand.setLandSize(landDto.getLandSize());
         existingLand.setCity(landDto.getCity());
