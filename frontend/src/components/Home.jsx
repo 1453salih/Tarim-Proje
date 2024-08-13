@@ -20,7 +20,7 @@ const cards = [
     { title: 'Arazi Ekle', description: '', link: '/add-land',button:'Arazi Ekle',image:card1},
     { title: 'Arazilerim', description: '',button:'Arazilerimi Görüntüle', link: '/land-list',image:card2,},
     { title: 'Veriminizi Degerlendiriniz',button:'Verim Degerlendir', link: '/degerlendirme',image:card3 },
-    { title: 'Ekim Yap', description: '',button:'Ekim Yap',link: '/planting',image:card4},
+    { title: 'Ekim Yap', description: '',button:'Ekim Yap',link: '/sowings',image:card4},
     { title: 'Card 5', description: 'Description 5', link: '/link5',image:'' },
     { title: 'Card 6', description: 'Description 6', link: '/link6',image:'' },
 ];

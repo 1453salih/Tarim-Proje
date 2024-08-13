@@ -11,6 +11,7 @@ import Signup from './components/Signup';
 import Login from './components/Login';
 import LandList from './components/LandList';
 import LandDetails from './components/LandDetails';
+import AddSowing from './components/AddSowing';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS dosyasını dahil eder
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // (İsteğe bağlı) Bootstrap'in JS dosyalarını dahil eder
 
@@ -34,6 +35,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/land-list" element={<LandList />} />
                 <Route path="/lands/detail/:id" element={<LandDetails />} /> {/* Dinamik Route */}
+                <Route path="/sowings" element={<AddSowing />} />
             </Routes>
         </Router>
     );
