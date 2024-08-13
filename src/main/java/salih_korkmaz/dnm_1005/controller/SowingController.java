@@ -15,7 +15,6 @@ public class SowingController {
     @Autowired
     private SowingService sowingService;
 
-    @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping
     public SowingDTO createSowing(@RequestBody SowingDTO sowingDto) {
         return sowingService.saveSowing(sowingDto);

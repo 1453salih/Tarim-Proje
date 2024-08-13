@@ -4,4 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import salih_korkmaz.dnm_1005.entity.Plant;
 
 public interface PlantRepository extends JpaRepository<Plant, Long> {
+    Plant findByName(String name);
 }
+
