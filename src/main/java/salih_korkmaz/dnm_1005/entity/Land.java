@@ -32,6 +32,10 @@ public class Land {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonBackReference
+    @JsonBackReference("user-land")
     private User user;
+
+    @OneToMany(mappedBy = "land", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference("land-sowing")
+    private List<Sowing> sowings;
 }

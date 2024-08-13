@@ -8,10 +8,5 @@ import jakarta.validation.constraints.NotNull;
 public class PlantDTO {
     private Long id;
 
-    @NotNull(message = "Name cannot be null")
-    private String name;
 
-    @NotNull(message = "Category name cannot be null")
-    private String categoryName;
-}
 
