@@ -2,12 +2,15 @@ package salih_korkmaz.dnm_1005.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import salih_korkmaz.dnm_1005.dto.LandDTO;
 import salih_korkmaz.dnm_1005.entity.Land;
 import salih_korkmaz.dnm_1005.entity.User;
 import salih_korkmaz.dnm_1005.repository.UserRepository;
 import salih_korkmaz.dnm_1005.service.LandService;
+import salih_korkmaz.dnm_1005.service.UserService;
 
 import java.util.List;
 
@@ -22,6 +25,8 @@ public class LandController {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserService userService;
 
     @PostMapping
     public Land createLand(@RequestBody Land land) {
@@ -37,8 +42,16 @@ public class LandController {
     }
 
     @GetMapping
-    public List<LandDTO> getAllLands() {
-        return landService.getAllLands();
+    public List<LandDTO> getLandsByUser() {
+        // Oturum açan kullanıcının kimliğini al
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        // UserService'den kullanıcıyı al
+        User user = userService.findByUsername(username);
+
+        // Kullanıcı ID'sine göre arazileri getir
+        return landService.getLandsByUser(user.getId());
     }
 
     @GetMapping("/detail/{id}")

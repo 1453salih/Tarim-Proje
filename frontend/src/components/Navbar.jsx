@@ -12,8 +12,9 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link } from 'react-router-dom';
+import Logo from '../assets/logo.png'; // Logo dosyasının yolu
 
-const pages = ['Add Land', 'View Lands', 'Contact','Signup','Login','Land List'];
+const pages = ['Add Land', 'View Lands', 'Contact', 'Signup', 'Login', 'Land List'];
 
 const Navbar = () => {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -35,15 +36,29 @@ const Navbar = () => {
     };
 
     return (
-        <AppBar position="static">
+        <AppBar position="static" sx={{ backgroundColor: 'green' }}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
+                    <Box
+                        component="img"
+                        src={Logo}
+                        alt="Ekim Rehberi Logo"
+                        sx={{ height: 40, marginRight: 2 }}
+                    />
+
                     <Typography
                         variant="h6"
                         noWrap
-                        component={Link} // Burada Typography'yi Link bileşeni olarak değiştiriyoruz
-                        to="/home" // Yönlendirmek istediğiniz URL
-                        sx={{ mr: 2, display: { xs: 'none', md: 'flex' }, textDecoration: 'none', color: 'inherit' }} // Link'teki varsayılan stilleri kaldırmak için
+                        component={Link}
+                        to="/home"
+                        sx={{
+                            mr: 2,
+                            display: { xs: 'none', md: 'flex' },
+                            textDecoration: 'none',
+                            color: 'white',
+                            fontFamily: 'Poppins, sans-serif',
+
+                        }}
                     >
                         Ekim Rehberi
                     </Typography>
@@ -75,11 +90,12 @@ const Navbar = () => {
                             onClose={handleCloseNavMenu}
                             sx={{
                                 display: { xs: 'block', md: 'none' },
+                                fontSize:'100px'
                             }}
                         >
                             {pages.map((page) => (
                                 <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                    <Typography textAlign="center">
+                                    <Typography textAlign="center" sx={{ fontFamily: 'Poppins, sans-serif'}}>
                                         <Link to={`/${page.toLowerCase().replace(/ /g, '-')}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                                             {page}
                                         </Link>
@@ -92,24 +108,16 @@ const Navbar = () => {
                         variant="h6"
                         noWrap
                         component="div"
-                        sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
+                        sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }, color: 'white', fontFamily: 'Poppins, sans-serif' }}
                     >
                         Ekim Rehberi
                     </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        <Button
-                            key="home"
-                            onClick={handleCloseNavMenu}
-                            sx={{ my: 2, color: 'white', display: 'block' }}
-                            component={Link} to="/home"
-                        >
-                            Home
-                        </Button>
                         {pages.map((page) => (
                             <Button
                                 key={page}
                                 onClick={handleCloseNavMenu}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
+                                sx={{ my: 2, color: 'white', display: 'block', fontFamily: 'Poppins, sans-serif' }}
                                 component={Link} to={`/${page.toLowerCase().replace(/ /g, '-')}`}
                             >
                                 {page}
@@ -124,7 +132,9 @@ const Navbar = () => {
                             </IconButton>
                         </Tooltip>
                         <Menu
-                            sx={{ mt: '45px' }}
+                            sx={{ mt: '45px' ,
+
+                                }}
                             id="menu-appbar"
                             anchorEl={anchorElUser}
                             anchorOrigin={{
@@ -140,21 +150,21 @@ const Navbar = () => {
                             onClose={handleCloseUserMenu}
                         >
                             <MenuItem onClick={handleCloseUserMenu}>
-                                <Typography textAlign="center">
+                                <Typography textAlign="center" sx={{ fontFamily: 'Poppins, sans-serif' }}>
                                     <Link to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
                                         Profile
                                     </Link>
                                 </Typography>
                             </MenuItem>
                             <MenuItem onClick={handleCloseUserMenu}>
-                                <Typography textAlign="center">
+                                <Typography textAlign="center" sx={{ fontFamily: 'Poppins, sans-serif' }}>
                                     <Link to="/settings" style={{ textDecoration: 'none', color: 'inherit' }}>
                                         Settings
                                     </Link>
                                 </Typography>
                             </MenuItem>
                             <MenuItem onClick={handleCloseUserMenu}>
-                                <Typography textAlign="center">
+                                <Typography textAlign="center" sx={{ fontFamily: 'Poppins, sans-serif' }}>
                                     <Link to="/login" style={{ textDecoration: 'none', color: 'inherit' }}>
                                         Logout
                                     </Link>
@@ -165,7 +175,6 @@ const Navbar = () => {
                 </Toolbar>
             </Container>
         </AppBar>
-
     );
 };
 export default Navbar;

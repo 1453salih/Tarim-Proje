@@ -68,6 +68,10 @@ public class LandService {
         return landRepository.save(existingLand);
     }
 
+    public List<LandDTO> getLandsByUser(Long userId) {
+        List<Land> lands = landRepository.findByUserId(userId);
+        return lands.stream().map(this::convertToDto).collect(Collectors.toList());
+    }
 
     private LandDTO convertToDto(Land land) {
         LandDTO landDto = new LandDTO();

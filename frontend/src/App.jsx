@@ -12,9 +12,6 @@ import Login from './components/Login';
 import LandList from './components/LandList';
 import LandDetails from './components/LandDetails';
 import AddSowing from './components/AddSowing';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap CSS dosyasını dahil eder
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // (İsteğe bağlı) Bootstrap'in JS dosyalarını dahil eder
-
 
 
 import './App.css';

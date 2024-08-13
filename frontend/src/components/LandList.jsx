@@ -1,16 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // axios'u import edin
 
 const LandList = () => {
     const [lands, setLands] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch('http://localhost:8080/lands')
-            .then(response => response.json())
+        const token = axios.defaults.headers.common['Authorization']?.split(' ')[1]; // Token'ı axios'tan alın
+
+        if (!token) {
+            console.error('Token bulunamadı.');
+            return;
+        }
+
+        fetch('http://localhost:8080/lands', {
+            headers: {
+                'Authorization': `Bearer ${token}` // Axios'tan alınan token'ı kullanın
+            }
+        })
+            .then(response => {
+                console.log('Response:', response);
+                return response.text();
+            })
+            .then(text => {
+                console.log('Response text:', text);
+                return JSON.parse(text);
+            })
             .then(data => setLands(data))
-            .catch(error => console.error('Error fetching lands:', error));
+            .catch(error => {
+                console.error('Error fetching lands:', error);
+                alert('Bir hata oluştu: ' + error.message);
+            });
     }, []);
 
     const handleEdit = (id) => {
