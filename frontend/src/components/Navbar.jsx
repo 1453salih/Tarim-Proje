@@ -17,7 +17,7 @@ import Logo from '../assets/logo.png'; // Logo dosyasının yolu
 
 const pages = ['Add Land', 'View Lands', 'Contact', 'Signup', 'Login', 'Land List'];
 
-const Navbar = () => {
+const Navbar = ({ isLoggedIn, setIsLoggedIn }) => { // setIsLoggedIn'i burada alıyoruz
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
     const navigate = useNavigate(); // useNavigate hook'u ile yönlendirme
@@ -41,11 +41,13 @@ const Navbar = () => {
         try {
             await axios.post('http://localhost:8080/auth/logout', {}, { withCredentials: true });
             localStorage.removeItem('userId'); // localStorage'dan kullanıcı bilgilerini temizleyin
+            setIsLoggedIn(false); // Kullanıcı çıkış yaptıktan sonra isLoggedIn durumunu false olarak ayarlayın
             navigate('/login'); // Kullanıcıyı login sayfasına yönlendirin
         } catch (error) {
             console.error('Logout failed:', error);
         }
     };
+
 
     return (
         <AppBar position="static" sx={{ backgroundColor: 'green' }}>

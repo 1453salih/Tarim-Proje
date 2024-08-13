@@ -7,7 +7,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const theme = createTheme();
 
-function Login() {
+function Login({ setIsLoggedIn }) { // setIsLoggedIn prop olarak alınıyor
     const [user, setUser] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -22,7 +22,8 @@ function Login() {
                 // Cookie otomatik olarak gönderildiği için sadece gerekli verileri saklıyoruz
                 localStorage.setItem('userId', data.userId);
                 setError('');
-                navigate('/home');
+                setIsLoggedIn(true); // Oturum açma başarılı, isLoggedIn true yapılıyor
+                navigate('/home'); // Ana sayfaya yönlendiriliyor
             } else {
                 setError('Invalid credentials');
             }
@@ -31,7 +32,6 @@ function Login() {
             console.error('Error:', error);
         }
     };
-
 
     return (
         <ThemeProvider theme={theme}>

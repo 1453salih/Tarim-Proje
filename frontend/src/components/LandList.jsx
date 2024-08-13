@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // axios'u import edin
+import axios from 'axios';
 
 const LandList = () => {
     const [lands, setLands] = useState([]);
+    const [isAuthenticated, setIsAuthenticated] = useState(true); // Başlangıçta true kabul edelim
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -15,18 +16,23 @@ const LandList = () => {
             })
             .catch(error => {
                 console.error('Error fetching lands:', error);
-                alert('Bir hata oluştu: ' + error.message);
+                if (error.response && error.response.status === 401) {
+                    setIsAuthenticated(false); // Eğer 401 Unauthorized hatası alırsanız, kullanıcı giriş yapmamış demektir
+                }
             });
     }, []);
 
-
-    const handleEdit = (id) => {
-        navigate(`/lands/edit/${id}`);
-    };
-
-    const handleDetail = (id) => {
-        navigate(`/lands/detail/${id}`);
-    };
+    if (!isAuthenticated) {
+        return (
+            <Container maxWidth="md">
+                <Box sx={{ mt: 3 }}>
+                    <Typography variant="h6" color="error">
+                        Oturum açmadan görüntüleyemezsiniz.
+                    </Typography>
+                </Box>
+            </Container>
+        );
+    }
 
     return (
         <Container maxWidth="md">
@@ -75,3 +81,4 @@ const LandList = () => {
 };
 
 export default LandList;
+
