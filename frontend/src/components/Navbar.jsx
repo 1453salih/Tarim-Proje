@@ -11,7 +11,8 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios'; // axios'u import edin
 import Logo from '../assets/logo.png'; // Logo dosyasının yolu
 
 const pages = ['Add Land', 'View Lands', 'Contact', 'Signup', 'Login', 'Land List'];
@@ -19,6 +20,7 @@ const pages = ['Add Land', 'View Lands', 'Contact', 'Signup', 'Login', 'Land Lis
 const Navbar = () => {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
+    const navigate = useNavigate(); // useNavigate hook'u ile yönlendirme
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -33,6 +35,16 @@ const Navbar = () => {
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
+    };
+
+    const handleLogout = async () => {
+        try {
+            await axios.post('http://localhost:8080/auth/logout', {}, { withCredentials: true });
+            localStorage.removeItem('userId'); // localStorage'dan kullanıcı bilgilerini temizleyin
+            navigate('/login'); // Kullanıcıyı login sayfasına yönlendirin
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
     };
 
     return (
@@ -134,7 +146,7 @@ const Navbar = () => {
                         <Menu
                             sx={{ mt: '45px' ,
 
-                                }}
+                            }}
                             id="menu-appbar"
                             anchorEl={anchorElUser}
                             anchorOrigin={{
@@ -163,11 +175,9 @@ const Navbar = () => {
                                     </Link>
                                 </Typography>
                             </MenuItem>
-                            <MenuItem onClick={handleCloseUserMenu}>
+                            <MenuItem onClick={handleLogout}>
                                 <Typography textAlign="center" sx={{ fontFamily: 'Poppins, sans-serif' }}>
-                                    <Link to="/login" style={{ textDecoration: 'none', color: 'inherit' }}>
-                                        Logout
-                                    </Link>
+                                    Logout
                                 </Typography>
                             </MenuItem>
                         </Menu>

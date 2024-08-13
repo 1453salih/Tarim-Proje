@@ -19,8 +19,8 @@ function AddSowing() {
         const fetchPlantsAndLands = async () => {
             try {
                 const [plantsResponse, landsResponse] = await Promise.all([
-                    axios.get('http://localhost:8080/plants'),
-                    axios.get('http://localhost:8080/lands')
+                    axios.get('http://localhost:8080/plants', { withCredentials: true }),
+                    axios.get('http://localhost:8080/lands', { withCredentials: true })
                 ]);
                 setPlants(plantsResponse.data);
                 setLands(landsResponse.data);
@@ -43,13 +43,6 @@ function AddSowing() {
             return;
         }
 
-        const token = axios.defaults.headers.common['Authorization']?.split(' ')[1];
-
-        if (!token) {
-            console.error('Token bulunamadı.');
-            return;
-        }
-
         const newSowing = {
             plantId: parseInt(plantId),
             sowingDate: sowingDate,
@@ -57,15 +50,8 @@ function AddSowing() {
         };
 
         try {
-            const response = await fetch('http://localhost:8080/sowings', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(newSowing),
-            });
-            if (response.ok) {
+            const response = await axios.post('http://localhost:8080/sowings', newSowing, { withCredentials: true });
+            if (response.status === 200) {
                 setSnackbarMessage('Sowing saved successfully!');
                 setSnackbarSeverity('success');
                 setOpenSnackbar(true);
@@ -84,6 +70,7 @@ function AddSowing() {
             setOpenSnackbar(true);
         }
     };
+
 
     const handleCloseSnackbar = () => {
         setOpenSnackbar(false);

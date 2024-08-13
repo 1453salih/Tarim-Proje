@@ -8,32 +8,17 @@ const LandList = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = axios.defaults.headers.common['Authorization']?.split(' ')[1]; // Token'ı axios'tan alın
-
-        if (!token) {
-            console.error('Token bulunamadı.');
-            return;
-        }
-
-        fetch('http://localhost:8080/lands', {
-            headers: {
-                'Authorization': `Bearer ${token}` // Axios'tan alınan token'ı kullanın
-            }
-        })
+        axios.get('http://localhost:8080/lands', { withCredentials: true })
             .then(response => {
                 console.log('Response:', response);
-                return response.text();
+                setLands(response.data);
             })
-            .then(text => {
-                console.log('Response text:', text);
-                return JSON.parse(text);
-            })
-            .then(data => setLands(data))
             .catch(error => {
                 console.error('Error fetching lands:', error);
                 alert('Bir hata oluştu: ' + error.message);
             });
     }, []);
+
 
     const handleEdit = (id) => {
         navigate(`/lands/edit/${id}`);

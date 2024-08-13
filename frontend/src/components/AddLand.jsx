@@ -54,12 +54,6 @@ function AddLand() {
         }
 
         const userId = localStorage.getItem('userId');
-        const token = axios.defaults.headers.common['Authorization']?.split(' ')[1];
-
-        if (!token) {
-            console.error('Token bulunamadı.');
-            return;
-        }
 
         const newLand = {
             name: landName,
@@ -71,15 +65,8 @@ function AddLand() {
         };
 
         try {
-            const response = await fetch('http://localhost:8080/lands', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(newLand),
-            });
-            if (response.ok) {
+            const response = await axios.post('http://localhost:8080/lands', newLand, { withCredentials: true });
+            if (response.status === 200) {
                 setSnackbarMessage('Land saved successfully!');
                 setSnackbarSeverity('success');
                 setOpenSnackbar(true);
@@ -100,6 +87,8 @@ function AddLand() {
             setOpenSnackbar(true);
         }
     };
+
+
 
     const handleCloseSnackbar = () => {
         setOpenSnackbar(false);
