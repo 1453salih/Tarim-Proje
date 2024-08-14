@@ -33,6 +33,9 @@ const LandList = () => {
             </Container>
         );
     }
+    const handleDetail = (id) => {
+        navigate(`/detail/${id}`);
+    };
 
     return (
         <Container maxWidth="md">

@@ -26,12 +26,14 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            // Her girişte yeni bir token oluştur
             String token = jwtUtil.generateToken(user.getUser());
             return new LoginResponse(token, user.getId());
         } else {
             throw new RuntimeException("Invalid credentials");
         }
     }
+
 
     public LoginResponse signup(LoginRequest request) {
         User user = new User();
@@ -46,5 +48,7 @@ public class UserService {
         return userRepository.findByUser(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
+
+
 
 }

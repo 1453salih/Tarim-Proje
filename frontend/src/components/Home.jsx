@@ -6,7 +6,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Breadcrumb from './BreadCrumb'; // Breadcrumb bileşenini import edin
 import { Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
 
@@ -24,42 +24,15 @@ const cards = [
     { title: 'Card 6', description: 'Description 6', link: '/link6', image: '' },
 ];
 
-function handleClick(event) {
-    event.preventDefault();
-    console.info('You clicked a breadcrumb.');
-}
-
 function Home() {
     return (
         <Container>
-            <Box
-                sx={{
-                    marginTop:'10px',
-                    backgroundColor: 'rgba(0, 128, 0, 0.1)',
-                    padding: '10px 20px',
-                    borderRadius: '8px',
-                    marginBottom: 4,
-                    display: 'flex',
-                    justifyContent: 'start',
-                    alignItems: 'center',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                    fontFamily: 'Poppins, sans-serif',
-                }}
-            >
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link
-                        underline="hover"
-                        color="inherit"
-                        href="/"
-                        onClick={handleClick}
-                        style={{ fontSize: '1rem', color: 'green', fontFamily: 'Poppins, sans-serif' }}
-                    >
-                        Anasayfa
-                    </Link>
-
-                    <Typography color="text.primary" sx={{ fontSize: '1rem', color: 'green', fontFamily: 'Poppins, sans-serif' }}>Menü</Typography>
-                </Breadcrumbs>
+            {/* Breadcrumb bileşenini ekleyin */}
+            <Box>
+                <Breadcrumb />
             </Box>
+
+            {/* Diğer içerikler */}
             <Grid container spacing={4}>
                 {cards.map((card, index) => (
                     <Grid item key={index} xs={12} sm={6} md={4}>

@@ -43,7 +43,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         String username = null;
 
-        if (jwt != null) {
+        if (jwt != null && !jwtUtil.isTokenExpired(jwt)) {
             username = jwtUtil.extractUsername(jwt);
         }
 
