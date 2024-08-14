@@ -39,19 +39,25 @@ public class SowingService {
 
         Sowing savedSowing = sowingRepository.save(sowing);
 
-        return convertToDto(savedSowing);  // Sowing nesnesini SowingDTO'ya dönüştürüp döndürün
+        return convertToDto(savedSowing);
     }
-
 
     public List<SowingDTO> getAllSowings() {
         return sowingRepository.findAll().stream().map(this::convertToDto).collect(Collectors.toList());
+    }
+
+    public List<SowingDTO> getSowingsByUser(Long userId) {
+        List<Sowing> sowings = sowingRepository.findByUserId(userId);
+        return sowings.stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
     private SowingDTO convertToDto(Sowing sowing) {
         SowingDTO sowingDto = new SowingDTO();
         sowingDto.setId(sowing.getId());
         sowingDto.setPlantId(sowing.getPlant().getId());
+        sowingDto.setPlantName(sowing.getPlant().getName()); // Bitki adı ekleniyor
         sowingDto.setLandId(sowing.getLand().getId());
+        sowingDto.setLandName(sowing.getLand().getName()); // Arazi adı ekleniyor
         sowingDto.setSowingDate(sowing.getSowingDate());
         return sowingDto;
     }

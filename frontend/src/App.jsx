@@ -12,8 +12,10 @@ import Login from './components/Login';
 import LandList from './components/LandList';
 import LandDetails from './components/LandDetails';
 import AddSowing from './components/AddSowing';
+import SowingList from "./components/SowingList.jsx";
 
 import './App.css';
+
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -63,6 +65,7 @@ function App() {
                 <Route path="/land-list" element={isLoggedIn ? <LandList /> : <Navigate to="/login" />} />
                 <Route path="/lands/detail/:id" element={isLoggedIn ? <LandDetails /> : <Navigate to="/login" />} />
                 <Route path="/sowings" element={isLoggedIn ? <AddSowing /> : <Navigate to="/login" />} />
+                <Route path="/sowing-list" element={isLoggedIn ? <SowingList /> : <Navigate to="/login" />} />
             </Routes>
         </Router>
     );
