@@ -37,7 +37,6 @@ public class PlantService {
         PlantDTO plantDto = new PlantDTO();
         plantDto.setId(plant.getId());
         plantDto.setName(plant.getName());
-        plantDto.setCategoryName(plant.getCategoryName());
         return plantDto;
     }
 }

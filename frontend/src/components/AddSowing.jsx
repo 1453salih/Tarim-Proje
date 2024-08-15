@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { TextField, Button, Container, Typography, Box, MenuItem, FormControl, InputLabel, Select, Snackbar, Alert } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import BreadcrumbComponent from "./BreadCrumb";
+
 
 function AddSowing() {
     const [plantId, setPlantId] = useState('');
@@ -78,10 +80,14 @@ function AddSowing() {
 
     return (
         <Container maxWidth="sm">
+            <Box>
+                <BreadcrumbComponent pageName="Ekim Yap" />
+            </Box>
             <Box component="form" onSubmit={handleAddSowing} sx={{ mt: 3 }}>
                 <Typography variant="h4" component="h2" gutterBottom>
                     Add Sowing
                 </Typography>
+
                 <FormControl fullWidth margin="normal">
                     <InputLabel>Plant</InputLabel>
                     <Select

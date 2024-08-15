@@ -28,7 +28,7 @@ function App() {
                     method: 'GET',
                     credentials: 'include',
                 });
-
+                console.log(response);
                 if (response.ok) {
                     setIsLoggedIn(true);
                 } else {
@@ -44,6 +44,8 @@ function App() {
 
         checkAuth();
     }, []);
+
+
 
     if (loading) {
         return <div>Loading...</div>; // Yüklenme sırasında bir mesaj veya spinner gösterebilirsiniz

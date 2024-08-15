@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import BreadcrumbComponent from "./BreadCrumb.jsx";
 
 const LandList = () => {
     const [lands, setLands] = useState([]);
@@ -39,6 +40,9 @@ const LandList = () => {
 
     return (
         <Container maxWidth="md">
+            <Box>
+                <BreadcrumbComponent pageName="Arazilerim" />
+            </Box>
             <Box sx={{ mt: 3 }}>
                 <Typography variant="h4" component="h2" gutterBottom>
                     Lands List

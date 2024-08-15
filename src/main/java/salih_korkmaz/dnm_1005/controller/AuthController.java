@@ -11,6 +11,9 @@ import salih_korkmaz.dnm_1005.dto.LoginResponse;
 import salih_korkmaz.dnm_1005.service.UserService;
 import salih_korkmaz.dnm_1005.util.JwtUtil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/auth")
@@ -75,11 +78,18 @@ public class AuthController {
     }
 
     @GetMapping("/validate-token")
-    public ResponseEntity<Void> validateToken(@CookieValue(name = "jwt", required = false) String jwt) {
+    public ResponseEntity<Map<String, Boolean>> validateToken(@CookieValue(name = "jwt", required = false) String jwt) {
+        Map<String, Boolean> response = new HashMap<>();
+
         if (jwt != null && jwtUtil.validateToken(jwt, jwtUtil.extractUsername(jwt))) {
-            return ResponseEntity.ok().build();
+            response.put("isValid", true);
+            return ResponseEntity.ok(response);
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        response.put("isValid", false);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
+
+
 
 }

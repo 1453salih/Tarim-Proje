@@ -20,7 +20,6 @@ public class PlantController {
     public Plant createPlant(@RequestBody PlantDTO plantDto) {
         Plant plant = new Plant();
         plant.setName(plantDto.getName());
-        plant.setCategoryName(plantDto.getCategoryName());
         return plantService.savePlant(plant);
     }
 

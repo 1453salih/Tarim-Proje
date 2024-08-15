@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Breadcrumbs, Typography } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 
-const BreadcrumbComponent = () => {
+const BreadcrumbComponent = ({ pageName }) => {
     const navigate = useNavigate();
 
     const handleClick = (event, path) => {
@@ -23,6 +23,7 @@ const BreadcrumbComponent = () => {
                 alignItems: 'center',
                 boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
                 fontFamily: 'Poppins, sans-serif',
+
             }}
         >
             <Breadcrumbs aria-label="breadcrumb">
@@ -31,13 +32,13 @@ const BreadcrumbComponent = () => {
                     color="inherit"
                     to="/" // href yerine to kullanıyoruz çünkü React Router kullanıyoruz
                     onClick={(event) => handleClick(event, '/')}
-                    style={{ fontSize: '1rem', color: 'green', fontFamily: 'Poppins, sans-serif' }}
+                    style={{ fontSize: '1rem', color: 'green', fontFamily: 'Poppins, sans-serif',textDecoration:'none'}}
                 >
                     Anasayfa
                 </Link>
 
                 <Typography color="text.primary" sx={{ fontSize: '1rem', color: 'green', fontFamily: 'Poppins, sans-serif' }}>
-                    Menü
+                    {pageName}
                 </Typography>
             </Breadcrumbs>
         </Box>
