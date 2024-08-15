@@ -15,6 +15,36 @@ function AddSowing() {
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
     const navigate = useNavigate();
+    //-----------------------------------------------------------------------------------
+    const [categories ,setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
+
+    useEffect(()=>{
+        const fetchCategories = async ()=>{
+            try{
+                const response = await axios.get('http://localhost:8080/categories',{withCredentials:true});
+                setCategories(response.data);
+            }catch(error){
+                console.log("Error Fetching Categories",error);
+            }
+        };
+        fetchCategories();
+    },[]);
+
+    useEffect(() => {
+        if(selectedCategory){
+            const fetchPlantsByCategory = async ()=>{
+                try {
+                    const response = await axios.get('http://localhost:8080/plants',{withCredentials:true});
+                }catch (error){
+                    console.log("Error Fetching Plants",error);
+                }
+            };
+
+            fetchPlantsByCategory();
+        }
+    }, [selectedCategory]);
+
 
     useEffect(() => {
         // Bitkileri ve arazileri API'den çekmek için istekler
@@ -89,16 +119,30 @@ function AddSowing() {
                 </Typography>
 
                 <FormControl fullWidth margin="normal">
-                    <InputLabel>Plant</InputLabel>
+                    <InputLabel>Kategori</InputLabel>
+                    <Select
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                    >
+                        {categories.map((category) => (
+                            <MenuItem key={category.id} value={category.id}>{category.categoryName}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+
+                <FormControl fullWidth margin="normal">
+                    <InputLabel>Bitki</InputLabel>
                     <Select
                         value={plantId}
                         onChange={(e) => setPlantId(e.target.value)}
+                        disabled={!selectedCategory} // Kategori seçilmeden bitki seçimi yapılamaz
                     >
                         {plants.map((plant) => (
                             <MenuItem key={plant.id} value={plant.id}>{plant.name}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
+
                 <TextField
                     fullWidth
                     label="Sowing Date"

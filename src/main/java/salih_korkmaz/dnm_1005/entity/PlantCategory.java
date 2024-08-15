@@ -19,5 +19,5 @@ public class PlantCategory {
 
 
     @OneToMany(mappedBy = "plantCategory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Plant> plant;
+    private List<Plant> plant;// mappedBy
 }
