@@ -41,7 +41,7 @@ function AddSowing() {
                     console.log("Error Fetching Plants",error);
                 }
             };
-
+//s
             fetchPlantsByCategory();
         }
     }, [selectedCategory]);
