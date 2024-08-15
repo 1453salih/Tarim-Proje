@@ -3,12 +3,8 @@ package salih_korkmaz.dnm_1005.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import salih_korkmaz.dnm_1005.dto.PlantDTO;
-import salih_korkmaz.dnm_1005.dto.SowingDTO;
 import salih_korkmaz.dnm_1005.entity.Plant;
-import salih_korkmaz.dnm_1005.entity.Sowing;
-import salih_korkmaz.dnm_1005.repository.LandRepository;
 import salih_korkmaz.dnm_1005.repository.PlantRepository;
-import salih_korkmaz.dnm_1005.repository.SowingRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +21,13 @@ public class PlantService {
 
     public List<PlantDTO> getAllPlants() {
         return plantRepository.findAll().stream().map(this::convertToDto).collect(Collectors.toList());
+    }
+
+    public List<PlantDTO> getPlantsByCategory(Long categoryId) {
+        return plantRepository.findByPlantCategoryId(categoryId)
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     public PlantDTO getPlantById(Long id) {

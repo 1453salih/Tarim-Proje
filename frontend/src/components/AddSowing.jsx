@@ -35,7 +35,8 @@ function AddSowing() {
         if(selectedCategory){
             const fetchPlantsByCategory = async ()=>{
                 try {
-                    const response = await axios.get('http://localhost:8080/plants',{withCredentials:true});
+                    const response = await axios.get(`http://localhost:8080/plants/by-category?categoryId=${selectedCategory}`, { withCredentials: true });
+                    setPlants(response.data);
                 }catch (error){
                     console.log("Error Fetching Plants",error);
                 }

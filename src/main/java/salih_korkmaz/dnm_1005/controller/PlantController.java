@@ -28,6 +28,11 @@ public class PlantController {
         return plantService.getAllPlants();
     }
 
+    @GetMapping("/by-category")
+    public List<PlantDTO> getPlantsByCategory(@RequestParam Long categoryId) {
+        return plantService.getPlantsByCategory(categoryId);
+    }
+
     @GetMapping("/detail/{id}")
     public PlantDTO getPlantById(@PathVariable Long id) {
         return plantService.getPlantById(id);
