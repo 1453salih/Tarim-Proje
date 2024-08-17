@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import salih_korkmaz.dnm_1005.dto.LandDTO;
 import salih_korkmaz.dnm_1005.entity.Land;
+import salih_korkmaz.dnm_1005.entity.Locality;
 import salih_korkmaz.dnm_1005.entity.User;
 import salih_korkmaz.dnm_1005.repository.LandRepository;
+import salih_korkmaz.dnm_1005.repository.LocalityRepository;
 import salih_korkmaz.dnm_1005.repository.UserRepository;
 
 import java.util.List;
@@ -23,49 +25,55 @@ public class LandService {
     @Autowired
     private UserRepository userRepository;
 
-    public Land saveLand(Land land) {
-        // Kullanıcıyı userId ile bul
-        User user = userRepository.findById(land.getUser().getId())
+    @Autowired
+    private LocalityRepository localityRepository;
+
+    public Land saveLand(LandDTO landDto) {
+        User user = userRepository.findById(landDto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Land nesnesine User'ı set et
-        land.setUser(user);
+        Locality locality = localityRepository.findById(landDto.getLocalityId())
+                .orElseThrow(() -> new RuntimeException("Locality not found"));
 
-        // Land'ı kaydet
+        Land land = new Land();
+        land.setName(landDto.getName());
+        land.setLandSize(landDto.getLandSize());
+        land.setUser(user);
+        land.setLocality(locality);
+
         return landRepository.save(land);
     }
 
-    public List<LandDTO> getAllLands() {
-        return landRepository.findAll().stream().map(this::convertToDto).collect(Collectors.toList());
-    }
-    public LandDTO getLandById(Long id) {
-        Land land = landRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Land not found"));
-        return convertToDto(land);
-    }
-
-    public Land updateLand(@PathVariable Long id, @Valid @RequestBody LandDTO landDto) {
-        //verilen id ile veritabanından  mevcut araziyi bulmaya çalışır
+    public Land updateLand(Long id, @Valid LandDTO landDto) {
         Land existingLand = landRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Land not found")); //Eğer arazi bulunamazsa, "Land not found" (Arazi bulunamadı) şeklinde bir hata fırlatılır.
+                .orElseThrow(() -> new RuntimeException("Land not found"));
 
-        //? Bu kısımda, LandDTO nesnesinden gelen yeni veriler, mevcut arazi nesnesine (existingLand) set edilir.
-        //? Böylece, güncellenmesi gereken bilgiler (isim, arazi boyutu, şehir, ilçe, köy) güncellenir.
         existingLand.setName(landDto.getName());
         existingLand.setLandSize(landDto.getLandSize());
-        existingLand.setCity(landDto.getCity());
-        existingLand.setDistrict(landDto.getDistrict());
-        existingLand.setVillage(landDto.getVillage());
 
-        // Güncellenen kullanıcı bilgisi varsa, kullanıcıyı bulur ve set eder
         if (landDto.getUserId() != null) {
             User user = userRepository.findById(landDto.getUserId())
                     .orElseThrow(() -> new RuntimeException("User not found"));
             existingLand.setUser(user);
         }
 
-        // Güncellenen araziyi kaydeder ve döndürür
+        if (landDto.getLocalityId() != null) {
+            Locality locality = localityRepository.findById(landDto.getLocalityId())
+                    .orElseThrow(() -> new RuntimeException("Locality not found"));
+            existingLand.setLocality(locality);
+        }
+
         return landRepository.save(existingLand);
+    }
+
+    public List<LandDTO> getAllLands() {
+        return landRepository.findAll().stream().map(this::convertToDto).collect(Collectors.toList());
+    }
+
+    public LandDTO getLandById(Long id) {
+        Land land = landRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Land not found"));
+        return convertToDto(land);
     }
 
     public List<LandDTO> getLandsByUser(Long userId) {
@@ -78,10 +86,13 @@ public class LandService {
         landDto.setId(land.getId());
         landDto.setName(land.getName());
         landDto.setLandSize(land.getLandSize());
-        landDto.setCity(land.getCity());
-        landDto.setDistrict(land.getDistrict());
-        landDto.setVillage(land.getVillage());
         landDto.setUserId(land.getUser().getId());
+        landDto.setLocalityId(land.getLocality().getCode());
         return landDto;
+    }
+
+    public Locality findLocalityById(Long localityId) {
+        return localityRepository.findById(localityId)
+                .orElseThrow(() -> new RuntimeException("Locality not found"));
     }
 }

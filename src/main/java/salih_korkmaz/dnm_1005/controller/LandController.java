@@ -1,6 +1,5 @@
 package salih_korkmaz.dnm_1005.controller;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,7 +13,6 @@ import salih_korkmaz.dnm_1005.service.UserService;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/lands")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -25,21 +23,18 @@ public class LandController {
 
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private UserService userService;
 
     @PostMapping
-    public Land createLand(@RequestBody Land land) {
-        // Kullanıcıyı userId ile bul
-        User user = userRepository.findById(land.getUser().getId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // Land nesnesine User'ı set et
-        land.setUser(user);
-
-        // Land'ı kaydet
-        return landService.saveLand(land);
+    public Land createLand(@RequestBody LandDTO landDto) {
+        if (landDto.getUserId() == null) {
+            throw new IllegalArgumentException("User ID must not be null in controller");
+        }
+        return landService.saveLand(landDto);
     }
+
 
     @GetMapping
     public List<LandDTO> getLandsByUser() {
@@ -64,5 +59,4 @@ public class LandController {
         // LandService'i kullanarak araziyi güncelle
         return landService.updateLand(id, landDto);
     }
-
 }

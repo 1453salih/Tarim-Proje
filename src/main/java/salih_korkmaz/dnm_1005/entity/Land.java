@@ -1,12 +1,11 @@
 package salih_korkmaz.dnm_1005.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.List;
 
+import java.util.List;
 
 @Data
 @Entity
@@ -22,13 +21,9 @@ public class Land {
     @Column(nullable = false)
     int landSize;
 
-    @Column(nullable = false)
-    String city;
-
-    @Column(nullable = false)
-    String district;
-
-    String village;
+    @ManyToOne
+    @JoinColumn(name = "locality_code", referencedColumnName = "code")
+    private Locality locality;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

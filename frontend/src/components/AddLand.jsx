@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, Container, Typography, Box, MenuItem, FormControl, InputLabel, Select, Snackbar, Alert } from '@mui/material';
-import ilIlceData from '../Data/il-ilce.json';
-import koylerData from '../Data/koyler.json';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import BreadcrumbComponent from "./BreadCrumb.jsx";
@@ -12,42 +10,70 @@ function AddLand() {
     const [selectedIl, setSelectedIl] = useState('');
     const [selectedIlce, setSelectedIlce] = useState('');
     const [selectedKoy, setSelectedKoy] = useState('');
-    const [ilceler, setIlceler] = useState([]);
-    const [koyler, setKoyler] = useState([]);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+    const [cities, setCities] = useState([]); // Şehir listesi
+    const [districts, setDistricts] = useState([]); // İlçe listesi
+    const [villages, setVillages] = useState([]); // Köy/Mahalle listesi
+
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Şehirleri veritabanından çekmek için API isteği
+        const fetchCities = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/locations/cities');
+                setCities(response.data);
+            } catch (error) {
+                console.error("Error fetching cities:", error);
+            }
+        };
+
+        fetchCities();
+    }, []);
+
+    useEffect(() => {
         if (selectedIl) {
-            const ilceList = ilIlceData
-                .filter(item => item.il.localeCompare(selectedIl, undefined, { sensitivity: 'base' }) === 0)
-                .map(item => item.ilce);
-            setIlceler(ilceList);
-            setSelectedIlce('');
-            setKoyler([]);
-            setSelectedKoy('');
+            const fetchDistricts = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:8080/api/locations/districts/${selectedIl}`);
+                    setDistricts(response.data);
+                    setSelectedIlce('');
+                    setVillages([]);
+                    setSelectedKoy('');
+                } catch (error) {
+                    console.error("Error fetching districts:", error);
+                }
+            };
+
+            fetchDistricts();
         }
     }, [selectedIl]);
 
     useEffect(() => {
         if (selectedIlce) {
-            const koyList = koylerData
-                .filter(item => item.il.localeCompare(selectedIl, undefined, { sensitivity: 'base' }) === 0 && item.ilce.localeCompare(selectedIlce, undefined, { sensitivity: 'base' }) === 0)
-                .map(item => item.mahalle_koy);
-            setKoyler(koyList);
-            setSelectedKoy('');
+            const fetchLocalities = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:8080/api/locations/localities/${selectedIlce}`);
+                    setVillages(response.data);
+                    setSelectedKoy('');
+                } catch (error) {
+                    console.error("Error fetching localities:", error);
+                }
+            };
+
+            fetchLocalities();
         } else {
-            setKoyler([]);
+            setVillages([]);
         }
-    }, [selectedIlce, selectedIl]);
+    }, [selectedIlce]);
 
     const handleAddLand = async (e) => {
         e.preventDefault();
 
         // Boş alan kontrolü
-        if (!landName || !landSize || !selectedIl || !selectedIlce) {
+        if (!landName || !landSize || !selectedIl || !selectedIlce || !selectedKoy) {
             setSnackbarMessage('Please fill in all the fields.');
             setSnackbarSeverity('error');
             setOpenSnackbar(true);
@@ -55,14 +81,18 @@ function AddLand() {
         }
 
         const userId = localStorage.getItem('userId');
+        if (!userId) {
+            setSnackbarMessage('User not logged in.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
+            return;
+        }
 
         const newLand = {
             name: landName,
             landSize: parseInt(landSize),
-            city: selectedIl,
-            district: selectedIlce,
-            village: selectedKoy,
-            user: { id: parseInt(userId) }
+            localityId: selectedKoy, // localityId yeterli diye düşünüyorum.
+            userId: parseInt(userId)
         };
 
         try {
@@ -88,8 +118,6 @@ function AddLand() {
             setOpenSnackbar(true);
         }
     };
-
-
 
     const handleCloseSnackbar = () => {
         setOpenSnackbar(false);
@@ -127,8 +155,8 @@ function AddLand() {
                         value={selectedIl}
                         onChange={(e) => setSelectedIl(e.target.value)}
                     >
-                        {Array.from(new Set(ilIlceData.map(item => item.il))).map(il => (
-                            <MenuItem key={il} value={il}>{il}</MenuItem>
+                        {cities.map(city => (
+                            <MenuItem key={city.code} value={city.code}>{city.name}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
@@ -138,22 +166,23 @@ function AddLand() {
                         value={selectedIlce}
                         onChange={(e) => setSelectedIlce(e.target.value)}
                     >
-                        {ilceler.map((ilce, index) => (
-                            <MenuItem key={index} value={ilce}>{ilce}</MenuItem>
+                        {districts.map(district => (
+                            <MenuItem key={district.code} value={district.code}>{district.name}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
-                <FormControl fullWidth margin="normal" disabled={!selectedIlce || koyler.length === 0}>
+                <FormControl fullWidth margin="normal" disabled={!selectedIlce || villages.length === 0}>
                     <InputLabel>Köy/Mahalle</InputLabel>
                     <Select
                         value={selectedKoy}
                         onChange={(e) => setSelectedKoy(e.target.value)}
                     >
-                        {koyler.map((koy, index) => (
-                            <MenuItem key={index} value={koy}>{koy}</MenuItem>
+                        {villages.map(locality => (
+                            <MenuItem key={locality.code} value={locality.code}>{locality.name}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
+
                 <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
                     Add Land
                 </Button>

@@ -16,11 +16,9 @@ public class LandDTO {
     @NotNull(message = "Land size cannot be null")
     private int landSize;
 
-    @NotNull(message = "City cannot be null")
-    private String city;
+    @NotNull(message = "Locality ID cannot be null")
+    private Long localityId; // Mahalle ID'sini tutar
 
-    private String district;
-    private String village;
-
+    @NotNull(message = "User ID cannot be null")
     private Long userId; // User ID Değeri
 }
