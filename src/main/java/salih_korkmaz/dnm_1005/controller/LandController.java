@@ -38,14 +38,11 @@ public class LandController {
 
     @GetMapping
     public List<LandDTO> getLandsByUser() {
-        // Oturum açan kullanıcının kimliğini al
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
 
-        // UserService'den kullanıcıyı al
-        User user = userService.findByUsername(username);
+        // UserService'den kullanıcıyı alır
+        User user = userService.getAuthenticatedUser();
 
-        // Kullanıcı ID'sine göre arazileri getir
+        // Kullanıcı ID'sine göre arazileri getirir
         return landService.getLandsByUser(user.getId());
     }
 
@@ -56,7 +53,7 @@ public class LandController {
 
     @PutMapping("/update/{id}")
     public Land updateLand(@PathVariable Long id, @RequestBody LandDTO landDto) {
-        // LandService'i kullanarak araziyi güncelle
+        // LandService'i kullanarak araziyi günceller
         return landService.updateLand(id, landDto);
     }
 }

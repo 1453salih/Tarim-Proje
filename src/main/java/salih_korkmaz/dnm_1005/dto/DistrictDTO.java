@@ -10,5 +10,5 @@ public class DistrictDTO {
     private String type;
     private String latitude;
     private String longitude;
-    private int cityCode;  // Şehir kodunu da DTO'da saklayabiliriz
+    private int cityCode;
 }

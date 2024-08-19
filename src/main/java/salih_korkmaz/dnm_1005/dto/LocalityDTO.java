@@ -8,5 +8,5 @@ public class LocalityDTO {
     private String name;
     private String slug;
     private String type;
-    private long districtCode;  // İlçe kodunu da DTO'da saklayabiliriz
+    private long districtCode;
 }

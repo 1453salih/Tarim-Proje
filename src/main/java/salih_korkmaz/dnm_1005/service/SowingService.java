@@ -6,8 +6,7 @@ import salih_korkmaz.dnm_1005.dto.SowingDTO;
 import salih_korkmaz.dnm_1005.entity.Land;
 import salih_korkmaz.dnm_1005.entity.Plant;
 import salih_korkmaz.dnm_1005.entity.Sowing;
-import salih_korkmaz.dnm_1005.repository.LandRepository;
-import salih_korkmaz.dnm_1005.repository.PlantRepository;
+import salih_korkmaz.dnm_1005.mapper.SowingMapper;
 import salih_korkmaz.dnm_1005.repository.SowingRepository;
 
 import java.util.List;
@@ -16,49 +15,42 @@ import java.util.stream.Collectors;
 @Service
 public class SowingService {
 
-    @Autowired
-    private SowingRepository sowingRepository;
+    private final SowingRepository sowingRepository;
+    private final PlantService plantService;
+    private final LandService landService;
+    private final SowingMapper sowingMapper;
 
     @Autowired
-    private PlantRepository plantRepository;
-
-    @Autowired
-    private LandRepository landRepository;
-
-    public SowingDTO saveSowing(SowingDTO sowingDto) {
-        Plant plant = plantRepository.findById(sowingDto.getPlantId())
-                .orElseThrow(() -> new RuntimeException("Plant not found"));
-
-        Land land = landRepository.findById(sowingDto.getLandId())
-                .orElseThrow(() -> new RuntimeException("Land not found"));
-
-        Sowing sowing = new Sowing();
-        sowing.setPlant(plant);
-        sowing.setLand(land);
-        sowing.setSowingDate(sowingDto.getSowingDate());
-
-        Sowing savedSowing = sowingRepository.save(sowing);
-
-        return convertToDto(savedSowing);
+    public SowingService(SowingRepository sowingRepository, PlantService plantService, LandService landService, SowingMapper sowingMapper) {
+        this.sowingRepository = sowingRepository;
+        this.plantService = plantService;
+        this.landService = landService;
+        this.sowingMapper = sowingMapper;
     }
 
+    public SowingDTO saveSowing(SowingDTO sowingDto) {
+        Plant plant = plantService.findPlantById(sowingDto.getPlantId());  // Plant nesnesi döndürülüyor
+        Land land = landService.findLandById(sowingDto.getLandId());  // Aynı şekilde Land için de eklenebilir
+
+        Sowing sowing = sowingMapper.toEntity(sowingDto);
+        sowing.setPlant(plant);
+        sowing.setLand(land);
+
+        Sowing savedSowing = sowingRepository.save(sowing);
+        return sowingMapper.toDto(savedSowing);
+    }
+
+
     public List<SowingDTO> getAllSowings() {
-        return sowingRepository.findAll().stream().map(this::convertToDto).collect(Collectors.toList());
+        return sowingRepository.findAll().stream()
+                .map(sowingMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     public List<SowingDTO> getSowingsByUser(Long userId) {
         List<Sowing> sowings = sowingRepository.findByUserId(userId);
-        return sowings.stream().map(this::convertToDto).collect(Collectors.toList());
-    }
-
-    private SowingDTO convertToDto(Sowing sowing) {
-        SowingDTO sowingDto = new SowingDTO();
-        sowingDto.setId(sowing.getId());
-        sowingDto.setPlantId(sowing.getPlant().getId());
-        sowingDto.setPlantName(sowing.getPlant().getName()); // Bitki adı ekleniyor
-        sowingDto.setLandId(sowing.getLand().getId());
-        sowingDto.setLandName(sowing.getLand().getName()); // Arazi adı ekleniyor
-        sowingDto.setSowingDate(sowing.getSowingDate());
-        return sowingDto;
+        return sowings.stream()
+                .map(sowingMapper::toDto)
+                .collect(Collectors.toList());
     }
 }

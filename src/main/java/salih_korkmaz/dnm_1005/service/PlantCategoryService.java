@@ -1,9 +1,8 @@
 package salih_korkmaz.dnm_1005.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import salih_korkmaz.dnm_1005.dto.PlantCategoryDTO;
-import salih_korkmaz.dnm_1005.entity.PlantCategory;
+import salih_korkmaz.dnm_1005.mapper.PlantCategoryMapper;
 import salih_korkmaz.dnm_1005.repository.PlantCategoryRepository;
 
 import java.util.List;
@@ -12,17 +11,17 @@ import java.util.stream.Collectors;
 @Service
 public class PlantCategoryService {
 
-    @Autowired
-    private PlantCategoryRepository plantCategoryRepository;
+
+    private final PlantCategoryRepository plantCategoryRepository;
+    private final PlantCategoryMapper plantCategoryMapper;
+
+    public PlantCategoryService(PlantCategoryRepository plantCategoryRepository, PlantCategoryMapper plantCategoryMapper) {
+        this.plantCategoryRepository = plantCategoryRepository;
+        this.plantCategoryMapper = plantCategoryMapper;
+    }
 
     public List<PlantCategoryDTO> getAllCategories() {
-        return plantCategoryRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
+        return plantCategoryRepository.findAll().stream().map(plantCategoryMapper::toDTO).collect(Collectors.toList());
     }
 
-    private PlantCategoryDTO convertToDTO(PlantCategory category) {
-        PlantCategoryDTO dto = new PlantCategoryDTO();
-        dto.setId(category.getId());
-        dto.setCategoryName(category.getCategoryName());
-        return dto;
-    }
 }

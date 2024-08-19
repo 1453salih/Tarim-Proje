@@ -1,5 +1,6 @@
 package salih_korkmaz.dnm_1005.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -24,6 +25,6 @@ public class City {
     private String longitude;
 
     @OneToMany(mappedBy = "city")
+    @JsonManagedReference // Bu taraf serileştirilecek
     private List<District> districts;
-
-    }
+}

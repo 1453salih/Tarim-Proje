@@ -1,6 +1,8 @@
 package salih_korkmaz.dnm_1005.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import salih_korkmaz.dnm_1005.dto.LoginRequest;
@@ -48,7 +50,11 @@ public class UserService {
         return userRepository.findByUser(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
-
+    public User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return findByUsername(username);
+    }
 
 
 }

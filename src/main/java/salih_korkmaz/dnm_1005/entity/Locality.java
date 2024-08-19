@@ -19,4 +19,5 @@ public class Locality {
     @ManyToOne(optional = true)
     @JoinColumn(name = "parentcode", referencedColumnName = "code")
     private District district;
+
 }

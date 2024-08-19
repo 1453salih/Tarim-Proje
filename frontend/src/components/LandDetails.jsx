@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import {Container, Typography, Box, Paper, Button, TextField, MenuItem, FormControl, InputLabel, Select, Snackbar, Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
-import {useNavigate, useParams} from 'react-router-dom';
-import ilIlceData from '../Data/il-ilce.json';
-import koylerData from '../Data/koyler.json';
+import { Container, Typography, Box, Paper, Button, TextField, MenuItem, FormControl, InputLabel, Select, Snackbar, Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const LandDetails = () => {
     const { id } = useParams();
     const [land, setLand] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [ilceler, setIlceler] = useState([]);
-    const [koyler, setKoyler] = useState([]);
+    const [selectedIl, setSelectedIl] = useState('');
+    const [selectedIlce, setSelectedIlce] = useState('');
+    const [selectedKoy, setSelectedKoy] = useState('');
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [cities, setCities] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [villages, setVillages] = useState([]);
     const navigate = useNavigate();
 
     const handleEditToggle = () => {
@@ -21,20 +24,30 @@ const LandDetails = () => {
     };
 
     const handleSave = () => {
+        const updatedLand = {
+            ...land,
+            localityId: selectedKoy, // Güncellenmiş localityId'yi kullanıyoruz
+        };
+
         fetch(`http://localhost:8080/lands/update/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(land),
+            body: JSON.stringify(updatedLand),
         })
             .then(response => response.json())
             .then(data => {
-                setLand(data);
-                setIsEditing(false);
-                setSnackbarMessage('Land updated successfully!');
-                setSnackbarSeverity('success');
-                setOpenSnackbar(true);
+                // Veriyi kaydettikten sonra tekrar yükleyin
+                fetch(`http://localhost:8080/lands/detail/${id}`)
+                    .then(response => response.json())
+                    .then(updatedData => {
+                        setLand(updatedData);
+                        setIsEditing(false);
+                        setSnackbarMessage('Land updated successfully!');
+                        setSnackbarSeverity('success');
+                        setOpenSnackbar(true);
+                    });
             })
             .catch(error => {
                 console.error('Error updating land details:', error);
@@ -43,6 +56,9 @@ const LandDetails = () => {
                 setOpenSnackbar(true);
             });
     };
+
+
+
 
     const handleDelete = () => {
         fetch(`http://localhost:8080/lands/delete/${id}`, {
@@ -54,7 +70,7 @@ const LandDetails = () => {
                     setSnackbarSeverity('success');
                     setOpenSnackbar(true);
                     setOpenDeleteDialog(false);
-                    navigate('/lands'); // Silme işleminden sonra kullanıcıyı liste sayfasına yönlendir
+                    navigate('/lands');
                 } else {
                     setSnackbarMessage('Failed to delete the Land.');
                     setSnackbarSeverity('error');
@@ -81,54 +97,61 @@ const LandDetails = () => {
         setOpenDeleteDialog(false);
     };
 
+    // Şehir, ilçe ve köy bilgilerini API üzerinden almak için useEffect hookları
+    useEffect(() => {
+        axios.get('http://localhost:8080/api/locations/cities')
+            .then(response => setCities(response.data))
+            .catch(error => console.error("Error fetching cities:", error));
+    }, []);
+
+    useEffect(() => {
+        if (selectedIl) {
+            axios.get(`http://localhost:8080/api/locations/districts/${selectedIl}`)
+                .then(response => {
+                    setDistricts(response.data);
+                })
+                .catch(error => console.error("Error fetching districts:", error));
+        }
+    }, [selectedIl]);
+
+    useEffect(() => {
+        if (selectedIlce) {
+            axios.get(`http://localhost:8080/api/locations/localities/${selectedIlce}`)
+                .then(response => {
+                    setVillages(response.data);
+                })
+                .catch(error => console.error("Error fetching localities:", error));
+        }
+    }, [selectedIlce]);
+
+
+
     useEffect(() => {
         fetch(`http://localhost:8080/lands/detail/${id}`)
             .then(response => response.json())
             .then(data => {
                 setLand(data);
-                if (data.city) {
-                    const ilceList = ilIlceData
-                        .filter(item => item.il.localeCompare(data.city, undefined, { sensitivity: 'base' }) === 0)
-                        .map(item => item.ilce);
-                    setIlceler(ilceList);
+                setSelectedIl(data.location?.cityCode || ''); // cityName yerine cityCode
+                setSelectedIlce(data.location?.districtCode || ''); // districtName yerine districtCode
+                setSelectedKoy(data.location?.localityCode || ''); // localityName yerine localityCode
+
+                // İl ve ilçe bilgilerini set ettikten sonra, ilçe ve köy verilerini de çekmek için ilgili API'leri çağırıyoruz.
+                if (data.location?.cityCode) {
+                    axios.get(`http://localhost:8080/api/locations/districts/${data.location.cityCode}`)
+                        .then(response => {
+                            setDistricts(response.data);
+                        });
                 }
-                if (data.city && data.district) {
-                    const koyList = koylerData
-                        .filter(item => item.il.localeCompare(data.city, undefined, { sensitivity: 'base' }) === 0 && item.ilce.localeCompare(data.district, undefined, { sensitivity: 'base' }) === 0)
-                        .map(item => item.mahalle_koy);
-                    setKoyler(koyList);
+
+                if (data.location?.districtCode) {
+                    axios.get(`http://localhost:8080/api/locations/localities/${data.location.districtCode}`)
+                        .then(response => {
+                            setVillages(response.data);
+                        });
                 }
             })
             .catch(error => console.error('Error fetching land details:', error));
     }, [id]);
-
-    useEffect(() => {
-        if (land?.city) {
-            const ilceList = ilIlceData
-                .filter(item => item.il.localeCompare(land.city, undefined, { sensitivity: 'base' }) === 0)
-                .map(item => item.ilce);
-            setIlceler(ilceList);
-
-            if (!ilceList.includes(land.district)) {
-                setLand(prevState => ({ ...prevState, district: '', village: '' }));
-            }
-        }
-    }, [land?.city]);
-
-    useEffect(() => {
-        if (land?.district) {
-            const koyList = koylerData
-                .filter(item => item.il.localeCompare(land.city, undefined, { sensitivity: 'base' }) === 0 && item.ilce.localeCompare(land.district, undefined, { sensitivity: 'base' }) === 0)
-                .map(item => item.mahalle_koy);
-            setKoyler(koyList);
-
-            if (!koyList.includes(land.village)) {
-                setLand(prevState => ({ ...prevState, village: '' }));
-            }
-        } else {
-            setKoyler([]);
-        }
-    }, [land?.district]);
 
     if (!land) {
         return <Typography>Loading...</Typography>;
@@ -141,9 +164,6 @@ const LandDetails = () => {
             [name]: value,
         }));
     };
-
-    // Benzersiz şehir isimlerini elde etme
-    const uniqueCities = Array.from(new Set(ilIlceData.map(item => item.il)));
 
     return (
         <Container maxWidth="md">
@@ -174,35 +194,42 @@ const LandDetails = () => {
                                 <InputLabel>İl</InputLabel>
                                 <Select
                                     name="city"
-                                    value={land.city}
-                                    onChange={handleChange}
+                                    value={selectedIl}
+                                    onChange={(e) => {
+                                        setSelectedIl(e.target.value);
+                                        setSelectedIlce(''); // İl değiştiğinde ilçe sıfırlanır
+                                        setSelectedKoy(''); // İlçe değiştiğinde köy/madde sıfırlanır
+                                    }}
                                 >
-                                    {uniqueCities.map(il => (
-                                        <MenuItem key={il} value={il}>{il}</MenuItem>
+                                    {cities.map(city => (
+                                        <MenuItem key={city.code} value={city.code}>{city.name}</MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
-                            <FormControl fullWidth margin="normal" disabled={!land.city}>
+                            <FormControl fullWidth margin="normal" disabled={!selectedIl}>
                                 <InputLabel>İlçe</InputLabel>
                                 <Select
                                     name="district"
-                                    value={land.district}
-                                    onChange={handleChange}
+                                    value={selectedIlce}
+                                    onChange={(e) => {
+                                        setSelectedIlce(e.target.value);
+                                        setSelectedKoy(''); // İlçe değiştiğinde köy/madde sıfırlanır
+                                    }}
                                 >
-                                    {ilceler.map((ilce, index) => (
-                                        <MenuItem key={index} value={ilce}>{ilce}</MenuItem>
+                                    {districts.map(district => (
+                                        <MenuItem key={district.code} value={district.code}>{district.name}</MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
-                            <FormControl fullWidth margin="normal" disabled={!land.district || koyler.length === 0}>
+                            <FormControl fullWidth margin="normal" disabled={!selectedIlce || villages.length === 0}>
                                 <InputLabel>Köy/Mahalle</InputLabel>
                                 <Select
                                     name="village"
-                                    value={land.village || ''}
-                                    onChange={handleChange}
+                                    value={selectedKoy}
+                                    onChange={(e) => setSelectedKoy(e.target.value)}
                                 >
-                                    {koyler.map((koy, index) => (
-                                        <MenuItem key={index} value={koy}>{koy}</MenuItem>
+                                    {villages.map(locality => (
+                                        <MenuItem key={locality.code} value={locality.code}>{locality.name}</MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
@@ -210,9 +237,9 @@ const LandDetails = () => {
                     ) : (
                         <>
                             <Typography variant="h6">Boyut: {land.landSize} hektar</Typography>
-                            <Typography variant="h6">Şehir: {land.city}</Typography>
-                            <Typography variant="h6">İlçe: {land.district}</Typography>
-                            <Typography variant="h6">Köy: {land.village || 'N/A'}</Typography>
+                            <Typography variant="h6">Şehir: {land.location?.cityName || 'N/A'}</Typography>
+                            <Typography variant="h6">İlçe: {land.location?.districtName || 'N/A'}</Typography>
+                            <Typography variant="h6">Köy: {land.location?.localityName || 'N/A'}</Typography>
                         </>
                     )}
                 </Paper>
@@ -250,7 +277,6 @@ const LandDetails = () => {
                 </Alert>
             </Snackbar>
 
-            {/* Silme Onay Modalı */}
             <Dialog
                 open={openDeleteDialog}
                 onClose={handleCloseDeleteDialog}

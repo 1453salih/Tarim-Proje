@@ -34,6 +34,7 @@ const LandList = () => {
             </Container>
         );
     }
+
     const handleDetail = (id) => {
         navigate(`/lands/detail/${id}`);
     };
@@ -66,16 +67,14 @@ const LandList = () => {
                                         {land.name}
                                     </TableCell>
                                     <TableCell align="right">{land.landSize}</TableCell>
-                                    <TableCell align="right">{land.city}</TableCell>
-                                    <TableCell align="right">{land.district}</TableCell>
-                                    <TableCell align="right">{land.village || 'N/A'}</TableCell>
+                                    <TableCell align="right">{land.location.cityName}</TableCell>
+                                    <TableCell align="right">{land.location.districtName}</TableCell>
+                                    <TableCell align="right">{land.location.localityName || 'N/A'}</TableCell>
                                     <TableCell align="right">
-                                        <Button variant="contained" color="primary" onClick={() => handleEdit(land.id)}>
-                                            Düzenle
-                                        </Button>
-                                        <Button variant="outlined" color="secondary" onClick={() => handleDetail(land.id)} sx={{ ml: 2 }}>
+                                        <Button variant="contained" color="primary" onClick={() => handleDetail(land.id)}>
                                             Detay
                                         </Button>
+                                        {/* Diğer aksiyon butonları eklenebilir */}
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -88,4 +87,3 @@ const LandList = () => {
 };
 
 export default LandList;
-

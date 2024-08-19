@@ -16,11 +16,13 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 public class SowingController {
 
-    @Autowired
-    private SowingService sowingService;
+    private final SowingService sowingService;
+    private final UserService userService;
 
-    @Autowired
-    private UserService userService;
+    public SowingController(SowingService sowingService, UserService userService) {
+        this.sowingService = sowingService;
+        this.userService = userService;
+    }
 
     @PostMapping
     public SowingDTO createSowing(@RequestBody SowingDTO sowingDto) {
@@ -29,14 +31,11 @@ public class SowingController {
 
     @GetMapping
     public List<SowingDTO> getSowingsByUser() {
-        // Oturum açan kullanıcının kimliğini al
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
 
-        // UserService'den kullanıcıyı al
-        User user = userService.findByUsername(username);
+        // UserService'den kullanıcıyı alır.
+        User user = userService.getAuthenticatedUser();
 
-        // Kullanıcı ID'sine göre ekimleri getir
+        // Kullanıcı ID'sine göre ekimleri getirir.
         return sowingService.getSowingsByUser(user.getId());
     }
 }
