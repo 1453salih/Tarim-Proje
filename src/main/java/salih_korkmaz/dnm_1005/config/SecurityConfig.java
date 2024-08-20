@@ -41,8 +41,10 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/lands/**").permitAll()
                         .requestMatchers("/sowings/**").permitAll()
+                        .requestMatchers("/sowings/detail/**").permitAll()
                         .requestMatchers("/plants/**").permitAll()
                         .requestMatchers("/api/categories").permitAll()
+                        .requestMatchers("/categories/**").permitAll()
                         .requestMatchers("/api/locations/**").permitAll()
                         .requestMatchers("/recommendations/**").permitAll()  // /recommendations/** yoluna izin ver
                         .anyRequest().authenticated()

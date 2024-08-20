@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import salih_korkmaz.dnm_1005.dto.LandDTO;
 import salih_korkmaz.dnm_1005.dto.SowingDTO;
 import salih_korkmaz.dnm_1005.entity.User;
+import salih_korkmaz.dnm_1005.service.LandService;
 import salih_korkmaz.dnm_1005.service.SowingService;
 import salih_korkmaz.dnm_1005.service.UserService;
 
@@ -19,7 +21,7 @@ public class SowingController {
     private final SowingService sowingService;
     private final UserService userService;
 
-    public SowingController(SowingService sowingService, UserService userService) {
+    public SowingController(SowingService sowingService, UserService userService, LandService landService) {
         this.sowingService = sowingService;
         this.userService = userService;
     }
@@ -27,6 +29,11 @@ public class SowingController {
     @PostMapping
     public SowingDTO createSowing(@RequestBody SowingDTO sowingDto) {
         return sowingService.saveSowing(sowingDto);
+    }
+
+    @GetMapping("/detail/{id}")
+    public SowingDTO getSowingById(@PathVariable Long id) {
+        return sowingService.getSowingById(id);
     }
 
     @GetMapping

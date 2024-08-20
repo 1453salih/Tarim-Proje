@@ -16,6 +16,7 @@ public class SowingMapper {
         SowingDTO sowingDto = new SowingDTO();
         sowingDto.setId(sowing.getId());
         sowingDto.setSowingField(sowing.getSowingField());
+        sowingDto.setSowingType(sowing.getSowingType());
         sowingDto.setPlantId(sowing.getPlant().getId());
         sowingDto.setPlantName(sowing.getPlant().getName());
         sowingDto.setLandId(sowing.getLand().getId());
@@ -43,6 +44,8 @@ public class SowingMapper {
         sowing.setLand(land);
 
         sowing.setSowingField(sowingDto.getSowingField());
+
+        sowing.setSowingType(sowingDto.getSowingType());
 
         // SowingDate
         sowing.setSowingDate(sowingDto.getSowingDate());

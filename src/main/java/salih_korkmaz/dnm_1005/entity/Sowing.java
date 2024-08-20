@@ -16,6 +16,8 @@ public class Sowing {
 
     private int sowingField;
 
+    private String sowingType;
+
     @ManyToOne
     @JoinColumn(name = "plant_id", nullable = false)
     private Plant plant;

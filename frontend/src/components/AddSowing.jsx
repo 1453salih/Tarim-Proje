@@ -31,6 +31,7 @@ function AddSowing() {
     const [snackbar, setSnackbar] = useState({open: false, message: '', severity: 'success'});
     const navigate = useNavigate();
     const [sowingField, setSowingField] = useState('');
+    const [sowingType, setSowingType] = useState('');
 
 
     useEffect(() => {
@@ -106,7 +107,7 @@ function AddSowing() {
     const handleAddSowing = async (e) => {
         e.preventDefault();
 
-        if (!plantId || !sowingDate || !landId || !sowingField) {
+        if (!plantId || !sowingDate || !landId || !sowingField || !sowingType) {
             setSnackbar({open: true, message: 'Please fill in all the fields.', severity: 'error'});
             return;
         }
@@ -115,7 +116,8 @@ function AddSowing() {
             plantId: parseInt(plantId),
             sowingDate: sowingDate,
             landId: parseInt(landId),
-            sowingField: parseFloat(sowingField)
+            sowingField: parseFloat(sowingField),
+            sowingType: sowingType
         };
 
         try {
@@ -127,6 +129,7 @@ function AddSowing() {
                 setSowingDate('');
                 setLandId('');
                 setSowingField(''); // Alanı temizle
+                setSowingType('');
             } else {
                 setSnackbar({open: true, message: 'Failed to save the Sowing.', severity: 'error'});
             }
@@ -216,6 +219,24 @@ function AddSowing() {
                                     inputProps={{ min: 0 }}
                                 />
                             </FormControl>
+                            <FormControl fullWidth margin="normal">
+                                <InputLabel>Land Type</InputLabel>
+                                <Select
+                                    label="Land Type"
+                                    value={sowingType}
+                                    onChange={(e) => {
+                                        console.log("Selected Sowing Type: ", e.target.value); // Konsola seçilen değeri yazdırır
+                                        setSowingType(e.target.value);}}
+                                >
+                                    <MenuItem value="Tarla" key="Tarla">Tarla</MenuItem>
+                                    <MenuItem value="Bağ" key="Bağ">Bağ</MenuItem>
+                                    <MenuItem value="Bahçe" key="Bahçe">Bahçe</MenuItem>
+                                    <MenuItem value="Zeytinlik" key="Zeytinlik">Zeytinlik</MenuItem>
+                                    <MenuItem value="Çayır" key="Çayır">Çayır</MenuItem>
+                                    <MenuItem value="Mera" key="Mera">Mera</MenuItem>
+                                </Select>
+                            </FormControl>
+
                             <Button type="submit" variant="contained" fullWidth
                                     sx={{mt: 2, backgroundColor: green[700]}}>
                                 Add Sowing

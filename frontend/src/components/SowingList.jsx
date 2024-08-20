@@ -53,6 +53,9 @@ const SowingList = () => {
                             <TableRow>
                                 <TableCell>Name</TableCell>
                                 <TableCell align="right">Plant</TableCell>
+                                <TableCell align="right">Planted Area</TableCell>
+                                <TableCell align="right">Uncultivated Area</TableCell>
+                                <TableCell align="right">Sowing Type</TableCell>
                                 <TableCell align="right">Date</TableCell>
                                 <TableCell align="right">Actions</TableCell>
                             </TableRow>
@@ -64,10 +67,12 @@ const SowingList = () => {
                                         {sowing.landName}
                                     </TableCell>
                                     <TableCell align="right">{sowing.plantName}</TableCell>
+                                    <TableCell align="right">{sowing.sowingField}</TableCell>
+                                    <TableCell align="right">{sowing.sowingType}</TableCell>
+                                    <TableCell align="right">1</TableCell>
                                     <TableCell align="right">{sowing.sowingDate}</TableCell>
                                     <TableCell align="right">
-
-                                        <Button variant="contained" color="primary" onClick={() => handleDetail(land.id)} sx={{ ml: 2 }}>
+                                        <Button variant="contained" color="primary" onClick={() => handleDetail(sowing.id)} sx={{ ml: 2 }}>
                                             Detay
                                         </Button>
                                     </TableCell>
