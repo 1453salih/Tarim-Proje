@@ -23,7 +23,6 @@ public class SowingService {
     private final PlantService plantService;
     private final LandService landService;
     private final SowingMapper sowingMapper;
-    private final LandRepository landRepository;
 
     @Autowired
     public SowingService(SowingRepository sowingRepository, PlantService plantService, LandService landService, SowingMapper sowingMapper, LandRepository landRepository) {
@@ -31,7 +30,6 @@ public class SowingService {
         this.plantService = plantService;
         this.landService = landService;
         this.sowingMapper = sowingMapper;
-        this.landRepository = landRepository;
     }
 
     public SowingDTO saveSowing(SowingDTO sowingDto) {
@@ -45,7 +43,7 @@ public class SowingService {
         Sowing savedSowing = sowingRepository.save(sowing);
         return sowingMapper.toDto(savedSowing);
     }
-    public Sowing updateSowing(Long id, @Valid SowingDTO sowingDto) {
+    public Sowing updateSowing (Long id, @Valid SowingDTO sowingDto) {
        Sowing existingSowing = sowingRepository.findById(id)
                .orElseThrow(() -> new RuntimeException("Sowing not found"));
 

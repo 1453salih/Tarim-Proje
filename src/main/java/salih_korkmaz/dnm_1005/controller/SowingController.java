@@ -1,11 +1,10 @@
 package salih_korkmaz.dnm_1005.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import salih_korkmaz.dnm_1005.dto.LandDTO;
 import salih_korkmaz.dnm_1005.dto.SowingDTO;
+import salih_korkmaz.dnm_1005.entity.Land;
+import salih_korkmaz.dnm_1005.entity.Sowing;
 import salih_korkmaz.dnm_1005.entity.User;
 import salih_korkmaz.dnm_1005.service.LandService;
 import salih_korkmaz.dnm_1005.service.SowingService;
@@ -35,7 +34,11 @@ public class SowingController {
     public SowingDTO getSowingById(@PathVariable Long id) {
         return sowingService.getSowingById(id);
     }
-
+    @PutMapping("/update/{id}")
+    public Sowing updateSowing(@PathVariable Long id, @RequestBody SowingDTO sowingDto) {
+        // LandService'i kullanarak araziyi günceller
+        return sowingService.updateSowing(id, sowingDto);
+    }
     @GetMapping
     public List<SowingDTO> getSowingsByUser() {
 

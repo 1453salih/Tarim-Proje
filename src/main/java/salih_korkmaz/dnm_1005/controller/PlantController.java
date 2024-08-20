@@ -1,6 +1,5 @@
 package salih_korkmaz.dnm_1005.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import salih_korkmaz.dnm_1005.dto.PlantDTO;
 import salih_korkmaz.dnm_1005.entity.Plant;

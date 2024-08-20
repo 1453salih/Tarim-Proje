@@ -111,29 +111,40 @@ const SowingDetails = () => {
 
     // Kaydetme ve silme işlemleri için kullanılan fonksiyonlar
     const handleSave = async () => {
-        if (!plantId || !sowing.sowingDate || !landId || !sowing.sowingField || !sowing.sowingType) {
-            setSnackbar({open: true, message: 'Please fill in all the fields.', severity: 'error'});
+        if (!plantId || !sowing.sowingDate || !landId || !sowing.sowingField || !sowingType) {
+            setSnackbarMessage('Please fill in all the fields.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
             return;
         }
 
         const updatedSowing = {
             ...sowing,
             plantId: parseInt(plantId),
-            landId: parseInt(landId)
+            landId: parseInt(landId),
+            sowingType: sowingType // sowingType güncellenmiş olarak dahil ediliyor
         };
 
         try {
             const response = await axios.put(`http://localhost:8080/sowings/update/${id}`, updatedSowing, {withCredentials: true});
             if (response.status === 200) {
-                setSnackbar({open: true, message: 'Sowing updated successfully!', severity: 'success'});
+                setSnackbarMessage('Sowing updated successfully!');
+                setSnackbarSeverity('success');
+                setOpenSnackbar(true);
                 setTimeout(() => navigate('/sowing-list'), 3000);
             } else {
-                setSnackbar({open: true, message: 'Failed to update the Sowing.', severity: 'error'});
+                setSnackbarMessage('Failed to update the Sowing.');
+                setSnackbarSeverity('error');
+                setOpenSnackbar(true);
             }
         } catch (error) {
-            setSnackbar({open: true, message: 'Error: ' + error.message, severity: 'error'});
+            setSnackbarMessage('Error: ' + error.message);
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
         }
     };
+
+
 
     const handleDelete = async () => {
         try {

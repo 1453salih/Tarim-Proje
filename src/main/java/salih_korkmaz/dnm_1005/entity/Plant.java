@@ -1,5 +1,6 @@
 package salih_korkmaz.dnm_1005.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class Plant {
 
 
     @OneToMany(mappedBy = "plant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonBackReference // Döngüyü kırmak için bu anotasyonu kullanabilirsiniz.
     private List<Sowing> sowings;
 
     private String image;
