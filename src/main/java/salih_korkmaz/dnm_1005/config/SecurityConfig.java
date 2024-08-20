@@ -20,8 +20,12 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JwtRequestFilter jwtRequestFilter;
+
+    private final JwtRequestFilter jwtRequestFilter;
+
+    public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
+        this.jwtRequestFilter = jwtRequestFilter;
+    }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -40,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/plants/**").permitAll()
                         .requestMatchers("/api/categories").permitAll()
                         .requestMatchers("/api/locations/**").permitAll()
+                        .requestMatchers("/recommendations/**").permitAll()  // /recommendations/** yoluna izin ver
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

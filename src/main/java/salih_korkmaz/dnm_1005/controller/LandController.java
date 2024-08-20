@@ -6,6 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import salih_korkmaz.dnm_1005.dto.LandDTO;
 import salih_korkmaz.dnm_1005.entity.Land;
+import salih_korkmaz.dnm_1005.entity.Locality;
 import salih_korkmaz.dnm_1005.entity.User;
 import salih_korkmaz.dnm_1005.repository.UserRepository;
 import salih_korkmaz.dnm_1005.service.LandService;
@@ -56,4 +57,10 @@ public class LandController {
         // LandService'i kullanarak araziyi günceller
         return landService.updateLand(id, landDto);
     }
+    @GetMapping("/{landId}/locality")
+    public Locality getLocalityByLandId(@PathVariable Long landId) {
+        return landService.getLocalityByLandId(landId);
+    }
+
+
 }

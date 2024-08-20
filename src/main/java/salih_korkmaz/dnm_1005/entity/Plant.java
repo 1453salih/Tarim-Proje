@@ -1,5 +1,6 @@
 package salih_korkmaz.dnm_1005.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,7 +21,16 @@ public class Plant {
     @OneToMany(mappedBy = "plant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Sowing> sowings;
 
+    private String image;
+
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
+    @JsonIgnore
     private PlantCategory plantCategory; //mappedBy'da kullanılan kısımdır.("plantCategory")
+
+    @OneToMany(mappedBy = "plant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore  // Döngüyü kırmak için
+    private List<Recommendation> recommendations;
+
+
 }

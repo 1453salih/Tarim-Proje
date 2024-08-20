@@ -50,6 +50,7 @@ public class UserService {
         return userRepository.findByUser(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
+
     public User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();

@@ -1,6 +1,7 @@
 package salih_korkmaz.dnm_1005.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -22,9 +23,10 @@ public class District {
 
     @ManyToOne
     @JoinColumn(name = "parentcode", referencedColumnName = "code", insertable = false, updatable = false)
-    @JsonBackReference
+    @JsonManagedReference  // City serileştirilecek
     private City city;
 
     @OneToMany(mappedBy = "district")
+    @JsonBackReference  // Localities geri referans olarak işaretleniyor
     private List<Locality> localities;
 }

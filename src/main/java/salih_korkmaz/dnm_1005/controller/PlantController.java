@@ -13,8 +13,12 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 public class PlantController {
 
-    @Autowired
-    private PlantService plantService;
+
+    private final PlantService plantService;
+
+    public PlantController(PlantService plantService) {
+        this.plantService = plantService;
+    }
 
     @PostMapping
     public Plant createPlant(@RequestBody PlantDTO plantDto) {

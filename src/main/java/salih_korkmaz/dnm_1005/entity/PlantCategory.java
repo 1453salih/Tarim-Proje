@@ -1,5 +1,6 @@
 package salih_korkmaz.dnm_1005.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -19,5 +20,6 @@ public class PlantCategory {
 
 
     @OneToMany(mappedBy = "plantCategory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Plant> plant;// mappedBy
 }

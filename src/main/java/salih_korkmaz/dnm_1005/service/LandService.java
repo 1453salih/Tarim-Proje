@@ -126,8 +126,9 @@ public class LandService {
                 .orElseThrow(() -> new RuntimeException("Land not found"));
     }
 
-    public Locality findLocalityById(Long localityId) {
-        return localityRepository.findById(localityId)
-                .orElseThrow(() -> new RuntimeException("Locality not found"));
+    public Locality getLocalityByLandId(Long landId) {
+        return landRepository.findById(landId)
+                .map(Land::getLocality)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid land ID: " + landId));
     }
 }

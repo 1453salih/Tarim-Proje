@@ -2,6 +2,7 @@ package salih_korkmaz.dnm_1005.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -13,6 +14,8 @@ public class Sowing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private int sowingField;
+
     @ManyToOne
     @JoinColumn(name = "plant_id", nullable = false)
     private Plant plant;
@@ -22,5 +25,6 @@ public class Sowing {
     private Land land;
 
     @Column(nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate sowingDate;
 }

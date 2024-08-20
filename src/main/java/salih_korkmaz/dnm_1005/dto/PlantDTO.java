@@ -8,6 +8,12 @@ import jakarta.validation.constraints.NotNull;
 public class PlantDTO {
     private Long id;
 
+    private String harvestPeriod;
+
+    private String SowingPeriod;
+
+    private String image;
+
     @NotNull(message = "Name cannot be null")
     private String name;
 
