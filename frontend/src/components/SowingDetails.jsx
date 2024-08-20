@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import BreadcrumbComponent from "./BreadCrumb.jsx";
@@ -14,11 +14,12 @@ import {
     Snackbar,
     TextField, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 } from "@mui/material";
-import { useNavigate, useParams } from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
+import RecommendationsTable from "./RecommendationsTable";
 
 const SowingDetails = () => {
-    const { id } = useParams();
+    const {id} = useParams();
     const [sowing, setSowing] = useState(null);
     const [landId, setLandId] = useState('');
     const [plantId, setPlantId] = useState('');
@@ -41,7 +42,7 @@ const SowingDetails = () => {
         if (plantId) {
             const fetchPlantCategoryDetails = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:8080/categories/by-plant/${plantId}`, { withCredentials: true });
+                    const response = await axios.get(`http://localhost:8080/categories/by-plant/${plantId}`, {withCredentials: true});
                     const plantCategory = response.data;
                     console.log(plantCategory);
                     setSelectedCategory(plantCategory.id); // Kategori bilgisini set et
@@ -56,7 +57,7 @@ const SowingDetails = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/categories', { withCredentials: true });
+                const response = await axios.get('http://localhost:8080/categories', {withCredentials: true});
                 setCategories(response.data);
             } catch (error) {
                 console.error("Error Fetching Categories", error);
@@ -69,7 +70,7 @@ const SowingDetails = () => {
         if (selectedCategory) {
             const fetchPlantsByCategory = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:8080/plants/by-category?categoryId=${selectedCategory}`, { withCredentials: true });
+                    const response = await axios.get(`http://localhost:8080/plants/by-category?categoryId=${selectedCategory}`, {withCredentials: true});
                     setPlants(response.data);
                 } catch (error) {
                     console.error("Error Fetching Plants", error);
@@ -83,8 +84,8 @@ const SowingDetails = () => {
         const fetchPlantsAndLands = async () => {
             try {
                 const [plantsResponse, landsResponse] = await Promise.all([
-                    axios.get('http://localhost:8080/plants', { withCredentials: true }),
-                    axios.get('http://localhost:8080/lands', { withCredentials: true })
+                    axios.get('http://localhost:8080/plants', {withCredentials: true}),
+                    axios.get('http://localhost:8080/lands', {withCredentials: true})
                 ]);
                 setPlants(plantsResponse.data);
                 setLands(landsResponse.data);
@@ -97,43 +98,21 @@ const SowingDetails = () => {
 
     // Ekim detaylarını ve önerileri çekmek için kullanılan useEffect hookları
     useEffect(() => {
-        axios.get(`http://localhost:8080/sowings/detail/${id}`, { withCredentials: true })
+        axios.get(`http://localhost:8080/sowings/detail/${id}`, {withCredentials: true})
             .then(response => {
                 setSowing(response.data);
                 setLandId(response.data.landId);
                 setPlantId(response.data.plantId);
                 setSelectedCategory(response.data.categoryId);
+                setSowingType(response.data.sowingType); // Sowing Type burada set ediliyor
             })
             .catch(error => console.error('Error fetching sowing details:', error));
     }, [id]);
 
-    useEffect(() => {
-        const fetchRecommendations = async () => {
-            try {
-                const localityResponse = await axios.get(`http://localhost:8080/lands/${landId}/locality`, { withCredentials: true });
-                const localityCode = localityResponse.data.code;
-
-                if (!localityCode) {
-                    console.error("Locality code is undefined");
-                    return;
-                }
-
-                const recommendationsResponse = await axios.get(`http://localhost:8080/recommendations?localityCode=${localityCode}`, { withCredentials: true });
-                setRecommendations(recommendationsResponse.data);
-            } catch (error) {
-                console.error("Error Fetching Recommendations", error);
-            }
-        };
-
-        if (landId) {
-            fetchRecommendations();
-        }
-    }, [landId]);
-
     // Kaydetme ve silme işlemleri için kullanılan fonksiyonlar
     const handleSave = async () => {
         if (!plantId || !sowing.sowingDate || !landId || !sowing.sowingField || !sowing.sowingType) {
-            setSnackbar({ open: true, message: 'Please fill in all the fields.', severity: 'error' });
+            setSnackbar({open: true, message: 'Please fill in all the fields.', severity: 'error'});
             return;
         }
 
@@ -144,29 +123,29 @@ const SowingDetails = () => {
         };
 
         try {
-            const response = await axios.put(`http://localhost:8080/sowings/update/${id}`, updatedSowing, { withCredentials: true });
+            const response = await axios.put(`http://localhost:8080/sowings/update/${id}`, updatedSowing, {withCredentials: true});
             if (response.status === 200) {
-                setSnackbar({ open: true, message: 'Sowing updated successfully!', severity: 'success' });
+                setSnackbar({open: true, message: 'Sowing updated successfully!', severity: 'success'});
                 setTimeout(() => navigate('/sowing-list'), 3000);
             } else {
-                setSnackbar({ open: true, message: 'Failed to update the Sowing.', severity: 'error' });
+                setSnackbar({open: true, message: 'Failed to update the Sowing.', severity: 'error'});
             }
         } catch (error) {
-            setSnackbar({ open: true, message: 'Error: ' + error.message, severity: 'error' });
+            setSnackbar({open: true, message: 'Error: ' + error.message, severity: 'error'});
         }
     };
 
     const handleDelete = async () => {
         try {
-            const response = await axios.delete(`http://localhost:8080/sowings/delete/${id}`, { withCredentials: true });
+            const response = await axios.delete(`http://localhost:8080/sowings/delete/${id}`, {withCredentials: true});
             if (response.status === 200) {
-                setSnackbar({ open: true, message: 'Sowing deleted successfully!', severity: 'success' });
+                setSnackbar({open: true, message: 'Sowing deleted successfully!', severity: 'success'});
                 setTimeout(() => navigate('/sowing-list'), 3000);
             } else {
-                setSnackbar({ open: true, message: 'Failed to delete the Sowing.', severity: 'error' });
+                setSnackbar({open: true, message: 'Failed to delete the Sowing.', severity: 'error'});
             }
         } catch (error) {
-            setSnackbar({ open: true, message: 'Error: ' + error.message, severity: 'error' });
+            setSnackbar({open: true, message: 'Error: ' + error.message, severity: 'error'});
         }
     };
 
@@ -187,7 +166,7 @@ const SowingDetails = () => {
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setSowing(prevState => ({
             ...prevState,
             [name]: value,
@@ -200,14 +179,14 @@ const SowingDetails = () => {
 
     return (
         <Container maxWidth="lg">
-            <BreadcrumbComponent pageName="Ekimlerim" />
+            <BreadcrumbComponent pageName="Ekimlerim"/>
             <Grid container spacing={4}>
                 <Grid item xs={12} md={6}>
-                    <Box sx={{ mt: 3 }}>
+                    <Box sx={{mt: 3}}>
                         <Typography variant="h4" component="h2" gutterBottom>
                             {isEditing ? 'Ekim Bilgilerini Düzenle' : `${sowing.landName} - ${sowing.plantName} Detayları`}
                         </Typography>
-                        <Paper elevation={3} sx={{ p: 2 }}>
+                        <Paper elevation={3} sx={{p: 2}}>
                             {isEditing ? (
                                 <>
                                     <FormControl fullWidth margin="normal">
@@ -265,7 +244,8 @@ const SowingDetails = () => {
                                             value={sowingType}
                                             onChange={(e) => {
                                                 console.log("Selected Sowing Type: ", e.target.value); // Konsola seçilen değeri yazdırır
-                                                setSowingType(e.target.value);}}
+                                                setSowingType(e.target.value);
+                                            }}
                                         >
                                             <MenuItem value="Tarla" key="Tarla">Tarla</MenuItem>
                                             <MenuItem value="Bağ" key="Bağ">Bağ</MenuItem>
@@ -275,6 +255,7 @@ const SowingDetails = () => {
                                             <MenuItem value="Mera" key="Mera">Mera</MenuItem>
                                         </Select>
                                     </FormControl>
+
                                     <TextField
                                         fullWidth
                                         label="Ekim Alanı"
@@ -286,7 +267,7 @@ const SowingDetails = () => {
                                         InputProps={{
                                             endAdornment: <InputAdornment position="end">m²</InputAdornment>,
                                         }}
-                                        inputProps={{ min: 0 }}
+                                        inputProps={{min: 0}}
                                     />
                                     <TextField
                                         fullWidth
@@ -296,7 +277,7 @@ const SowingDetails = () => {
                                         onChange={handleChange}
                                         margin="normal"
                                         type="date"
-                                        InputLabelProps={{ shrink: true }}
+                                        InputLabelProps={{shrink: true}}
                                     />
                                 </>
                             ) : (
@@ -309,13 +290,14 @@ const SowingDetails = () => {
                                 </>
                             )}
                         </Paper>
-                        <Box sx={{ marginTop: 3 }}>
+                        <Box sx={{marginTop: 3}}>
                             {isEditing ? (
                                 <>
                                     <Button variant="contained" color="primary" onClick={handleSave}>
                                         Kaydet
                                     </Button>
-                                    <Button variant="contained" color="secondary" onClick={handleEditToggle} sx={{ marginLeft: 2 }}>
+                                    <Button variant="contained" color="secondary" onClick={handleEditToggle}
+                                            sx={{marginLeft: 2}}>
                                         İptal
                                     </Button>
                                 </>
@@ -324,7 +306,8 @@ const SowingDetails = () => {
                                     <Button variant="contained" color="primary" onClick={handleEditToggle}>
                                         Düzenle
                                     </Button>
-                                    <Button variant="contained" color="error" onClick={handleOpenDeleteDialog} sx={{ marginLeft: 2 }}>
+                                    <Button variant="contained" color="error" onClick={handleOpenDeleteDialog}
+                                            sx={{marginLeft: 2}}>
                                         Sil
                                     </Button>
                                 </>
@@ -332,60 +315,19 @@ const SowingDetails = () => {
                         </Box>
                     </Box>
                 </Grid>
+                {isEditing ? (
+                    <RecommendationsTable landId={landId} />
+                ) : null}
 
-                <Grid item xs={12} md={6}>
-                    <Typography variant="h5" component="h3" gutterBottom sx={{ mt: 3, mb: 3 }}>
-                        Recommendations
-                    </Typography>
-                    {recommendations.length > 0 ? (
-                        <TableContainer component={Paper}>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Plant Image</TableCell>
-                                        <TableCell>Plant Name</TableCell>
-                                        <TableCell>Success Rate</TableCell>
-                                        <TableCell>Harvest Period</TableCell>
-                                        <TableCell>Sowing Period</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {recommendations.map((recommendation, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell>
-                                                <img
-                                                    src={`../../${recommendation.plantImage}`}
-                                                    alt={recommendation.plantName}
-                                                    style={{
-                                                        width: '50px',
-                                                        height: '50px',
-                                                        objectFit: 'cover',
-                                                        borderRadius: '10px'
-                                                    }}
-                                                />
-                                            </TableCell>
-                                            <TableCell>{recommendation.plantName}</TableCell>
-                                            <TableCell>{recommendation.succesRate}%</TableCell>
-                                            <TableCell>{recommendation.harvestPeriod}</TableCell>
-                                            <TableCell>{recommendation.sowingPeriod}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    ) : (
-                        <Typography>No recommendations available.</Typography>
-                    )}
-                </Grid>
             </Grid>
 
             <Snackbar
                 open={openSnackbar}
                 autoHideDuration={3000}
                 onClose={handleCloseSnackbar}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                anchorOrigin={{vertical: 'top', horizontal: 'center'}}
             >
-                <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{width: '100%'}}>
                     {snackbarMessage}
                 </Alert>
             </Snackbar>

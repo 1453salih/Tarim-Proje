@@ -3,12 +3,13 @@ import {
     TextField, Button, Container, Typography, Box, MenuItem,
     FormControl, InputLabel, Select, Snackbar, Alert, Grid,
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    Paper, Input,InputAdornment
+    Paper, Input, InputAdornment
 } from '@mui/material';
 
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 import BreadcrumbComponent from "./BreadCrumb";
+import RecommendationsTable from "./RecommendationsTable";
 import {green} from "@mui/material/colors";
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import '@fontsource/poppins';
@@ -75,34 +76,6 @@ function AddSowing() {
         };
         fetchPlantsAndLands();
     }, []);
-
-    useEffect(() => {
-        const fetchRecommendations = async () => {
-            try {
-                // İlk olarak landId'yi kullanarak locality bilgisi alınıyor
-                const localityResponse = await axios.get(`http://localhost:8080/lands/${landId}/locality`, {withCredentials: true});
-                console.log("Locality Response:", localityResponse.data);
-                const localityCode = localityResponse.data.code;
-
-
-                if (!localityCode) {
-                    console.error("Locality code is undefined");
-                    return;
-                }
-
-                // locality_code ile recommendation verileri alınıyor
-                const recommendationsResponse = await axios.get(`http://localhost:8080/recommendations?localityCode=${localityCode}`, {withCredentials: true});
-                console.log("Recommendations: ", recommendationsResponse.data);
-                setRecommendations(recommendationsResponse.data);
-            } catch (error) {
-                console.error("Error Fetching Recommendations", error);
-            }
-        };
-
-        if (landId) {
-            fetchRecommendations();
-        }
-    }, [landId]);
 
     const handleAddSowing = async (e) => {
         e.preventDefault();
@@ -216,7 +189,7 @@ function AddSowing() {
                                     InputProps={{
                                         endAdornment: <InputAdornment position="end">m²</InputAdornment>,
                                     }}
-                                    inputProps={{ min: 0 }}
+                                    inputProps={{min: 0}}
                                 />
                             </FormControl>
                             <FormControl fullWidth margin="normal">
@@ -226,7 +199,8 @@ function AddSowing() {
                                     value={sowingType}
                                     onChange={(e) => {
                                         console.log("Selected Sowing Type: ", e.target.value); // Konsola seçilen değeri yazdırır
-                                        setSowingType(e.target.value);}}
+                                        setSowingType(e.target.value);
+                                    }}
                                 >
                                     <MenuItem value="Tarla" key="Tarla">Tarla</MenuItem>
                                     <MenuItem value="Bağ" key="Bağ">Bağ</MenuItem>
@@ -243,51 +217,7 @@ function AddSowing() {
                             </Button>
                         </Box>
                     </Grid>
-
-                    <Grid item xs={12} md={6}>
-                        <Typography variant="h5" component="h3" gutterBottom sx={{mt: 3, mb: 3}}>
-                            Recommendations
-                        </Typography>
-                        {recommendations.length > 0 ? (
-                            <TableContainer component={Paper}>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Plant İmage</TableCell>
-                                            <TableCell>Plant Name</TableCell>
-                                            <TableCell>Success Rate</TableCell>
-                                            <TableCell>Harvest Period</TableCell>
-                                            <TableCell>Sowing Period</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {recommendations.map((recommendation, index) => (
-                                            <TableRow key={index} sx={{fontFamily: 'Poppins, sans-serif'}}>
-                                                <TableCell>
-                                                    <img
-                                                        src={recommendation.plantImage}
-                                                        alt={recommendation.plantName}
-                                                        style={{
-                                                            width: '50px',
-                                                            height: '50px',
-                                                            objectFit: 'cover',
-                                                            borderRadius: '10px'
-                                                        }}
-                                                    />
-                                                </TableCell>
-                                                <TableCell>{recommendation.plantName}</TableCell>
-                                                <TableCell>{recommendation.succesRate}%</TableCell>
-                                                <TableCell>{recommendation.harvestPeriod}</TableCell>
-                                                <TableCell>{recommendation.sowingPeriod}</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        ) : (
-                            <Typography>No recommendations available.</Typography>
-                        )}
-                    </Grid>
+                    <RecommendationsTable landId={landId}/>
                 </Grid>
 
                 <Snackbar
