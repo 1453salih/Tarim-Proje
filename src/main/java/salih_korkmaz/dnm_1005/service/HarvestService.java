@@ -1,5 +1,6 @@
 package salih_korkmaz.dnm_1005.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import salih_korkmaz.dnm_1005.dto.HarvestDTO;
 import salih_korkmaz.dnm_1005.entity.Harvest;
@@ -34,9 +35,11 @@ public class HarvestService {
     }
 
     public Harvest findHarvestById(Long harvestId){
+        System.out.println("Finding Harvest with id: " + harvestId);
         return harvestRepository.findById(harvestId)
                 .orElseThrow(()-> new RuntimeException("Harvest not found"));
     }
+
 
     // Yeni metot: Belirli bir ekim için hasat edilip edilmediğini kontrol eder
     public boolean existsBySowingId(Long sowingId) {
@@ -52,4 +55,11 @@ public class HarvestService {
         return harvestRepository.findBySowingLandUserId(userId);
     }
 
+    @Transactional
+    public void deleteHarvestBySowingId(Long sowingId) {
+        Harvest harvest = harvestRepository.findBySowingId(sowingId)
+                .orElseThrow(() -> new RuntimeException("Harvest not found for sowing id: " + sowingId));
+        System.out.println("Deleting Harvest with id: " + harvest.getId() + " for sowing id: " + sowingId);
+        harvestRepository.delete(harvest);
+    }
 }

@@ -63,26 +63,19 @@ const HarvestList = () => {
     const handleSnackbarClose = () => {
         setSnackbarOpen(false);
     };
-
-    const handleDeleteHarvest = async (id) => {
+    const handleDeleteHarvest = async (sowingId) => {
+        console.log(sowingId);
         try {
-            // Değerlendirme ID'sini al
-            const evaluationResponse = await axios.get(`http://localhost:8080/evaloutions/harvest/${id}`, { withCredentials: true });
-            const evaluationId = evaluationResponse.data.id;
-
-            // Önce değerlendirmeyi sil
-            await axios.delete(`http://localhost:8080/evaloutions/delete/${evaluationId}`, { withCredentials: true });
-
-            // Sonra hasatı sil
-            await axios.delete(`http://localhost:8080/harvests/delete/${id}`, { withCredentials: true });
+            // Hasatı sil
+            await axios.delete(`http://localhost:8080/harvests/delete-by-sowing/${sowingId}`, { withCredentials: true });
 
             // Başarı mesajı
-            setHarvests(prevHarvests => prevHarvests.filter(harvest => harvest.id !== id));
-            setSnackbarMessage('Hasat ve ilgili değerlendirme başarıyla silindi.');
+            setHarvests(prevHarvests => prevHarvests.filter(harvest => harvest.sowingId !== sowingId));
+            setSnackbarMessage('Hasat başarıyla silindi.');
             setSnackbarSeverity('success');
             setSnackbarOpen(true);
         } catch (error) {
-            console.error('Hasat veya değerlendirme silme sırasında hata oluştu:', error);
+            console.error('Hasat silme sırasında hata oluştu:', error);
             setSnackbarMessage('Silme işlemi sırasında bir hata oluştu.');
             setSnackbarSeverity('error');
             setSnackbarOpen(true);

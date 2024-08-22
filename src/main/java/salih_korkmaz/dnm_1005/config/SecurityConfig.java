@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/harvests/**").permitAll()
                         .requestMatchers("/evaloutions/**").permitAll()
                         .requestMatchers("/evaloutions/harvest/**").permitAll()
+                        .requestMatchers("/harvests/delete-by-sowing/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

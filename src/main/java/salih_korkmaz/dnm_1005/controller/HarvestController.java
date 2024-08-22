@@ -19,11 +19,18 @@ public class HarvestController {
     }
 
     @PostMapping
-    public HarvestDTO makeHarvest(@RequestBody HarvestDTO harvestDto){
+    public HarvestDTO makeHarvest(@RequestBody HarvestDTO harvestDto) {
         return harvestService.saveHarvest(harvestDto);
     }
+
     @DeleteMapping("/delete/{id}")
     public void deleteHarvest(@PathVariable Long id) {
+        System.out.println("Deleting Harvest with id: " + id); // Gelen ID'yi loglayın
         harvestService.deleteHarvest(id);
+    }
+
+    @DeleteMapping("/delete-by-sowing/{sowingId}")
+    public void deleteHarvestBySowingId(@PathVariable Long sowingId) {
+        harvestService.deleteHarvestBySowingId(sowingId);
     }
 }
