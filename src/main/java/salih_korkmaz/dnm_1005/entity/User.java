@@ -1,6 +1,7 @@
 package salih_korkmaz.dnm_1005.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import jakarta.persistence.*;
@@ -15,8 +16,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String user;
+    @Column(unique = true, nullable = false,length = 100)
+    private String email;
+
 
     @Column(nullable = false)
     private String password;

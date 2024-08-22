@@ -36,7 +36,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS yapılandırmasını ekleyin
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/lands/**").permitAll()
@@ -46,11 +46,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/categories").permitAll()
                         .requestMatchers("/categories/**").permitAll()
                         .requestMatchers("/api/locations/**").permitAll()
-                        .requestMatchers("/recommendations/**").permitAll()  // /recommendations/** yoluna izin ver
+                        .requestMatchers("/recommendations/**").permitAll()
                         .requestMatchers("/harvests/**").permitAll()
                         .requestMatchers("/evaloutions/**").permitAll()
                         .requestMatchers("/evaloutions/harvest/**").permitAll()
                         .requestMatchers("/harvests/delete-by-sowing/**").permitAll()
+                        .requestMatchers("/auth/logout").permitAll() // Buraya ekleyin
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -58,6 +59,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     @Bean
     public CorsFilter corsFilter() {

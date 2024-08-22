@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import salih_korkmaz.dnm_1005.dto.LoginRequest;
 import salih_korkmaz.dnm_1005.dto.LoginResponse;
 import salih_korkmaz.dnm_1005.entity.User;
+import salih_korkmaz.dnm_1005.exception.EmailAlreadyInUseException;
 import salih_korkmaz.dnm_1005.repository.UserRepository;
 import salih_korkmaz.dnm_1005.util.JwtUtil;
 
@@ -24,38 +25,54 @@ public class UserService {
     private JwtUtil jwtUtil;
 
     public LoginResponse login(LoginRequest request) {
-        User user = userRepository.findByUser(request.getUser())
+        User user = userRepository.findByEmail(request.getEmail())  // findByUser yerine findByEmail
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             // Her girişte yeni bir token oluştur
-            String token = jwtUtil.generateToken(user.getUser());
-            return new LoginResponse(token, user.getId());
+            String token = jwtUtil.generateToken(user.getEmail());  // user.getUser() yerine user.getEmail()
+            return new LoginResponse(token, user.getId().toString());
         } else {
             throw new RuntimeException("Invalid credentials");
         }
     }
 
 
+
     public LoginResponse signup(LoginRequest request) {
+        // E-posta adresinin kullanımda olup olmadığını kontrol eder
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new EmailAlreadyInUseException("This email is already in use");
+        }
+
+        // Yeni bir kullanıcı oluşturur ve kaydeder
         User user = new User();
-        user.setUser(request.getUser());
+        user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
-        String token = jwtUtil.generateToken(user.getUser());
-        return new LoginResponse(token, user.getId());
+
+        // Token oluşturulur
+        String token = jwtUtil.generateToken(user.getEmail());
+
+        // Kullanıcıya ait token ve userId'yi içeren bir yanıt döndürülür
+        return new LoginResponse(token, user.getId().toString());
     }
 
-    public User findByUsername(String username) {
-        return userRepository.findByUser(username)
+
+
+
+    public User findByEmail(String email) {  // findByUsername yerine findByEmail
+        return userRepository.findByEmail(email)  // findByUser yerine findByEmail
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
+
     public User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        return findByUsername(username);
+        String email = authentication.getName();  // username yerine email
+        return findByEmail(email);  // findByUsername yerine findByEmail
     }
+
 
 
 }

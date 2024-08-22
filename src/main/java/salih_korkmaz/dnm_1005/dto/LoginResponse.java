@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoginResponse {
     private String token;
-    private Long userId;
+    private String userId;  // Long yerine String yapıldı
 }

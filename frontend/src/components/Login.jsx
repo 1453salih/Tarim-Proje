@@ -8,7 +8,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 const theme = createTheme();
 
 function Login({ setIsLoggedIn }) { // setIsLoggedIn prop olarak alınıyor
-    const [user, setUser] = useState('');
+    const [email, setEmail] = useState('');  // user yerine email
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -16,14 +16,14 @@ function Login({ setIsLoggedIn }) { // setIsLoggedIn prop olarak alınıyor
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:8080/auth/login', { user, password }, { withCredentials: true });
+            const response = await axios.post('http://localhost:8080/auth/login', { email, password }, { withCredentials: true });  // user yerine email
             if (response.status === 200) {
                 const data = response.data;
-                // Cookie otomatik olarak gönderildiği için sadece gerekli verileri saklıyoruz
+                // Cookie otomatik olarak gönderildiği için sadece gerekli verileri saklanıyor.
                 localStorage.setItem('userId', data.userId);
                 setError('');
-                setIsLoggedIn(true); // Oturum açma başarılı, isLoggedIn true yapılıyor
-                navigate('/home'); // Ana sayfaya yönlendiriliyor
+                setIsLoggedIn(true); // Oturum açma başarılı, isLoggedIn true yapılıyor.
+                navigate('/home'); // Ana sayfaya yönlendiriliyor.
             } else {
                 setError('Invalid credentials');
             }
@@ -62,13 +62,13 @@ function Login({ setIsLoggedIn }) { // setIsLoggedIn prop olarak alınıyor
                             margin="normal"
                             required
                             fullWidth
-                            id="user"
-                            label="Username"
-                            name="user"
-                            autoComplete="user"
+                            id="email"  // user yerine email
+                            label="Email"  // Username yerine Email
+                            name="email"  // user yerine email
+                            autoComplete="email"
                             autoFocus
-                            value={user}
-                            onChange={(e) => setUser(e.target.value)}
+                            value={email}  // user yerine email
+                            onChange={(e) => setEmail(e.target.value)}  // user yerine email
                         />
                         <TextField
                             variant="outlined"
