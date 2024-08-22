@@ -1,7 +1,6 @@
 package salih_korkmaz.dnm_1005.service;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import salih_korkmaz.dnm_1005.dto.SowingDTO;
 import salih_korkmaz.dnm_1005.entity.Land;
@@ -24,7 +23,6 @@ public class SowingService {
     private final LandService landService;
     private final SowingMapper sowingMapper;
 
-    @Autowired
     public SowingService(SowingRepository sowingRepository, PlantService plantService, LandService landService, SowingMapper sowingMapper, LandRepository landRepository) {
         this.sowingRepository = sowingRepository;
         this.plantService = plantService;
@@ -85,5 +83,10 @@ public class SowingService {
         Sowing sowing = sowingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sowing not found"));
         return sowingMapper.toDto(sowing);
+    }
+
+    public Sowing findSowingById(Long sowingId) {
+        return sowingRepository.findById(sowingId)
+                .orElseThrow(() -> new RuntimeException("Sowing not found"));
     }
 }

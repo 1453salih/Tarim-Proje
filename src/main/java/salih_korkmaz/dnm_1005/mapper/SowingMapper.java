@@ -33,8 +33,8 @@ public class SowingMapper {
             sowing.setId(sowingDto.getId());
         }
 
-        // Plant ve Land nesnelerini Entity olarak set etmeniz gerekiyor.
-        // Bunun için Plant ve Land Service'lerinizden ilgili nesneleri bulmanız gerekebilir.
+        // Plant ve Land nesnelerini Entity olarak set etmem gerekiyor.
+        // Bunun için Plant ve Land Service'lerimden ilgili nesneleri bulmam gerekebilir.
         Plant plant = new Plant();
         plant.setId(sowingDto.getPlantId());
         sowing.setPlant(plant);
@@ -43,8 +43,10 @@ public class SowingMapper {
         land.setId(sowingDto.getLandId());
         sowing.setLand(land);
 
+        //Sowing Field Size
         sowing.setSowingField(sowingDto.getSowingField());
 
+        //Sowing Type
         sowing.setSowingType(sowingDto.getSowingType());
 
         // SowingDate

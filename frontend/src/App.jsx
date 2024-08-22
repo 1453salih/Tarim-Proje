@@ -14,8 +14,11 @@ import LandDetails from './components/LandDetails';
 import AddSowing from './components/AddSowing';
 import SowingList from "./components/SowingList.jsx";
 import SowingDetails from "./components/SowingDetails";
+import HarvestList from "./components/HarvestList";
+import HarevstEvaluation from "./components/HarevstEvaluation";
 
 import './App.css';
+
 
 
 function App() {
@@ -70,6 +73,8 @@ function App() {
                 <Route path="/sowings" element={isLoggedIn ? <AddSowing /> : <Navigate to="/login" />} />
                 <Route path="/sowing-list" element={isLoggedIn ? <SowingList /> : <Navigate to="/login" />} />
                 <Route path="/sowings/detail/:id" element={isLoggedIn ? <SowingDetails /> : <Navigate to="/login" />} />
+                <Route path="/evaluation" element={isLoggedIn ? <HarevstEvaluation /> : <Navigate to="/login" />} />
+                <Route path="/harvest-list" element={isLoggedIn ? <HarvestList /> : <Navigate to="/login" />} />
             </Routes>
         </Router>
     );

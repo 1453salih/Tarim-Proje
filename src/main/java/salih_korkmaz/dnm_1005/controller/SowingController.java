@@ -1,11 +1,11 @@
 package salih_korkmaz.dnm_1005.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import salih_korkmaz.dnm_1005.dto.LandDTO;
 import salih_korkmaz.dnm_1005.dto.SowingDTO;
-import salih_korkmaz.dnm_1005.entity.Land;
 import salih_korkmaz.dnm_1005.entity.Sowing;
 import salih_korkmaz.dnm_1005.entity.User;
+import salih_korkmaz.dnm_1005.service.HarvestService;
 import salih_korkmaz.dnm_1005.service.LandService;
 import salih_korkmaz.dnm_1005.service.SowingService;
 import salih_korkmaz.dnm_1005.service.UserService;
@@ -19,10 +19,12 @@ public class SowingController {
 
     private final SowingService sowingService;
     private final UserService userService;
+    private final HarvestService harvestService;
 
-    public SowingController(SowingService sowingService, UserService userService, LandService landService) {
+    public SowingController(SowingService sowingService, UserService userService, LandService landService, HarvestService harvestService) {
         this.sowingService = sowingService;
         this.userService = userService;
+        this.harvestService = harvestService;
     }
 
     @PostMapping
@@ -47,5 +49,10 @@ public class SowingController {
 
         // Kullanıcı ID'sine göre ekimleri getirir.
         return sowingService.getSowingsByUser(user.getId());
+    }
+    @GetMapping("/{sowingId}/hasat-durumu")
+    public ResponseEntity<Boolean> hasatDurumu(@PathVariable Long sowingId) {
+        boolean hasatEdildiMi = harvestService.existsBySowingId(sowingId);
+        return ResponseEntity.ok(hasatEdildiMi);
     }
 }

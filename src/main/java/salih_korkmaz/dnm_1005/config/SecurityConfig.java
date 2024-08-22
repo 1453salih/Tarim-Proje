@@ -47,6 +47,9 @@ public class SecurityConfig {
                         .requestMatchers("/categories/**").permitAll()
                         .requestMatchers("/api/locations/**").permitAll()
                         .requestMatchers("/recommendations/**").permitAll()  // /recommendations/** yoluna izin ver
+                        .requestMatchers("/harvests/**").permitAll()
+                        .requestMatchers("/evaloutions/**").permitAll()
+                        .requestMatchers("/evaloutions/harvest/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
