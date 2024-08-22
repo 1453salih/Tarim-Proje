@@ -9,11 +9,12 @@ import salih_korkmaz.dnm_1005.entity.Sowing;
 public class HarvestMapper {
     public HarvestDTO toDTO(Harvest harvest){
         HarvestDTO harvestDTO = new HarvestDTO();
-        harvestDTO.setId(harvestDTO.getId());
+        harvestDTO.setId(harvest.getId()); // Harvest ID'yi DTO'ya set etme
         harvestDTO.setSowingId(harvest.getSowing().getId());
         harvestDTO.setHarvestDate(harvest.getHarvestDate());
         return harvestDTO;
     }
+
     public Harvest toEntity(HarvestDTO harvestDto){
         Harvest harvest = new Harvest();
 
@@ -21,8 +22,7 @@ public class HarvestMapper {
             harvest.setId(harvestDto.getId());
         }
 
-        //Sowing nesnesi Entity olarak set edilir.
-        //? Kayıt işleminde kullanılır  toEntity.
+        // Sowing nesnesi Entity olarak set edilir.
         Sowing sowing = new Sowing();
         sowing.setId(harvestDto.getSowingId());
         harvest.setSowing(sowing);
@@ -32,3 +32,4 @@ public class HarvestMapper {
         return harvest;
     }
 }
+

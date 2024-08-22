@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     Container,
     Typography,
@@ -14,10 +14,10 @@ import {
     Snackbar,
     Alert
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import BreadcrumbComponent from "./BreadCrumb.jsx";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import {createTheme, ThemeProvider} from "@mui/material/styles";
 import '@fontsource/poppins';
 
 const theme = createTheme({
@@ -36,14 +36,14 @@ const SowingList = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get('http://localhost:8080/sowings', { withCredentials: true })
+        axios.get('http://localhost:8080/sowings', {withCredentials: true})
             .then(response => {
                 console.log('Response:', response);
                 setSowings(response.data);
 
                 // Hasat durumunu kontrol etmek için her ekim kaydı için istek yapıyoruz
                 response.data.forEach(sowing => {
-                    axios.get(`http://localhost:8080/sowings/${sowing.id}/hasat-durumu`, { withCredentials: true })
+                    axios.get(`http://localhost:8080/sowings/${sowing.id}/hasat-durumu`, {withCredentials: true})
                         .then(hasatResponse => {
                             if (hasatResponse.data) {  // hasatResponse.data true ise
                                 setHarvestedSowingIds(prevIds => [...prevIds, sowing.id]);
@@ -69,7 +69,7 @@ const SowingList = () => {
     if (!isAuthenticated) {
         return (
             <Container maxWidth="md">
-                <Box sx={{ mt: 3 }}>
+                <Box sx={{mt: 3}}>
                     <Typography variant="h6" color="error">
                         Oturum açmadan görüntüleyemezsiniz.
                     </Typography>
@@ -91,15 +91,28 @@ const SowingList = () => {
         axios.post('http://localhost:8080/harvests', harvestDto, { withCredentials: true })
             .then(response => {
                 console.log('Hasat işlemi başarılı:', response);
-                setSnackbarMessage('Hasat işlemi başarılı!');
-                setSnackbarSeverity('success');
-                setSnackbarOpen(true);
+                console.log('Response Data:', response.data);  // Tüm response.data içeriğini loglayalım
 
-                // Hasat edilen ID'yi harvestedSowingIds listesine ekle
-                setHarvestedSowingIds(prevIds => [...prevIds, id]);
+                // Burada response.data.id kontrol ediliyor.
+                if (response.data && response.data.id) {
+                    const harvestId = response.data.id;  // Doğru ID'yi alıyoruz
+                    console.log('Oluşturulan harvest ID:', harvestId);
 
-                // Yönlendirme işlemi
-                setTimeout(() => navigate(`/evaluation`, { state: { harvestId: id } }), 1500);
+                    setSnackbarMessage('Hasat işlemi başarılı!');
+                    setSnackbarSeverity('success');
+                    setSnackbarOpen(true);
+
+                    // Hasat edilen ID'yi harvestedSowingIds listesine ekle
+                    setHarvestedSowingIds(prevIds => [...prevIds, id]);
+
+                    // Yönlendirme işlemi harvestId ile
+                    setTimeout(() => navigate(`/evaluation`, { state: { harvestId: harvestId } }), 1500);
+                } else {
+                    console.error('Harvest ID response data is missing:', response);
+                    setSnackbarMessage('Hasat işlemi başarılı, ancak Harvest ID alınamadı.');
+                    setSnackbarSeverity('warning');
+                    setSnackbarOpen(true);
+                }
             })
             .catch(error => {
                 console.error('Hasat işlemi sırasında hata oluştu:', error);
@@ -109,18 +122,20 @@ const SowingList = () => {
             });
     };
 
+
+
     return (
         <ThemeProvider theme={theme}>
             <Container maxWidth="md">
                 <Box>
-                    <BreadcrumbComponent pageName="Ekimlerim" />
+                    <BreadcrumbComponent pageName="Ekimlerim"/>
                 </Box>
-                <Box sx={{ mt: 3 }}>
+                <Box sx={{mt: 3}}>
                     <Typography variant="h4" component="h2" gutterBottom>
                         Sowings List
                     </Typography>
                     <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 650 }} aria-label="sowings table">
+                        <Table sx={{minWidth: 650}} aria-label="sowings table">
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Name</TableCell>
@@ -149,7 +164,7 @@ const SowingList = () => {
                                             justifyContent: 'center'
                                         }}>
                                             <Button variant="contained" color="primary"
-                                                    onClick={() => handleDetail(sowing.id)} sx={{ ml: 1 }}>
+                                                    onClick={() => handleDetail(sowing.id)} sx={{ml: 1}}>
                                                 Detay
                                             </Button>
                                             {harvestedSowingIds.includes(sowing.id) ? (
@@ -158,7 +173,8 @@ const SowingList = () => {
                                                 </Button>
                                             ) : (
                                                 <Button variant="contained" color="warning"
-                                                        onClick={() => handleHarvest(sowing.id)} sx={{ minWidth: '150px' }}>
+                                                        onClick={() => handleHarvest(sowing.id)}
+                                                        sx={{minWidth: '150px'}}>
                                                     Hasat Et
                                                 </Button>
                                             )}
@@ -175,7 +191,7 @@ const SowingList = () => {
                     autoHideDuration={3000}
                     onClose={handleSnackbarClose}
                 >
-                    <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                    <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{width: '100%'}}>
                         {snackbarMessage}
                     </Alert>
                 </Snackbar>

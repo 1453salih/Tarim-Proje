@@ -63,14 +63,13 @@ const HarvestList = () => {
     const handleSnackbarClose = () => {
         setSnackbarOpen(false);
     };
-    const handleDeleteHarvest = async (sowingId) => {
-        console.log(sowingId);
+    const handleDeleteHarvest = async (harvestId) => {
         try {
             // Hasatı sil
-            await axios.delete(`http://localhost:8080/harvests/delete-by-sowing/${sowingId}`, { withCredentials: true });
+            await axios.delete(`http://localhost:8080/harvests/delete-by-sowing/${harvestId}`, { withCredentials: true });
 
             // Başarı mesajı
-            setHarvests(prevHarvests => prevHarvests.filter(harvest => harvest.sowingId !== sowingId));
+            setHarvests(prevHarvests => prevHarvests.filter(harvest => harvest.id !== harvestId));
             setSnackbarMessage('Hasat başarıyla silindi.');
             setSnackbarSeverity('success');
             setSnackbarOpen(true);
@@ -81,6 +80,7 @@ const HarvestList = () => {
             setSnackbarOpen(true);
         }
     };
+
 
 
     if (!isAuthenticated) {
