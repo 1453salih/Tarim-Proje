@@ -10,15 +10,14 @@ import BreadcrumbComponent from "./BreadCrumb";
 import { Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
 
-import card1 from '../assets/card1.jpg';
-import card2 from '../assets/card2.jpg';
-import card3 from '../assets/card3.jpg';
-import card4 from '../assets/card4.jpg';
-import card5 from '../assets/card5.jpg';
+import card1 from '../assets/card1.webp';
+import card2 from '../assets/card2.webp';
+import card3 from '../assets/card3.webp';
+import card4 from '../assets/card4.webp';
+import card5 from '../assets/card5.webp';
 import card6 from '../assets/card6.jpg';
 
-
-const pageName = "Ekim Yap"
+const pageName = "Ekim Yap";
 
 const cards = [
     { title: 'Arazi Ekle', description: '', link: '/add-land', button: 'Arazi Ekle', image: card1 },
@@ -46,9 +45,14 @@ function Home() {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 justifyContent: 'space-between',
-                                boxShadow: 3,
+                                boxShadow: 4,
                                 borderRadius: 2,
                                 fontFamily: 'Poppins, sans-serif',
+                                transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+                                '&:hover': {
+                                    transform: 'scale(1.1) rotate(1deg)',
+                                    boxShadow: '10px 10px 20px rgba(0, 0, 0, 0.4)',
+                                },
                             }}
                         >
                             <CardMedia
@@ -71,16 +75,26 @@ function Home() {
                                             fullWidth
                                             size="large"
                                             sx={{
-                                                backgroundColor: 'green',
+                                                backgroundColor: '#FFA500', // Turuncu renk
                                                 color: 'white',
                                                 fontFamily: 'Poppins, sans-serif',
+                                                borderRadius: '10px',
+                                                boxShadow: 'inset -2px -2px 5px rgba(0, 0, 0, 0.25), inset 4px 4px 8px rgba(255, 255, 255, 0.75), 8px 8px 16px rgba(0, 0, 0, 0.2), -8px -8px 16px rgba(255, 255, 255, 0.7)', // İç ve dış gölge
+                                                transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
                                                 '&:hover': {
-                                                    backgroundColor: 'darkgreen',
+                                                    backgroundColor: '#FFA500', // Aynı renk kalsın
+                                                    boxShadow: 'inset 4px 4px 8px rgba(0, 0, 0, 0.25), inset -4px -4px 8px rgba(255, 255, 255, 0.75)', // İç gölge, basılı efekt
+                                                },
+                                                '&:active': {
+                                                    backgroundColor: '#FF8C00', // Basıldığında daha koyu turuncu
+                                                    boxShadow: 'inset 4px 4px 8px rgba(0, 0, 0, 0.3), inset -4px -4px 8px rgba(255, 255, 255, 0.6)', // Biraz daha belirgin iç gölge
                                                 },
                                             }}
                                         >
                                             {card.button}
                                         </Button>
+
+
                                     </Link>
                                 </Box>
                             </CardContent>

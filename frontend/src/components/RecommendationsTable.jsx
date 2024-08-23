@@ -8,12 +8,16 @@ import {
     TableRow,
     TableCell,
     TableBody,
-    Paper
+    Paper,
+    Box,
+    CircularProgress
 } from "@mui/material";
 import axios from "axios";
+import {orange} from "@mui/material/colors";
 
 const RecommendationsTable = ({ landId }) => {
     const [recommendations, setRecommendations] = useState([]);
+    const [imageLoading, setImageLoading] = useState({}); // Her bir resmin yüklenme durumu
 
     useEffect(() => {
         const fetchRecommendations = async () => {
@@ -28,6 +32,13 @@ const RecommendationsTable = ({ landId }) => {
 
                 const recommendationsResponse = await axios.get(`http://localhost:8080/recommendations?localityCode=${localityCode}`, { withCredentials: true });
                 setRecommendations(recommendationsResponse.data);
+
+                // Her bir resmin yüklenme durumu başlangıçta true olarak ayarlanıyor
+                const initialLoadingState = recommendationsResponse.data.reduce((acc, recommendation, index) => {
+                    acc[index] = true;
+                    return acc;
+                }, {});
+                setImageLoading(initialLoadingState);
             } catch (error) {
                 console.error("Error Fetching Recommendations", error);
             }
@@ -38,50 +49,73 @@ const RecommendationsTable = ({ landId }) => {
         }
     }, [landId]);
 
+    const handleImageLoad = (index) => {
+        setImageLoading(prevState => ({
+            ...prevState,
+            [index]: false
+        }));
+    };
+
     return (
         <Grid item xs={12} md={6}>
-            <Typography variant="h5" component="h3" gutterBottom sx={{ mt: 3, mb: 3 }}>
-                Recommendations
-            </Typography>
-            {recommendations.length > 0 ? (
-                <TableContainer component={Paper}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Plant Image</TableCell>
-                                <TableCell>Plant Name</TableCell>
-                                <TableCell>Success Rate</TableCell>
-                                <TableCell>Harvest Period</TableCell>
-                                <TableCell>Sowing Period</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {recommendations.map((recommendation, index) => (
-                                <TableRow key={index}>
-                                    <TableCell>
-                                        <img
-                                            src={`../../${recommendation.plantImage}`}
-                                            alt={recommendation.plantName}
-                                            style={{
-                                                width: '50px',
-                                                height: '50px',
-                                                objectFit: 'cover',
-                                                borderRadius: '10px'
-                                            }}
-                                        />
-                                    </TableCell>
-                                    <TableCell>{recommendation.plantName}</TableCell>
-                                    <TableCell>{recommendation.succesRate}%</TableCell>
-                                    <TableCell>{recommendation.harvestPeriod}</TableCell>
-                                    <TableCell>{recommendation.sowingPeriod}</TableCell>
+            <Box component={Paper} elevation={6} sx={{ p: 3 }}>
+                <Typography variant="h5" component="h3" gutterBottom>
+                    Recommendations
+                </Typography>
+                {recommendations.length > 0 ? (
+                    <TableContainer component={Paper} sx={{ boxShadow: '0px 4px 12px rgba(0.2, 0.2, 0.2, 0.3)',mt:4}} >
+                        <Table sx={{boxShadow:"1px 1px 1px 1px"}}>
+                            <TableHead sx={{backgroundColor: orange[700]}} >
+                                <TableRow >
+                                    <TableCell sx={{color: "#fff",borderRight: '1px solid #ddd'}}>Plant Image</TableCell>
+                                    <TableCell sx={{color: "#fff",borderRight: '1px solid #ddd'}}>Plant Name</TableCell>
+                                    <TableCell sx={{color: "#fff",borderRight: '1px solid #ddd'}}>Success Rate</TableCell>
+                                    <TableCell sx={{color: "#fff",borderRight: '1px solid #ddd'}}>Harvest Period</TableCell>
+                                    <TableCell sx={{color: "#fff"}}>Sowing Period</TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            ) : (
-                <Typography>No recommendations available.</Typography>
-            )}
+                            </TableHead>
+                            <TableBody>
+                                {recommendations.map((recommendation, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell sx={{borderRight: '1px solid #ddd', position: 'relative'}}>
+                                            {imageLoading[index] && (
+                                                <CircularProgress
+                                                    size={24}
+                                                    sx={{
+                                                        position: 'absolute',
+                                                        top: '50%',
+                                                        left: '50%',
+                                                        marginTop: '-12px',
+                                                        marginLeft: '-12px',
+                                                    }}
+                                                />
+                                            )}
+                                            <img
+                                                src={`../../${recommendation.plantImage}`}
+                                                alt={recommendation.plantName}
+                                                style={{
+                                                    width: '50px',
+                                                    height: '50px',
+                                                    objectFit: 'cover',
+                                                    borderRadius: '10px',
+                                                    display: imageLoading[index] ? 'none' : 'block'
+                                                }}
+                                                onLoad={() => handleImageLoad(index)}
+                                            />
+                                        </TableCell>
+                                        <TableCell sx={{borderRight: '1px solid #ddd'}}>{recommendation.plantName}</TableCell>
+                                        <TableCell sx={{borderRight: '1px solid #ddd'}}>{recommendation.succesRate}%</TableCell>
+                                        <TableCell sx={{borderRight: '1px solid #ddd'}}>{recommendation.harvestPeriod}</TableCell>
+                                        <TableCell>{recommendation.sowingPeriod}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                ) : (
+                    <Typography>No recommendations available.</Typography>
+                )}
+            </Box>
         </Grid>
     );
 };

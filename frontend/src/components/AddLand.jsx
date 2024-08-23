@@ -19,6 +19,13 @@ function AddLand() {
 
     const navigate = useNavigate();
 
+    //*Error State
+    const [landNameError, setLandNameError] = useState(false);
+    const [landSizeError, setLandSizeError] = useState(false);
+    const [selectedIlError, setSelectedIlError] = useState(false);
+    const [selectedIlceError, setSelectedIlceError] = useState(false);
+    const [selectedKoyError, setSelectedKoyError] = useState(false);
+    //*----------------------------------------------------------------------------------
     useEffect(() => {
         // Şehirleri veritabanından çekmek için API isteği
         const fetchCities = async () => {
@@ -73,7 +80,44 @@ function AddLand() {
         e.preventDefault();
 
         // Boş alan kontrolü
-        if (!landName || !landSize || !selectedIl || !selectedIlce || !selectedKoy) {
+        let hasError = false;
+
+        if (!landName) {
+            setLandNameError(true);
+            hasError = true;
+        } else {
+            setLandNameError(false);
+        }
+
+        if (!landSize) {
+            setLandSizeError(true);
+            hasError = true;
+        } else {
+            setLandSizeError(false);
+        }
+
+        if (!selectedIl) {
+            setSelectedIlError(true);
+            hasError = true;
+        } else {
+            setSelectedIlError(false);
+        }
+
+        if (!selectedIlce) {
+            setSelectedIlceError(true);
+            hasError = true;
+        } else {
+            setSelectedIlceError(false);
+        }
+
+        if (!selectedKoy) {
+            setSelectedKoyError(true);
+            hasError = true;
+        } else {
+            setSelectedKoyError(false);
+        }
+
+        if (hasError) {
             setSnackbarMessage('Please fill in all the fields.');
             setSnackbarSeverity('error');
             setOpenSnackbar(true);
@@ -138,50 +182,73 @@ function AddLand() {
                     variant="outlined"
                     margin="normal"
                     value={landName}
-                    onChange={(e) => setLandName(e.target.value)}
+                    onChange={(e) => {
+                        setLandName(e.target.value);
+                        if (e.target.value) setLandNameError(false);
+                    }}
+                    error={landNameError}
+                    helperText={landNameError ? "Land name is required." : ""}
                 />
+
                 <TextField
                     fullWidth
                     label="Land Size (hectares)"
                     variant="outlined"
                     margin="normal"
                     value={landSize}
-                    onChange={(e) => setLandSize(e.target.value)}
+                    onChange={(e) => {
+                        setLandSize(e.target.value);
+                        if (e.target.value) setLandSizeError(false);
+                    }}
+                    error={landSizeError}
+                    helperText={landSizeError ? "Land size is required." : ""}
                 />
 
-                <FormControl fullWidth margin="normal">
+                <FormControl fullWidth margin="normal" error={selectedIlError}>
                     <InputLabel>İl</InputLabel>
                     <Select
                         value={selectedIl}
-                        onChange={(e) => setSelectedIl(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedIl(e.target.value);
+                            if (e.target.value) setSelectedIlError(false);
+                        }}
                     >
                         {cities.map(city => (
                             <MenuItem key={city.code} value={city.code}>{city.name}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
-                <FormControl fullWidth margin="normal" disabled={!selectedIl}>
+
+                <FormControl fullWidth margin="normal" error={selectedIlceError} disabled={!selectedIl}>
                     <InputLabel>İlçe</InputLabel>
                     <Select
                         value={selectedIlce}
-                        onChange={(e) => setSelectedIlce(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedIlce(e.target.value);
+                            if (e.target.value) setSelectedIlceError(false);
+                        }}
                     >
                         {districts.map(district => (
                             <MenuItem key={district.code} value={district.code}>{district.name}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
-                <FormControl fullWidth margin="normal" disabled={!selectedIlce || villages.length === 0}>
+
+                <FormControl fullWidth margin="normal" error={selectedKoyError} disabled={!selectedIlce || villages.length === 0}>
                     <InputLabel>Köy/Mahalle</InputLabel>
                     <Select
                         value={selectedKoy}
-                        onChange={(e) => setSelectedKoy(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedKoy(e.target.value);
+                            if (e.target.value) setSelectedKoyError(false);
+                        }}
                     >
                         {villages.map(locality => (
                             <MenuItem key={locality.code} value={locality.code}>{locality.name}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
+
 
                 <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
                     Add Land

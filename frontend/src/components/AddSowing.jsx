@@ -1,17 +1,15 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     TextField, Button, Container, Typography, Box, MenuItem,
     FormControl, InputLabel, Select, Snackbar, Alert, Grid,
-    Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    Paper, Input, InputAdornment
+    Paper, InputAdornment
 } from '@mui/material';
-
 import axios from 'axios';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import BreadcrumbComponent from "./BreadCrumb";
 import RecommendationsTable from "./RecommendationsTable";
-import {green} from "@mui/material/colors";
-import {createTheme, ThemeProvider} from '@mui/material/styles';
+import { orange } from "@mui/material/colors";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import '@fontsource/poppins';
 
 const theme = createTheme({
@@ -29,16 +27,20 @@ function AddSowing() {
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('');
     const [recommendations, setRecommendations] = useState([]);
-    const [snackbar, setSnackbar] = useState({open: false, message: '', severity: 'success'});
+    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
     const navigate = useNavigate();
     const [sowingField, setSowingField] = useState('');
     const [sowingType, setSowingType] = useState('');
-
+    const [plantIdError, setPlantIdError] = useState(false);
+    const [sowingDateError, setSowingDateError] = useState(false);
+    const [landIdError, setLandIdError] = useState(false);
+    const [sowingFieldError, setSowingFieldError] = useState(false);
+    const [sowingTypeError, setSowingTypeError] = useState(false);
 
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/categories', {withCredentials: true});
+                const response = await axios.get('http://localhost:8080/categories', { withCredentials: true });
                 setCategories(response.data);
             } catch (error) {
                 console.error("Error Fetching Categories", error);
@@ -51,7 +53,7 @@ function AddSowing() {
         if (selectedCategory) {
             const fetchPlantsByCategory = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:8080/plants/by-category?categoryId=${selectedCategory}`, {withCredentials: true});
+                    const response = await axios.get(`http://localhost:8080/plants/by-category?categoryId=${selectedCategory}`, { withCredentials: true });
                     setPlants(response.data);
                 } catch (error) {
                     console.error("Error Fetching Plants", error);
@@ -65,8 +67,8 @@ function AddSowing() {
         const fetchPlantsAndLands = async () => {
             try {
                 const [plantsResponse, landsResponse] = await Promise.all([
-                    axios.get('http://localhost:8080/plants', {withCredentials: true}),
-                    axios.get('http://localhost:8080/lands', {withCredentials: true})
+                    axios.get('http://localhost:8080/plants', { withCredentials: true }),
+                    axios.get('http://localhost:8080/lands', { withCredentials: true })
                 ]);
                 setPlants(plantsResponse.data);
                 setLands(landsResponse.data);
@@ -79,9 +81,45 @@ function AddSowing() {
 
     const handleAddSowing = async (e) => {
         e.preventDefault();
+        let hasError = false;
 
-        if (!plantId || !sowingDate || !landId || !sowingField || !sowingType) {
-            setSnackbar({open: true, message: 'Please fill in all the fields.', severity: 'error'});
+        if (!plantId) {
+            setPlantIdError(true);
+            hasError = true;
+        } else {
+            setPlantIdError(false);
+        }
+
+        if (!sowingDate) {
+            setSowingDateError(true);
+            hasError = true;
+        } else {
+            setSowingDateError(false);
+        }
+
+        if (!landId) {
+            setLandIdError(true);
+            hasError = true;
+        } else {
+            setLandIdError(false);
+        }
+
+        if (!sowingField) {
+            setSowingFieldError(true);
+            hasError = true;
+        } else {
+            setSowingFieldError(false);
+        }
+
+        if (!sowingType) {
+            setSowingTypeError(true);
+            hasError = true;
+        } else {
+            setSowingTypeError(false);
+        }
+
+        if (hasError) {
+            setSnackbar({ open: true, message: 'Please fill in all the fields.', severity: 'error' });
             return;
         }
 
@@ -94,39 +132,39 @@ function AddSowing() {
         };
 
         try {
-            const response = await axios.post('http://localhost:8080/sowings', newSowing, {withCredentials: true});
-            if (response.status === 200) {
-                setSnackbar({open: true, message: 'Sowing saved successfully!', severity: 'success'});
-                setTimeout(() => navigate('/sowing-list'), 3000);
+            const response = await axios.post('http://localhost:8080/sowings', newSowing, { withCredentials: true });
+            if (response.status === 200 || response.status === 201) {
+                setSnackbar({ open: true, message: 'Sowing saved successfully!', severity: 'success' });
                 setPlantId('');
                 setSowingDate('');
                 setLandId('');
-                setSowingField(''); // Alanı temizle
+                setSowingField('');
                 setSowingType('');
+                setTimeout(() => navigate('/sowing-list'), 3000);
             } else {
-                setSnackbar({open: true, message: 'Failed to save the Sowing.', severity: 'error'});
+                setSnackbar({ open: true, message: 'Failed to save the Sowing.', severity: 'error' });
             }
         } catch (error) {
-            setSnackbar({open: true, message: 'Error: ' + error.message, severity: 'error'});
+            setSnackbar({ open: true, message: 'Error: ' + error.message, severity: 'error' });
         }
     };
 
     const handleCloseSnackbar = () => {
-        setSnackbar(prev => ({...prev, open: false}));
+        setSnackbar(prev => ({ ...prev, open: false }));
     };
 
     return (
         <ThemeProvider theme={theme}>
-            <Container maxWidth="lg" sx={{fontFamily: 'Poppins, sans-serif'}}>
-                <BreadcrumbComponent pageName="Ekim Yap"/>
-                <Grid container spacing={4}>
+            <Container maxWidth="lg" sx={{ fontFamily: 'Poppins, sans-serif' }}>
+                <BreadcrumbComponent pageName="Ekim Yap" />
+                <Grid container spacing={4} sx={{ mt: 3 }}>
                     <Grid item xs={12} md={6}>
-                        <Box component="form" onSubmit={handleAddSowing} sx={{mt: 3}}>
+                        <Paper component="form" onSubmit={handleAddSowing} sx={{ p: 5 }} elevation={6}>
                             <Typography variant="h5" component="h3" gutterBottom>
                                 Add Sowing
                             </Typography>
 
-                            <FormControl fullWidth margin="normal">
+                            <FormControl fullWidth margin="normal" error={plantIdError}>
                                 <InputLabel>Kategori</InputLabel>
                                 <Select
                                     label="Kategori"
@@ -134,13 +172,14 @@ function AddSowing() {
                                     onChange={(e) => setSelectedCategory(e.target.value)}
                                 >
                                     {categories.map((category) => (
-                                        <MenuItem key={category.id}
-                                                  value={category.id}>{category.categoryName}</MenuItem>
+                                        <MenuItem key={category.id} value={category.id}>
+                                            {category.categoryName}
+                                        </MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
 
-                            <FormControl fullWidth margin="normal">
+                            <FormControl fullWidth margin="normal" error={plantIdError}>
                                 <InputLabel>Bitki</InputLabel>
                                 <Select
                                     label="Bitki"
@@ -149,9 +188,12 @@ function AddSowing() {
                                     disabled={!selectedCategory}
                                 >
                                     {plants.map((plant) => (
-                                        <MenuItem key={plant.id} value={plant.id}>{plant.name}</MenuItem>
+                                        <MenuItem key={plant.id} value={plant.id}>
+                                            {plant.name}
+                                        </MenuItem>
                                     ))}
                                 </Select>
+                                {plantIdError && <Typography color="error">Please select a plant.</Typography>}
                             </FormControl>
 
                             <TextField
@@ -162,11 +204,14 @@ function AddSowing() {
                                 margin="normal"
                                 value={sowingDate}
                                 onChange={(e) => setSowingDate(e.target.value)}
+                                error={sowingDateError}
+                                helperText={sowingDateError ? 'Please select a date.' : ''}
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
                             />
-                            <FormControl fullWidth margin="normal">
+
+                            <FormControl fullWidth margin="normal" error={landIdError}>
                                 <InputLabel>Land</InputLabel>
                                 <Select
                                     label="Land"
@@ -174,31 +219,35 @@ function AddSowing() {
                                     onChange={(e) => setLandId(e.target.value)}
                                 >
                                     {lands.map((land) => (
-                                        <MenuItem key={land.id} value={land.id}>{land.name}</MenuItem>
+                                        <MenuItem key={land.id} value={land.id}>
+                                            {land.name}
+                                        </MenuItem>
                                     ))}
                                 </Select>
+                                {landIdError && <Typography color="error">Please select a land.</Typography>}
                             </FormControl>
-                            <FormControl fullWidth margin="normal">
-                                <TextField
-                                    id="outlined-basic"
-                                    label="Planted Area Size"
-                                    variant="outlined"
-                                    type="number"
-                                    value={sowingField}
-                                    onChange={(e) => setSowingField(e.target.value)} // Plnat Area Size alanında yapılan değişiklikleri tutar böylece ne yazzdıysak alır.
-                                    InputProps={{
-                                        endAdornment: <InputAdornment position="end">m²</InputAdornment>,
-                                    }}
-                                    inputProps={{min: 0}}
-                                />
-                            </FormControl>
-                            <FormControl fullWidth margin="normal">
+
+                            <TextField
+                                fullWidth
+                                label="Planted Area Size"
+                                variant="outlined"
+                                type="number"
+                                value={sowingField}
+                                onChange={(e) => setSowingField(e.target.value)}
+                                error={sowingFieldError}
+                                helperText={sowingFieldError ? 'Please enter a valid size.' : ''}
+                                InputProps={{
+                                    endAdornment: <InputAdornment position="end">m²</InputAdornment>,
+                                }}
+                                inputProps={{ min: 0 }}
+                            />
+
+                            <FormControl fullWidth margin="normal" error={sowingTypeError}>
                                 <InputLabel>Land Type</InputLabel>
                                 <Select
                                     label="Land Type"
                                     value={sowingType}
                                     onChange={(e) => {
-                                        console.log("Selected Sowing Type: ", e.target.value); // Konsola seçilen değeri yazdırır
                                         setSowingType(e.target.value);
                                     }}
                                 >
@@ -209,15 +258,26 @@ function AddSowing() {
                                     <MenuItem value="Çayır" key="Çayır">Çayır</MenuItem>
                                     <MenuItem value="Mera" key="Mera">Mera</MenuItem>
                                 </Select>
+                                {sowingTypeError && <Typography color="error">Please select a land type.</Typography>}
                             </FormControl>
 
-                            <Button type="submit" variant="contained" fullWidth
-                                    sx={{mt: 2, backgroundColor: green[700]}}>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                fullWidth
+                                sx={{
+                                    mt: 2,
+                                    backgroundColor: orange[700],
+                                    '&:hover': {
+                                        backgroundColor: orange[900],
+                                    },
+                                }}
+                            >
                                 Add Sowing
                             </Button>
-                        </Box>
+                        </Paper>
                     </Grid>
-                    <RecommendationsTable landId={landId}/>
+                    <RecommendationsTable landId={landId} />
                 </Grid>
 
                 <Snackbar
@@ -225,7 +285,7 @@ function AddSowing() {
                     autoHideDuration={3000}
                     onClose={handleCloseSnackbar}
                 >
-                    <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{width: '100%'}}>
+                    <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
                         {snackbar.message}
                     </Alert>
                 </Snackbar>

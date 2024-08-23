@@ -126,7 +126,7 @@ const SowingList = () => {
 
     return (
         <ThemeProvider theme={theme}>
-            <Container maxWidth="md">
+            <Container maxWidth="xl">
                 <Box>
                     <BreadcrumbComponent pageName="Ekimlerim"/>
                 </Box>
@@ -168,7 +168,7 @@ const SowingList = () => {
                                                 Detay
                                             </Button>
                                             {harvestedSowingIds.includes(sowing.id) ? (
-                                                <Button variant="contained" color="secondary" disabled>
+                                                <Button variant="contained" color="secondary" disabled sx={{ minWidth:'140px'}}>
                                                     Hasat Yapıldı
                                                 </Button>
                                             ) : (
