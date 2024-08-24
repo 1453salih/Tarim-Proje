@@ -21,6 +21,9 @@ public class Land {
     @Column(nullable = false)
     int landSize;
 
+    @Column(nullable = true)
+    String image;
+
     @ManyToOne
     @JoinColumn(name = "locality_code", referencedColumnName = "code")
     private Locality locality;

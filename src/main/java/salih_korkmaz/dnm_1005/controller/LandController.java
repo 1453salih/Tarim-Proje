@@ -1,9 +1,10 @@
 package salih_korkmaz.dnm_1005.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import salih_korkmaz.dnm_1005.dto.LandDTO;
 import salih_korkmaz.dnm_1005.entity.Land;
 import salih_korkmaz.dnm_1005.entity.Locality;
@@ -28,18 +29,20 @@ public class LandController {
     @Autowired
     private UserService userService;
 
+    // Arazi oluşturma ve görsel yükleme
     @PostMapping
-    public Land createLand(@RequestBody LandDTO landDto) {
+    public ResponseEntity<LandDTO> createLand(@RequestPart("land") LandDTO landDto,
+                                              @RequestPart("file") MultipartFile file) {
         if (landDto.getUserId() == null) {
             throw new IllegalArgumentException("User ID must not be null in controller");
         }
-        return landService.saveLand(landDto);
+        Land land = landService.saveLand(landDto, file);
+        LandDTO savedLandDto = landService.getLandById(land.getId());
+        return new ResponseEntity<>(savedLandDto, HttpStatus.CREATED);
     }
-
 
     @GetMapping
     public List<LandDTO> getLandsByUser() {
-
         // UserService'den kullanıcıyı alır
         User user = userService.getAuthenticatedUser();
 
@@ -53,14 +56,18 @@ public class LandController {
     }
 
     @PutMapping("/update/{id}")
-    public Land updateLand(@PathVariable Long id, @RequestBody LandDTO landDto) {
+    public ResponseEntity<LandDTO> updateLand(@PathVariable Long id,
+                                              @RequestPart("land") LandDTO landDto,
+                                              @RequestPart(value = "file", required = false) MultipartFile file) {
         // LandService'i kullanarak araziyi günceller
-        return landService.updateLand(id, landDto);
+        Land updatedLand = landService.updateLand(id, landDto, file);
+        LandDTO updatedLandDto = landService.getLandById(updatedLand.getId());
+        return new ResponseEntity<>(updatedLandDto, HttpStatus.OK);
     }
+
     @GetMapping("/{landId}/locality")
     public Locality getLocalityByLandId(@PathVariable Long landId) {
         return landService.getLocalityByLandId(landId);
     }
-
 
 }

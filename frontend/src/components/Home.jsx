@@ -45,13 +45,16 @@ function Home() {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 justifyContent: 'space-between',
-                                boxShadow: 4,
+                                boxShadow: 'inset -2px -2px 5px rgba(0, 0, 0, 0.25), inset 2px 2px 5px rgba(255, 255, 255, 0.75), 8px 8px 16px rgba(0, 0, 0, 0.2), -8px -8px 16px rgba(255, 255, 255, 0.7)', // İç ve dış gölge
                                 borderRadius: 2,
                                 fontFamily: 'Poppins, sans-serif',
                                 transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
                                 '&:hover': {
                                     transform: 'scale(1.1) rotate(1deg)',
-                                    boxShadow: '10px 10px 20px rgba(0, 0, 0, 0.4)',
+                                    boxShadow: 'inset 4px 4px 8px rgba(0, 0, 0, 0.25), inset -4px -4px 8px rgba(255, 255, 255, 0.75)', // Hover sırasında iç gölge, dış gölge yok
+                                },
+                                '&:active': {
+                                    boxShadow: 'inset 4px 4px 8px rgba(0, 0, 0, 0.3), inset -4px -4px 8px rgba(255, 255, 255, 0.6)', // Tıklanırken biraz daha belirgin iç gölge
                                 },
                             }}
                         >
@@ -75,14 +78,14 @@ function Home() {
                                             fullWidth
                                             size="large"
                                             sx={{
-                                                backgroundColor: '#FFA500', // Turuncu renk
+                                                backgroundColor: '#ff8a00', // Turuncu renk
                                                 color: 'white',
                                                 fontFamily: 'Poppins, sans-serif',
-                                                borderRadius: '10px',
-                                                boxShadow: 'inset -2px -2px 5px rgba(0, 0, 0, 0.25), inset 4px 4px 8px rgba(255, 255, 255, 0.75), 8px 8px 16px rgba(0, 0, 0, 0.2), -8px -8px 16px rgba(255, 255, 255, 0.7)', // İç ve dış gölge
+                                                borderRadius: '5px',
+                                                boxShadow: 'inset -2px -2px 5px rgba(0, 0, 0, 0.25), inset 2px 2px 5px rgba(255, 255, 255, 0.75), 8px 8px 16px rgba(0, 0, 0, 0.2), -8px -8px 16px rgba(255, 255, 255, 0.7)', // İç ve dış gölge
                                                 transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
                                                 '&:hover': {
-                                                    backgroundColor: '#FFA500', // Aynı renk kalsın
+                                                    backgroundColor: '#ff8a00', // Aynı renk kalsın
                                                     boxShadow: 'inset 4px 4px 8px rgba(0, 0, 0, 0.25), inset -4px -4px 8px rgba(255, 255, 255, 0.75)', // İç gölge, basılı efekt
                                                 },
                                                 '&:active': {

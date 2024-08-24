@@ -14,6 +14,7 @@ public class LandMapper {
         landDto.setLandSize(land.getLandSize());
         landDto.setUserId(land.getUser().getId());
         landDto.setLocalityId(land.getLocality().getCode());
+        landDto.setImageUrl(land.getImage());
         return landDto;
     }
 }

@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Container, Typography, Box, MenuItem, FormControl, InputLabel, Select, Snackbar, Alert } from '@mui/material';
+import {
+    TextField,
+    Button,
+    Container,
+    Typography,
+    Box,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    Select,
+    Snackbar,
+    Alert,
+    Paper
+} from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import BreadcrumbComponent from "./BreadCrumb.jsx";
+import ImageUploader from "./ImageUploader.jsx";
 
 function AddLand() {
     const [landName, setLandName] = useState('');
@@ -10,24 +24,23 @@ function AddLand() {
     const [selectedIl, setSelectedIl] = useState('');
     const [selectedIlce, setSelectedIlce] = useState('');
     const [selectedKoy, setSelectedKoy] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
-    const [cities, setCities] = useState([]); // Şehir listesi
-    const [districts, setDistricts] = useState([]); // İlçe listesi
-    const [villages, setVillages] = useState([]); // Köy/Mahalle listesi
+    const [cities, setCities] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [villages, setVillages] = useState([]);
 
     const navigate = useNavigate();
 
-    //*Error State
     const [landNameError, setLandNameError] = useState(false);
     const [landSizeError, setLandSizeError] = useState(false);
     const [selectedIlError, setSelectedIlError] = useState(false);
     const [selectedIlceError, setSelectedIlceError] = useState(false);
     const [selectedKoyError, setSelectedKoyError] = useState(false);
-    //*----------------------------------------------------------------------------------
+
     useEffect(() => {
-        // Şehirleri veritabanından çekmek için API isteği
         const fetchCities = async () => {
             try {
                 const response = await axios.get('http://localhost:8080/api/locations/cities');
@@ -79,46 +92,25 @@ function AddLand() {
     const handleAddLand = async (e) => {
         e.preventDefault();
 
-        // Boş alan kontrolü
         let hasError = false;
 
-        if (!landName) {
-            setLandNameError(true);
-            hasError = true;
-        } else {
-            setLandNameError(false);
-        }
+        if (!landName) setLandNameError(true), hasError = true;
+        else setLandNameError(false);
 
-        if (!landSize) {
-            setLandSizeError(true);
-            hasError = true;
-        } else {
-            setLandSizeError(false);
-        }
+        if (!landSize) setLandSizeError(true), hasError = true;
+        else setLandSizeError(false);
 
-        if (!selectedIl) {
-            setSelectedIlError(true);
-            hasError = true;
-        } else {
-            setSelectedIlError(false);
-        }
+        if (!selectedIl) setSelectedIlError(true), hasError = true;
+        else setSelectedIlError(false);
 
-        if (!selectedIlce) {
-            setSelectedIlceError(true);
-            hasError = true;
-        } else {
-            setSelectedIlceError(false);
-        }
+        if (!selectedIlce) setSelectedIlceError(true), hasError = true;
+        else setSelectedIlceError(false);
 
-        if (!selectedKoy) {
-            setSelectedKoyError(true);
-            hasError = true;
-        } else {
-            setSelectedKoyError(false);
-        }
+        if (!selectedKoy) setSelectedKoyError(true), hasError = true;
+        else setSelectedKoyError(false);
 
         if (hasError) {
-            setSnackbarMessage('Please fill in all the fields.');
+            setSnackbarMessage('Lütfen tüm alanları doldurun.');
             setSnackbarSeverity('error');
             setOpenSnackbar(true);
             return;
@@ -126,23 +118,33 @@ function AddLand() {
 
         const userId = localStorage.getItem('userId');
         if (!userId) {
-            setSnackbarMessage('User not logged in.');
+            setSnackbarMessage('Kullanıcı oturumu açık değil.');
             setSnackbarSeverity('error');
             setOpenSnackbar(true);
             return;
         }
 
-        const newLand = {
+        const landData = {
             name: landName,
             landSize: parseInt(landSize),
-            localityId: selectedKoy, // localityId yeterli diye düşünüyorum.
-            userId: parseInt(userId)
+            localityId: selectedKoy,
+            userId: parseInt(userId),
         };
 
+        const formData = new FormData();
+        formData.append('land', new Blob([JSON.stringify(landData)], { type: "application/json" }));
+        formData.append('file', imageUrl);
+
         try {
-            const response = await axios.post('http://localhost:8080/lands', newLand, { withCredentials: true });
-            if (response.status === 200) {
-                setSnackbarMessage('Land saved successfully!');
+            const response = await axios.post('http://localhost:8080/lands', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                withCredentials: true
+            });
+
+            if (response.status === 201) {
+                setSnackbarMessage('Arazi başarıyla kaydedildi!');
                 setSnackbarSeverity('success');
                 setOpenSnackbar(true);
                 setTimeout(() => navigate('/land-list'), 3000);
@@ -151,17 +153,19 @@ function AddLand() {
                 setSelectedIl('');
                 setSelectedIlce('');
                 setSelectedKoy('');
+                setImageUrl('');
             } else {
-                setSnackbarMessage('Failed to save the Land.');
+                setSnackbarMessage('Arazi kaydedilemedi.');
                 setSnackbarSeverity('error');
                 setOpenSnackbar(true);
             }
         } catch (error) {
-            setSnackbarMessage('Error: ' + error.message);
+            setSnackbarMessage('Hata: ' + error.message);
             setSnackbarSeverity('error');
             setOpenSnackbar(true);
         }
     };
+
 
     const handleCloseSnackbar = () => {
         setOpenSnackbar(false);
@@ -170,9 +174,9 @@ function AddLand() {
     return (
         <Container maxWidth="sm">
             <Box>
-                <BreadcrumbComponent pageName="Arazi Ekle" />
+                <BreadcrumbComponent pageName="Arazi Ekle"/>
             </Box>
-            <Box component="form" onSubmit={handleAddLand} sx={{ mt: 3 }}>
+            <Paper component="form" onSubmit={handleAddLand} sx={{mt: 3, p: 3}}>
                 <Typography variant="h4" component="h2" gutterBottom>
                     Add Land
                 </Typography>
@@ -234,7 +238,8 @@ function AddLand() {
                     </Select>
                 </FormControl>
 
-                <FormControl fullWidth margin="normal" error={selectedKoyError} disabled={!selectedIlce || villages.length === 0}>
+                <FormControl fullWidth margin="normal" error={selectedKoyError}
+                             disabled={!selectedIlce || villages.length === 0}>
                     <InputLabel>Köy/Mahalle</InputLabel>
                     <Select
                         value={selectedKoy}
@@ -249,11 +254,17 @@ function AddLand() {
                     </Select>
                 </FormControl>
 
+                <ImageUploader onImageUpload={setImageUrl} />
 
-                <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+                <Button type="submit" variant="contained" fullWidth sx={{
+                    mt: 2, backgroundColor: "#ff8a00",
+                    '&:hover': {
+                        backgroundColor: '#ff7a00',
+                    }
+                }}>
                     Add Land
                 </Button>
-            </Box>
+            </Paper>
 
             <Snackbar
                 open={openSnackbar}

@@ -1,7 +1,9 @@
 package salih_korkmaz.dnm_1005.service;
 
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import salih_korkmaz.dnm_1005.dto.LandDTO;
 import salih_korkmaz.dnm_1005.dto.LocationDTO;
 import salih_korkmaz.dnm_1005.entity.Land;
@@ -11,13 +13,19 @@ import salih_korkmaz.dnm_1005.mapper.LandMapper;
 import salih_korkmaz.dnm_1005.repository.LandRepository;
 import salih_korkmaz.dnm_1005.repository.LocalityRepository;
 import salih_korkmaz.dnm_1005.repository.UserRepository;
-
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class LandService {
-
+    @Value("${file.upload-dir}")
+    private String uploadDir;
     private final LandRepository landRepository;
     private final UserRepository userRepository;
     private final LocalityRepository localityRepository;
@@ -30,7 +38,7 @@ public class LandService {
         this.landMapper = landMapper;
     }
 
-    public Land saveLand(LandDTO landDto) {
+    public Land saveLand(LandDTO landDto, MultipartFile imageFile) {
         User user = userRepository.findById(landDto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -43,10 +51,16 @@ public class LandService {
         land.setUser(user);
         land.setLocality(locality);
 
+        if (imageFile != null && !imageFile.isEmpty()) {
+            // Resmi kaydet ve URL'yi al
+            String imageUrl = uploadImage(imageFile);
+            land.setImage(imageUrl);
+        }
+
         return landRepository.save(land);
     }
 
-    public Land updateLand(Long id, @Valid LandDTO landDto) {
+    public Land updateLand(Long id, @Valid LandDTO landDto, MultipartFile file) {
         Land existingLand = landRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Land not found"));
 
@@ -63,6 +77,12 @@ public class LandService {
             Locality locality = localityRepository.findById(landDto.getLocalityId())
                     .orElseThrow(() -> new RuntimeException("Locality not found"));
             existingLand.setLocality(locality);
+        }
+
+        // Dosya yükleme işlemi
+        if (file != null && !file.isEmpty()) {
+            String imageUrl = uploadImage(file); // Görsel yüklenir ve URL döndürülür
+            existingLand.setImage(imageUrl); // Görsel URL'si Land objesine set edilir
         }
 
         return landRepository.save(existingLand);
@@ -131,4 +151,16 @@ public class LandService {
                 .map(Land::getLocality)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid land ID: " + landId));
     }
+    public String uploadImage(MultipartFile file) {
+        try {
+            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+            Path path = Paths.get(uploadDir + File.separator + fileName);
+            Files.createDirectories(path.getParent());
+            Files.write(path, file.getBytes());
+            return "/uploads/" + fileName;
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to store image", e);
+        }
+    }
+
 }
