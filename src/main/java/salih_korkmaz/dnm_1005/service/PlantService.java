@@ -24,6 +24,10 @@ public class PlantService {
         return plantRepository.save(plant);
     }
 
+    //? getAllPlants metodu, veritabanındaki tüm Plant entity'lerini getirir ve
+    //? her birini PlantMapper kullanarak PlantDTO nesnesine dönüştürür.
+    //? Sonuç olarak, PlantDTO nesnelerinin bir listesini döndürür.
+
     public List<PlantDTO> getAllPlants() {
         return plantRepository.findAll().stream().map(plantMapper::toDTO).collect(Collectors.toList());
     }

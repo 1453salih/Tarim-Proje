@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Container, Typography, Box, Paper, Button, TextField, MenuItem, FormControl, InputLabel, Select, Snackbar, Alert, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import ImageUploader from "./ImageUploader.jsx";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Card from "@mui/material/Card";
 
 const LandDetails = () => {
     const { id } = useParams();
@@ -10,6 +14,7 @@ const LandDetails = () => {
     const [selectedIl, setSelectedIl] = useState('');
     const [selectedIlce, setSelectedIlce] = useState('');
     const [selectedKoy, setSelectedKoy] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -23,18 +28,25 @@ const LandDetails = () => {
         setIsEditing(!isEditing);
     };
 
+    //* Hem Json verisi hem de dosya gönderilebilmesini sağlar.
+
+
+
     const handleSave = () => {
         const updatedLand = {
             ...land,
             localityId: selectedKoy, // Güncellenmiş localityId'yi kullanıyoruz
         };
 
+        const formData = new FormData();
+        formData.append('land', new Blob([JSON.stringify(updatedLand)], { type: 'application/json' }));
+        if (imageUrl) {
+            formData.append('file', imageUrl);
+        }
+
         fetch(`http://localhost:8080/lands/update/${id}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedLand),
+            body:formData,
         })
             .then(response => response.json())
             .then(data => {
@@ -190,6 +202,7 @@ const LandDetails = () => {
                                 onChange={handleChange}
                                 margin="normal"
                             />
+
                             <FormControl fullWidth margin="normal">
                                 <InputLabel>İl</InputLabel>
                                 <Select
@@ -233,9 +246,19 @@ const LandDetails = () => {
                                     ))}
                                 </Select>
                             </FormControl>
+
+                            <ImageUploader onImageUpload={setImageUrl} />
                         </>
                     ) : (
                         <>
+                            <Card sx={{ maxWidth: 345, boxShadow: 3 }}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    image={land.imageUrl|| "../../src/assets/DefaultImage/defaultLand.png"}
+                                    alt="arazi görseli"
+                                />
+                            </Card>
                             <Typography variant="h6">Boyut: {land.landSize} hektar</Typography>
                             <Typography variant="h6">Şehir: {land.location?.cityName || 'N/A'}</Typography>
                             <Typography variant="h6">İlçe: {land.location?.districtName || 'N/A'}</Typography>
@@ -265,7 +288,6 @@ const LandDetails = () => {
                     )}
                 </Box>
             </Box>
-
             <Snackbar
                 open={openSnackbar}
                 autoHideDuration={3000}

@@ -39,7 +39,7 @@ const LandList = () => {
     };
 
     return (
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" sx={{marginBottom:"60px"}}>
             <Box>
                 <BreadcrumbComponent pageName="Arazilerim" />
             </Box>
@@ -50,12 +50,25 @@ const LandList = () => {
                 <Grid container spacing={3}>
                     {lands.map((land) => (
                         <Grid item xs={12} sm={6} md={4} key={land.id}>
-                            <Card sx={{ maxWidth: 345, boxShadow: 3 }}>
+                            <Card
+                                sx={{
+                                    maxWidth: 345,
+                                    boxShadow: '8px 8px 16px rgba(0, 0, 0, 0.2)', // Shadow effect on the bottom-right
+                                    background: 'linear-gradient(145deg, #ffffff, #f0f0f0)', // Light effect on the top-left
+                                    borderRadius: '12px', // Slightly rounded corners for the raised look
+                                    '&:hover': {
+                                        boxShadow: '12px 12px 24px rgba(0, 0, 0, 0.3)', // Enhanced shadow on hover
+                                        transform: 'translateY(-4px)', // Slight lift on hover
+                                    },
+                                    padding: '16px', // Padding inside the card
+                                }}
+                            >
                                 <CardMedia
                                     component="img"
                                     height="140"
                                     image={land.imageUrl || "../../src/assets/DefaultImage/defaultLand.png"}
                                     alt={land.name}
+                                    sx={{borderRadius:"8px"}}
                                 />
                                 <CardContent>
                                     <Typography gutterBottom variant="h5" component="div">
@@ -81,6 +94,7 @@ const LandList = () => {
                                 </Box>
                             </Card>
                         </Grid>
+
                     ))}
                 </Grid>
             </Box>
