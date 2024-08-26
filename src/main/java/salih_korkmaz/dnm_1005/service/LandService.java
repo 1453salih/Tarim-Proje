@@ -157,7 +157,7 @@ public class LandService {
             Path path = Paths.get(uploadDir + File.separator + fileName);
             Files.createDirectories(path.getParent());
             Files.write(path, file.getBytes());
-            return "/uploads/" + fileName;
+            return "../../src/assets/Lands/" + fileName;
         } catch (IOException e) {
             throw new RuntimeException("Failed to store image", e);
         }
