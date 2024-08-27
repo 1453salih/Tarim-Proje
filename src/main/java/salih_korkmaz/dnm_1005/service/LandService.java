@@ -52,7 +52,7 @@ public class LandService {
         land.setLocality(locality);
 
         if (imageFile != null && !imageFile.isEmpty()) {
-            // Resmi kaydet ve URL'yi al
+            // Resmi kayder ve URL'yi alır
             String imageUrl = uploadImage(imageFile);
             land.setImage(imageUrl);
         }
@@ -88,57 +88,20 @@ public class LandService {
         return landRepository.save(existingLand);
     }
 
-    public List<LandDTO> getAllLands() {
-        return landRepository.findAll().stream().map(land -> {
-            LandDTO landDTO = landMapper.toDTO(land);
-            LocationDTO locationDTO = new LocationDTO(
-                    land.getLocality().getDistrict().getCity().getName(),
-                    land.getLocality().getDistrict().getName(),
-                    land.getLocality().getName(),
-                    land.getLocality().getDistrict().getCity().getCode(),  // City code
-                    land.getLocality().getDistrict().getCode(),  // District code
-                    land.getLocality().getCode()  // Locality code
-            );
-            landDTO.setLocation(locationDTO);
-            return landDTO;
-        }).collect(Collectors.toList());
-    }
+
 
     public LandDTO getLandById(Long id) {
         Land land = landRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Land not found"));
-
         LandDTO landDTO = landMapper.toDTO(land);
-
-        // LocationDTO'yu manuel olarak doldur
-        LocationDTO locationDTO = new LocationDTO(
-                land.getLocality().getDistrict().getCity().getName(),
-                land.getLocality().getDistrict().getName(),
-                land.getLocality().getName(),
-                land.getLocality().getDistrict().getCity().getCode(),  // City code
-                land.getLocality().getDistrict().getCode(),  // District code
-                land.getLocality().getCode()  // Locality code
-        );
-        landDTO.setLocation(locationDTO);
 
         return landDTO;
     }
 
+
     public List<LandDTO> getLandsByUser(Long userId) {
         List<Land> lands = landRepository.findByUserId(userId);
-        return lands.stream().map(land -> {
-            LandDTO landDTO = landMapper.toDTO(land);
-            LocationDTO locationDTO = new LocationDTO(
-                    land.getLocality().getDistrict().getCity().getName(),
-                    land.getLocality().getDistrict().getName(),
-                    land.getLocality().getName(),
-                    land.getLocality().getDistrict().getCity().getCode(),  // City code
-                    land.getLocality().getDistrict().getCode(),  // District code
-                    land.getLocality().getCode()  // Locality code
-            );
-            landDTO.setLocation(locationDTO);
-            return landDTO;
-        }).collect(Collectors.toList());
+        return lands.stream().map(landMapper::toDTO).collect(Collectors.toList());
     }
 
     public Land findLandById(Long id) {

@@ -28,7 +28,7 @@ function App() {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const response = await fetch('/auth/validate-token', {
+                const response = await fetch('http://localhost:8080/auth/validate-token', {
                     method: 'GET',
                     credentials: 'include',
                 });
@@ -52,7 +52,7 @@ function App() {
 
 
     if (loading) {
-        return <div>Loading...</div>; // Yüklenme sırasında bir mesaj veya spinner gösterebilirsiniz
+        return <div>Loading...</div>; //TODO: Yüklenme sırasında bir mesaj veya spinner gösterilecek.
     }
 
     return (

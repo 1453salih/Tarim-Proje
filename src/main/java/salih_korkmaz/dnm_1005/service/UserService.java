@@ -25,12 +25,12 @@ public class UserService {
     private JwtUtil jwtUtil;
 
     public LoginResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())  // findByUser yerine findByEmail
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            // Her girişte yeni bir token oluştur
-            String token = jwtUtil.generateToken(user.getEmail());  // user.getUser() yerine user.getEmail()
+            //? Her girişte yeni bir token oluşturur
+            String token = jwtUtil.generateToken(user.getEmail());
             return new LoginResponse(token, user.getId().toString());
         } else {
             throw new RuntimeException("Invalid credentials");
@@ -61,16 +61,16 @@ public class UserService {
 
 
 
-    public User findByEmail(String email) {  // findByUsername yerine findByEmail
-        return userRepository.findByEmail(email)  // findByUser yerine findByEmail
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
 
     public User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();  // username yerine email
-        return findByEmail(email);  // findByUsername yerine findByEmail
+        String email = authentication.getName();
+        return findByEmail(email);
     }
 
 

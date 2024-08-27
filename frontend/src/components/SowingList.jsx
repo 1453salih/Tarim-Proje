@@ -155,8 +155,8 @@ const SowingList = () => {
                                         </TableCell>
                                         <TableCell align="right">{sowing.plantName}</TableCell>
                                         <TableCell align="right">{sowing.sowingField}</TableCell>
+                                        <TableCell align="right">TODO:</TableCell>
                                         <TableCell align="right">{sowing.sowingType}</TableCell>
-                                        <TableCell align="right">1</TableCell>
                                         <TableCell align="right">{sowing.sowingDate}</TableCell>
                                         <TableCell align="right" sx={{
                                             display: 'flex',

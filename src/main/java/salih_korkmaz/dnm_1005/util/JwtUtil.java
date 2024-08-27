@@ -16,6 +16,8 @@ import java.util.function.Function;
 public class JwtUtil {
 
     // Güvenli bir secret key oluşturuluyor HS256 türünde
+    //! Bu kısım her sunucu kapatılıp açıldığında oturumun yönetilmesi açısından sıkıntı çıkarıyor.
+    //! Sunucu kapatılıp açıldığı anda secret key kısmında uyumaşlık oluyor.
     private final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     // Bu metodu artık e-posta üzerinden çalışacak şekilde düzenliyoruz
@@ -65,4 +67,6 @@ public class JwtUtil {
         final String extractedEmail = extractEmail(token); // Kullanıcı adı yerine e-posta çıkarılıyor
         return (extractedEmail.equals(email) && !isTokenExpired(token));
     }
+
+
 }
