@@ -20,7 +20,7 @@ public class Plant {
 
 
     @OneToMany(mappedBy = "plant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonBackReference // Döngüyü kırmak için bu anotasyonu kullanabilirsiniz.
+    @JsonBackReference // Döngüyü kırmak için bu anotasyon kullanılabilir
     private List<Sowing> sowings;
 
     private String image;

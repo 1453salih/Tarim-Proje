@@ -69,7 +69,7 @@ public class SecurityConfig {
     private UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:5173")); // İzin verilen origin
+        config.setAllowedOrigins(List.of("http://localhost:5173")); // İzin verilen origin          Bunlar aplication properties'te tanımlanmalı.
         config.setAllowedHeaders(List.of("*")); // İzin verilen header'lar
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // İzin verilen HTTP metodları
 

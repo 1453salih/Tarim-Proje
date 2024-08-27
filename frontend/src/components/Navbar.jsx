@@ -12,7 +12,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios'; // axios'u import edin
+import axios from 'axios';
 import Logo from '../assets/logo.png'; // Logo dosyasının yolu
 
 const pages = ['Add Land', 'View Lands', 'Contact', 'Signup', 'Login', 'Land List'];
@@ -40,9 +40,9 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => { // setIsLoggedIn'i burada al
     const handleLogout = async () => {
         try {
             await axios.post('http://localhost:8080/auth/logout', {}, { withCredentials: true });
-            localStorage.removeItem('userId'); // localStorage'dan kullanıcı bilgilerini temizleyin
-            setIsLoggedIn(false); // Kullanıcı çıkış yaptıktan sonra isLoggedIn durumunu false olarak ayarlayın
-            navigate('/login'); // Kullanıcıyı login sayfasına yönlendirin
+            localStorage.removeItem('userId'); // localStorage'dan kullanıcı bilgilerini temizlenir.
+            setIsLoggedIn(false); // Kullanıcı çıkış yaptıktan sonra isLoggedIn = false
+            navigate('/login'); // Kullanıcıyı login sayfasına yönlendirir
         } catch (error) {
             console.error('Logout failed:', error);
         }

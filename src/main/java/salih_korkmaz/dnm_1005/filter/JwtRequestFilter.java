@@ -41,14 +41,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String email = null;
 
         if (jwt != null && !jwtUtil.isTokenExpired(jwt)) {
-            email = jwtUtil.extractEmail(jwt);  // extractUsername yerine extractEmail kullanılıyor
+            email = jwtUtil.extractEmail(jwt);
         }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);  // loadUserByUsername yerine loadUserByEmail
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
 
-            if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {  // getUsername yerine getEmail
+            if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
 
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());

@@ -31,8 +31,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request, @CookieValue(name = "jwt", required = false) String jwt) {
-        if (jwt != null && jwtUtil.validateToken(jwt, jwtUtil.extractEmail(jwt))) {  // extractUsername yerine extractEmail
-            String email = jwtUtil.extractEmail(jwt);  // username yerine email kullandım
+        if (jwt != null && jwtUtil.validateToken(jwt, jwtUtil.extractEmail(jwt))) {
+            String email = jwtUtil.extractEmail(jwt);
             return ResponseEntity.ok(new LoginResponse(jwt, email));
         }
 

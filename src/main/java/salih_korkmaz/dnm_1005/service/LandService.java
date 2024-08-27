@@ -52,7 +52,7 @@ public class LandService {
         land.setLocality(locality);
 
         if (imageFile != null && !imageFile.isEmpty()) {
-            // Resmi kaydet ve URL'yi al
+            // Resmi kayder ve URL'yi alır
             String imageUrl = uploadImage(imageFile);
             land.setImage(imageUrl);
         }
@@ -110,7 +110,7 @@ public class LandService {
 
         LandDTO landDTO = landMapper.toDTO(land);
 
-        // LocationDTO'yu manuel olarak doldur
+        // LocationDTO'yu manuel olarak doldurma işlemi
         LocationDTO locationDTO = new LocationDTO(
                 land.getLocality().getDistrict().getCity().getName(),
                 land.getLocality().getDistrict().getName(),
