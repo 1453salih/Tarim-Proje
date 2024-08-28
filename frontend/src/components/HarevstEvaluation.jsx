@@ -52,7 +52,7 @@ const Evaluation = () => {
             return;
         }
 
-        const newEvaloution = {
+        const newEvaluation = {
             harvestId,
             harvestCondition,
             productQuality,
@@ -61,7 +61,7 @@ const Evaluation = () => {
         };
 
         try {
-            const response = await axios.post('http://localhost:8080/evaloutions', newEvaloution, { withCredentials: true });
+            const response = await axios.post('http://localhost:8080/evaluations', newEvaluation, { withCredentials: true });
 
             if(response.status === 200){
                 setSnackbarMessage('Evaluation was carried out successfully.');

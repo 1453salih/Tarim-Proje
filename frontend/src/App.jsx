@@ -18,6 +18,7 @@ import HarvestList from "./components/HarvestList";
 import HarevstEvaluation from "./components/HarevstEvaluation";
 
 import './App.css';
+import EvaluationList from "./components/EvaluationList";
 
 
 
@@ -75,6 +76,7 @@ function App() {
                 <Route path="/sowings/detail/:id" element={isLoggedIn ? <SowingDetails /> : <Navigate to="/login" />} />
                 <Route path="/evaluation" element={isLoggedIn ? <HarevstEvaluation /> : <Navigate to="/login" />} />
                 <Route path="/harvest-list" element={isLoggedIn ? <HarvestList /> : <Navigate to="/login" />} />
+                <Route path="/evaluation-list" element={isLoggedIn ? <EvaluationList /> : <Navigate to="/login" />} />
             </Routes>
         </Router>
     );

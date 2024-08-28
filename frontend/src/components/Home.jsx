@@ -22,10 +22,10 @@ const pageName = "Ekim Yap";
 const cards = [
     { title: 'Arazi Ekle', description: '', link: '/add-land', button: 'Arazi Ekle', image: card1 },
     { title: 'Arazilerim', description: '', button: 'Arazilerimi Görüntüle', link: '/land-list', image: card2 },
-    { title: 'Veriminizi Degerlendiriniz', button: 'Verim Degerlendir', link: '/degerlendirme', image: card3 },
     { title: 'Ekim Yap', description: '', button: 'Ekim Yap', link: '/sowings', image: card4 },
     { title: 'Ekimlerim', description: '', button: 'Ekimlerim', link: '/sowing-list', image:card5 },
     { title: 'Hasatlarım', description: '',button: 'Hasatlarım', link: '/harvest-list', image: card6 },
+    { title: 'Veriminizi Degerlendiriniz', button: 'Verim Degerlendir', link: '/evaluation-list', image: card3 },
 ];
 
 function Home() {

@@ -24,5 +24,5 @@ public class Harvest{
     private LocalDate harvestDate;
 
     @OneToOne(mappedBy = "harvest", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Evaloution evaloution;
+    private Evaluation evaluation;
 }
