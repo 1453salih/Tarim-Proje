@@ -26,7 +26,7 @@ const RecommendationsTable = ({ landId }) => {
                 const localityCode = localityResponse.data.code;
 
                 if (!localityCode) {
-                    console.error("Locality code is undefined");
+                    console.error("Yer kodu tanımsız");
                     return;
                 }
 
@@ -40,7 +40,7 @@ const RecommendationsTable = ({ landId }) => {
                 }, {});
                 setImageLoading(initialLoadingState);
             } catch (error) {
-                console.error("Error Fetching Recommendations", error);
+                console.error("Öneriler alınırken hata oluştu", error);
             }
         };
 
@@ -60,24 +60,24 @@ const RecommendationsTable = ({ landId }) => {
         <Grid item xs={12} md={6}>
             <Box component={Paper} elevation={6} sx={{ p: 3 }}>
                 <Typography variant="h5" component="h3" gutterBottom>
-                    Recommendations
+                    Öneriler
                 </Typography>
                 {recommendations.length > 0 ? (
-                    <TableContainer component={Paper} sx={{ boxShadow: '0px 4px 12px rgba(0.2, 0.2, 0.2, 0.3)',mt:4}} >
-                        <Table sx={{boxShadow:"1px 1px 1px 1px"}}>
-                            <TableHead sx={{backgroundColor: orange[700]}} >
-                                <TableRow >
-                                    <TableCell sx={{color: "#fff",borderRight: '1px solid #ddd'}}>Plant Image</TableCell>
-                                    <TableCell sx={{color: "#fff",borderRight: '1px solid #ddd'}}>Plant Name</TableCell>
-                                    <TableCell sx={{color: "#fff",borderRight: '1px solid #ddd'}}>Success Rate</TableCell>
-                                    <TableCell sx={{color: "#fff",borderRight: '1px solid #ddd'}}>Harvest Period</TableCell>
-                                    <TableCell sx={{color: "#fff"}}>Sowing Period</TableCell>
+                    <TableContainer component={Paper} sx={{ boxShadow: '0px 4px 12px rgba(0.2, 0.2, 0.2, 0.3)', mt:4 }}>
+                        <Table sx={{ boxShadow: "1px 1px 1px 1px" }}>
+                            <TableHead sx={{ backgroundColor: orange[700] }}>
+                                <TableRow>
+                                    <TableCell sx={{ color: "#fff", borderRight: '1px solid #ddd' }}>Bitki Görseli</TableCell>
+                                    <TableCell sx={{ color: "#fff", borderRight: '1px solid #ddd' }}>Bitki Adı</TableCell>
+                                    <TableCell sx={{ color: "#fff", borderRight: '1px solid #ddd' }}>Başarı Oranı</TableCell>
+                                    <TableCell sx={{ color: "#fff", borderRight: '1px solid #ddd' }}>Hasat Dönemi</TableCell>
+                                    <TableCell sx={{ color: "#fff" }}>Ekim Dönemi</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {recommendations.map((recommendation, index) => (
                                     <TableRow key={index}>
-                                        <TableCell sx={{borderRight: '1px solid #ddd', position: 'relative'}}>
+                                        <TableCell sx={{ borderRight: '1px solid #ddd', position: 'relative' }}>
                                             {imageLoading[index] && (
                                                 <CircularProgress
                                                     size={24}
@@ -103,9 +103,9 @@ const RecommendationsTable = ({ landId }) => {
                                                 onLoad={() => handleImageLoad(index)}
                                             />
                                         </TableCell>
-                                        <TableCell sx={{borderRight: '1px solid #ddd'}}>{recommendation.plantName}</TableCell>
-                                        <TableCell sx={{borderRight: '1px solid #ddd'}}>{recommendation.succesRate}%</TableCell>
-                                        <TableCell sx={{borderRight: '1px solid #ddd'}}>{recommendation.harvestPeriod}</TableCell>
+                                        <TableCell sx={{ borderRight: '1px solid #ddd' }}>{recommendation.plantName}</TableCell>
+                                        <TableCell sx={{ borderRight: '1px solid #ddd' }}>{recommendation.succesRate}%</TableCell>
+                                        <TableCell sx={{ borderRight: '1px solid #ddd' }}>{recommendation.harvestPeriod}</TableCell>
                                         <TableCell>{recommendation.sowingPeriod}</TableCell>
                                     </TableRow>
                                 ))}
@@ -113,7 +113,7 @@ const RecommendationsTable = ({ landId }) => {
                         </Table>
                     </TableContainer>
                 ) : (
-                    <Typography>No recommendations available.</Typography>
+                    <Typography>Mevcut öneri yok.</Typography>
                 )}
             </Box>
         </Grid>

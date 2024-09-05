@@ -30,12 +30,28 @@ function AddSowing() {
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
     const navigate = useNavigate();
     const [sowingField, setSowingField] = useState('');
-    const [sowingType, setSowingType] = useState('');
+
     const [plantIdError, setPlantIdError] = useState(false);
     const [sowingDateError, setSowingDateError] = useState(false);
     const [landIdError, setLandIdError] = useState(false);
     const [sowingFieldError, setSowingFieldError] = useState(false);
-    const [sowingTypeError, setSowingTypeError] = useState(false);
+    const [availableLand, setAvailableLand] = useState(null);  //* Ekilebilir Alan
+
+    useEffect(() => {
+        if (landId) {
+            const fetchAvailableLand = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:8080/lands/detail/${landId}`, { withCredentials: true });
+                    console.log("Available Land:", response.data.clayableLand); // Hata kontorl.
+                    setAvailableLand(response.data.clayableLand); // Ekilebilir alanı ayarlıyoruz.
+                } catch (error) {
+                    console.error('Error fetching available land:', error);
+                }
+            };
+            fetchAvailableLand();
+        }
+    }, [landId]);
+
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -107,19 +123,20 @@ function AddSowing() {
         if (!sowingField) {
             setSowingFieldError(true);
             hasError = true;
+        } else if (availableLand === null) {
+            setSnackbar({ open: true, message: `Ekim alanı için geçerli bir arazi seçilmelidir.`, severity: 'error' });
+            hasError = true;
+        } else if (parseFloat(sowingField) > availableLand) {
+            setSowingFieldError(true);
+            setSnackbar({ open: true, message: `Ekim alanı ${availableLand} m²'yi aşmamalıdır.`, severity: 'error' });
+            hasError = true;
         } else {
             setSowingFieldError(false);
         }
 
-        if (!sowingType) {
-            setSowingTypeError(true);
-            hasError = true;
-        } else {
-            setSowingTypeError(false);
-        }
+
 
         if (hasError) {
-            setSnackbar({ open: true, message: 'Please fill in all the fields.', severity: 'error' });
             return;
         }
 
@@ -128,18 +145,16 @@ function AddSowing() {
             sowingDate: sowingDate,
             landId: parseInt(landId),
             sowingField: parseFloat(sowingField),
-            sowingType: sowingType
         };
 
         try {
             const response = await axios.post('http://localhost:8080/sowings', newSowing, { withCredentials: true });
             if (response.status === 200 || response.status === 201) {
-                setSnackbar({ open: true, message: 'Sowing saved successfully!', severity: 'success' });
+                setSnackbar({ open: true, message: 'Ekim işlemi başarıyla kaydedildi!', severity: 'success' });
                 setPlantId('');
                 setSowingDate('');
                 setLandId('');
                 setSowingField('');
-                setSowingType('');
                 setTimeout(() => navigate('/sowing-list'), 3000);
             } else {
                 setSnackbar({ open: true, message: 'Failed to save the Sowing.', severity: 'error' });
@@ -149,13 +164,14 @@ function AddSowing() {
         }
     };
 
+
     const handleCloseSnackbar = () => {
         setSnackbar(prev => ({ ...prev, open: false }));
     };
 
     return (
         <ThemeProvider theme={theme}>
-            <Container maxWidth="lg" sx={{ fontFamily: 'Poppins, sans-serif' }}>
+            <Container maxWidth="lg">
                 <BreadcrumbComponent pageName="Ekim Yap" />
                 <Grid container spacing={4} sx={{ mt: 3 }}>
                     <Grid item xs={12} md={6}>
@@ -241,25 +257,6 @@ function AddSowing() {
                                 }}
                                 inputProps={{ min: 0 }}
                             />
-
-                            <FormControl fullWidth margin="normal" error={sowingTypeError}>
-                                <InputLabel>Land Type</InputLabel>
-                                <Select
-                                    label="Land Type"
-                                    value={sowingType}
-                                    onChange={(e) => {
-                                        setSowingType(e.target.value);
-                                    }}
-                                >
-                                    <MenuItem value="Tarla" key="Tarla">Tarla</MenuItem>
-                                    <MenuItem value="Bağ" key="Bağ">Bağ</MenuItem>
-                                    <MenuItem value="Bahçe" key="Bahçe">Bahçe</MenuItem>
-                                    <MenuItem value="Zeytinlik" key="Zeytinlik">Zeytinlik</MenuItem>
-                                    <MenuItem value="Çayır" key="Çayır">Çayır</MenuItem>
-                                    <MenuItem value="Mera" key="Mera">Mera</MenuItem>
-                                </Select>
-                                {sowingTypeError && <Typography color="error">Please select a land type.</Typography>}
-                            </FormControl>
 
                             <Button
                                 type="submit"

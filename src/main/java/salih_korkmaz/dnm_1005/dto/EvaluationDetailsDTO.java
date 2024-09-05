@@ -17,4 +17,5 @@ public class EvaluationDetailsDTO {
     private String harvestCondition;
     private String productQuality;
     private double productQuantity;
+    private long harvestId;
 }

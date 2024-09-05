@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import AddLand from './components/AddLand';
-import ViewLands from './components/ViewLands';
 import Profile from './components/Profile';
 import Settings from './components/Settings';
 import Contact from './components/Contact';
@@ -16,15 +15,27 @@ import SowingList from "./components/SowingList.jsx";
 import SowingDetails from "./components/SowingDetails";
 import HarvestList from "./components/HarvestList";
 import HarevstEvaluation from "./components/HarevstEvaluation";
+import EvaluationList from "./components/EvaluationList";
+import EvaluationEdit from "./components/EvaluationEdit";
+
+
+
+import Spinner from './Spinner/Spinner'; // Spinner bileşeninin yolunu doğru ayarlayın
+
 
 import './App.css';
-import EvaluationList from "./components/EvaluationList";
 
 
+function NavbarWrapper({ isLoggedIn, setIsLoggedIn }) {
+    const location = useLocation();
+    const hideNavbar = location.pathname === '/login' || location.pathname === '/signup';
+
+    return !hideNavbar && <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />;
+}
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [loading, setLoading] = useState(true); // Yüklenme durumu
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -33,7 +44,6 @@ function App() {
                     method: 'GET',
                     credentials: 'include',
                 });
-                console.log(response);
                 if (response.ok) {
                     setIsLoggedIn(true);
                 } else {
@@ -43,27 +53,24 @@ function App() {
                 console.error('Error checking authentication:', error);
                 setIsLoggedIn(false);
             } finally {
-                setLoading(false); // Yüklenme durumunu güncelle
+                setLoading(false);
             }
         };
 
         checkAuth();
     }, []);
 
-
-
     if (loading) {
-        return <div>Loading...</div>; //TODO: Yüklenme sırasında bir mesaj veya spinner gösterilecek.
+        return <Spinner />;
     }
 
     return (
         <Router>
-            <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+            <NavbarWrapper isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
             <Routes>
                 <Route path="/" element={<Navigate to={isLoggedIn ? "/home" : "/login"} />} />
                 <Route path="/home" element={isLoggedIn ? <Home /> : <Navigate to="/login" />} />
                 <Route path="/add-land" element={isLoggedIn ? <AddLand /> : <Navigate to="/login" />} />
-                <Route path="/view-lands" element={isLoggedIn ? <ViewLands /> : <Navigate to="/login" />} />
                 <Route path="/profile" element={isLoggedIn ? <Profile /> : <Navigate to="/login" />} />
                 <Route path="/settings" element={isLoggedIn ? <Settings /> : <Navigate to="/login" />} />
                 <Route path="/contact" element={isLoggedIn ? <Contact /> : <Navigate to="/login" />} />
@@ -77,6 +84,7 @@ function App() {
                 <Route path="/evaluation" element={isLoggedIn ? <HarevstEvaluation /> : <Navigate to="/login" />} />
                 <Route path="/harvest-list" element={isLoggedIn ? <HarvestList /> : <Navigate to="/login" />} />
                 <Route path="/evaluation-list" element={isLoggedIn ? <EvaluationList /> : <Navigate to="/login" />} />
+                <Route path="/evaluation/edit/:id" element={isLoggedIn ? <EvaluationEdit /> : <Navigate to="/login" />} />
             </Routes>
         </Router>
     );

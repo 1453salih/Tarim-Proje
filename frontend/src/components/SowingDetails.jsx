@@ -33,7 +33,7 @@ const SowingDetails = () => {
     const [plants, setPlants] = useState([]);
     const [lands, setLands] = useState([]);
     const [recommendations, setRecommendations] = useState([]);
-    const [sowingType, setSowingType] = useState('');
+    const [landType, setLandType] = useState('');
 
     const navigate = useNavigate();
 
@@ -104,15 +104,25 @@ const SowingDetails = () => {
                 setLandId(response.data.landId);
                 setPlantId(response.data.plantId);
                 setSelectedCategory(response.data.categoryId);
-                setSowingType(response.data.sowingType); // Sowing Type burada set ediliyor
+                setLandType(response.data.landType); // Sowing Type burada set ediliyor
             })
             .catch(error => console.error('Error fetching sowing details:', error));
     }, [id]);
 
     // Kaydetme ve silme işlemleri için kullanılan fonksiyonlar
     const handleSave = async () => {
-        if (!plantId || !sowing.sowingDate || !landId || !sowing.sowingField || !sowingType) {
+        if (!plantId || !sowing.sowingDate || !landId || !sowing.sowingField || !landType) {
             setSnackbarMessage('Please fill in all the fields.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
+            return;
+        }
+
+        // Seçilen arazinin ekilebilir alanını bulmak için arazi verileri içinde filtreleme
+        const selectedLand = lands.find(land => land.id === parseInt(landId));
+
+        if (selectedLand && parseFloat(sowing.sowingField) > parseFloat(selectedLand.clayableLand)) {
+            setSnackbarMessage(`Sowing field (${sowing.sowingField} m²) cannot be larger than the clayable land (${selectedLand.clayableLand} m²).`);
             setSnackbarSeverity('error');
             setOpenSnackbar(true);
             return;
@@ -122,7 +132,7 @@ const SowingDetails = () => {
             ...sowing,
             plantId: parseInt(plantId),
             landId: parseInt(landId),
-            sowingType: sowingType // sowingType güncellenmiş olarak dahil ediliyor
+            landType: landType // landType güncellenmiş olarak dahil ediliyor
         };
 
         try {
@@ -143,6 +153,7 @@ const SowingDetails = () => {
             setOpenSnackbar(true);
         }
     };
+
 
 
 
@@ -193,11 +204,11 @@ const SowingDetails = () => {
             <BreadcrumbComponent pageName="Ekimlerim"/>
             <Grid container spacing={4}>
                 <Grid item xs={12} md={6}>
-                    <Box sx={{mt: 3}}>
-                        <Typography variant="h4" component="h2" gutterBottom>
-                            {isEditing ? 'Ekim Bilgilerini Düzenle' : `${sowing.landName} - ${sowing.plantName} Detayları`}
-                        </Typography>
+                    <Box>
                         <Paper elevation={3} sx={{p: 2}}>
+                            <Typography variant="h4" component="h2" gutterBottom>
+                                {isEditing ? 'Ekim Bilgilerini Düzenle' : `${sowing.landName} - ${sowing.plantName} Detayları`}
+                            </Typography>
                             {isEditing ? (
                                 <>
                                     <FormControl fullWidth margin="normal">
@@ -252,10 +263,10 @@ const SowingDetails = () => {
                                         <InputLabel>Land Type</InputLabel>
                                         <Select
                                             label="Land Type"
-                                            value={sowingType}
+                                            value={landType}
                                             onChange={(e) => {
                                                 console.log("Selected Sowing Type: ", e.target.value); // Konsola seçilen değeri yazdırır
-                                                setSowingType(e.target.value);
+                                                setLandType(e.target.value);
                                             }}
                                         >
                                             <MenuItem value="Tarla" key="Tarla">Tarla</MenuItem>
@@ -293,8 +304,9 @@ const SowingDetails = () => {
                                 </>
                             ) : (
                                 <>
+
                                     <Typography variant="h6">Ekim Alanı: {sowing.sowingField} m²</Typography>
-                                    <Typography variant="h6">Ekim Türü: {sowing.sowingType}</Typography>
+                                    <Typography variant="h6">Ekim Türü: {sowing.landType}</Typography>
                                     <Typography variant="h6">Bitki: {sowing.plantName}</Typography>
                                     <Typography variant="h6">Arazi: {sowing.landName}</Typography>
                                     <Typography variant="h6">Ekim Tarihi: {sowing.sowingDate}</Typography>

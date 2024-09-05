@@ -4,6 +4,7 @@ package salih_korkmaz.dnm_1005.controller;
 import org.springframework.web.bind.annotation.*;
 import salih_korkmaz.dnm_1005.dto.EvaluationDTO;
 import salih_korkmaz.dnm_1005.dto.EvaluationDetailsDTO;
+import salih_korkmaz.dnm_1005.entity.Evaluation;
 import salih_korkmaz.dnm_1005.entity.User;
 import salih_korkmaz.dnm_1005.repository.HarvestRepository;
 import salih_korkmaz.dnm_1005.service.EvaluationService;
@@ -42,9 +43,21 @@ public class EvaluationController {
         return evaluationService.getEvaluationDetails(id);
     }
 
+    @GetMapping("/api/{id}")
+    public EvaluationDTO getEvaluation(@PathVariable Long id) {
+        return evaluationService.getEvaluation(id);
+    }
+
     @GetMapping
     public List<EvaluationDetailsDTO> getEvaluationsByUser() {
         User user = userService.getAuthenticatedUser();
         return evaluationService.getEvaluationsByUser(user.getId());
     }
+
+
+    @PutMapping("/{id}")
+    public Evaluation updateEvaluation(@PathVariable Long id, @RequestBody EvaluationDTO evaluationDto) {
+        return evaluationService.updateEvaluation(id, evaluationDto);
+    }
+
 }

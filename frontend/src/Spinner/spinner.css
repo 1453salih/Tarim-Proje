@@ -1,0 +1,29 @@
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: white;
+}
+
+.loader {
+    width: 60px;
+    aspect-ratio: 1;
+    background:
+            linear-gradient(45deg, rgb(0, 122, 55) 50%,#0000 0),
+            linear-gradient(45deg,#0000 50%, #007a37 0),
+            linear-gradient(-45deg, #aaaaaa 50%,#0000 0),
+            linear-gradient(-45deg,#0000 50%, #aaaaaa 0),
+            linear-gradient(#ff6900 0 0);
+    background-size: 50% 50%;
+    background-repeat: no-repeat;
+    animation: l18 1.5s infinite;
+}
+
+@keyframes l18 {
+    0%   {background-position:50% 50%,50% 50%,50%  50% ,50% 50%,50% 50%}
+    25%  {background-position:0  100%,100%  0,50%  50% ,50% 50%,50% 50%}
+    50%  {background-position:0  100%,100%  0,100% 100%,0   0  ,50% 50%}
+    75%  {background-position:50% 50%,50% 50%,100% 100%,0   0  ,50% 50%}
+    100% {background-position:50% 50%,50% 50%,50%  50% ,50% 50%,50% 50%}
+}

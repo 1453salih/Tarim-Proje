@@ -9,6 +9,7 @@ import salih_korkmaz.dnm_1005.mapper.HarvestMapper;
 import salih_korkmaz.dnm_1005.repository.HarvestRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class HarvestService {
@@ -55,11 +56,11 @@ public class HarvestService {
         return harvestRepository.findBySowingLandUserId(userId);
     }
 
-    @Transactional
-    public void deleteHarvestBySowingId(Long sowingId) {
-        Harvest harvest = harvestRepository.findBySowingId(sowingId)
-                .orElseThrow(() -> new RuntimeException("Harvest not found for sowing id: " + sowingId));
-        System.out.println("Deleting Harvest with id: " + harvest.getId() + " for sowing id: " + sowingId);
-        harvestRepository.delete(harvest);
+    public List<HarvestDTO> getAllHarvestsByUserId(Long userId) {
+        List<Harvest> harvests = harvestRepository.findBySowingLandUserId(userId);
+        return harvests.stream()
+                .map(harvestMapper::toDTO)  // Tek adımda mapper'ı kullan
+                .collect(Collectors.toList());
     }
+
 }

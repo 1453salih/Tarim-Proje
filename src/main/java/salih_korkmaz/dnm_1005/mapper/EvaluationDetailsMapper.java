@@ -24,7 +24,9 @@ public class EvaluationDetailsMapper {
         dto.setHarvestCondition(evaluation.getHarvestCondition());
         dto.setProductQuality(evaluation.getProductQuality());
         dto.setProductQuantity(evaluation.getProductQuantity());
+        dto.setHarvestId(harvest.getId());
 
         return dto;
     }
 }
+

@@ -21,6 +21,11 @@ public class Land {
     @Column(nullable = false)
     int landSize;
 
+    @Column(nullable = false)
+    private String landType;
+
+    private int clayableLand;
+
     @Column(nullable = true)
     String image;
 

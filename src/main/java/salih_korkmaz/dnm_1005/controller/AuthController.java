@@ -114,6 +114,4 @@ public class AuthController {
         errorResponse.put("message", ex.getMessage());
         return errorResponse;
     }
-
-
 }

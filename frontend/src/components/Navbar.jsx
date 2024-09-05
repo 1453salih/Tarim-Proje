@@ -15,7 +15,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Logo from '../assets/logo.png'; // Logo dosyasının yolu
 
-const pages = ['Add Land', 'View Lands', 'Contact', 'Signup', 'Login', 'Land List'];
+const pages = ['Add Land', 'Land List'];
 
 const Navbar = ({ isLoggedIn, setIsLoggedIn }) => { // setIsLoggedIn'i burada alıyoruz
     const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -50,7 +50,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => { // setIsLoggedIn'i burada al
 
 
     return (
-        <AppBar position="static" sx={{ backgroundColor: 'green' }}>
+        <AppBar position="static" sx={{ backgroundColor: '#007a37' }}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <Box

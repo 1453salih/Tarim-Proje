@@ -34,7 +34,7 @@ public class LandController {
     public ResponseEntity<LandDTO> createLand(@RequestPart("land") LandDTO landDto,
                                               @RequestPart("file") MultipartFile file) {
         if (landDto.getUserId() == null) {
-            throw new IllegalArgumentException("User ID must not be null in controller");
+            throw new IllegalArgumentException("Controller'da Kullanıcı Kimliği null olmamalıdır");
         }
         Land land = landService.saveLand(landDto, file);
         LandDTO savedLandDto = landService.getLandById(land.getId());

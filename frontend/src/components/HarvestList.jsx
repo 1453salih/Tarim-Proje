@@ -12,7 +12,10 @@ import {
     Paper,
     Button,
     Snackbar,
-    Alert
+    Alert,
+    Modal,
+    Backdrop,
+    Fade
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -32,56 +35,59 @@ const HarvestList = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedHarvestId, setSelectedHarvestId] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get('http://localhost:8080/sowings', { withCredentials: true })
-            .then(response => {
-                const sowingPromises = response.data.map(sowing =>
-                    axios.get(`http://localhost:8080/sowings/${sowing.id}/hasat-durumu`, { withCredentials: true })
-                        .then(hasatResponse => hasatResponse.data ? sowing : null)
-                        .catch(error => {
-                            console.error('Error fetching harvest status:', error);
-                            return null;
-                        })
-                );
+        const userId = localStorage.getItem('userId');
 
-                Promise.all(sowingPromises).then(filteredSowings => {
-                    const harvestedSowings = filteredSowings.filter(sowing => sowing !== null);
-                    setHarvests(harvestedSowings);
+        if (userId) {
+            axios.get(`http://localhost:8080/harvests/user/${userId}`, { withCredentials: true })
+                .then(response => {
+                    setHarvests(response.data);
+                })
+                .catch(error => {
+                    console.error('Hasatları getirirken hata oluştu:', error);
+                    if (error.response && error.response.status === 401) {
+                        setIsAuthenticated(false);
+                    }
                 });
-            })
-            .catch(error => {
-                console.error('Error fetching sowings:', error);
-                if (error.response && error.response.status === 401) {
-                    setIsAuthenticated(false);
-                }
-            });
+        } else {
+            setIsAuthenticated(false);
+        }
     }, []);
-
 
     const handleSnackbarClose = () => {
         setSnackbarOpen(false);
     };
-    const handleDeleteHarvest = async (harvestId) => {
-        try {
-            // Hasatı sil
-            await axios.delete(`http://localhost:8080/harvests/delete-by-sowing/${harvestId}`, { withCredentials: true });
 
-            // Başarı mesajı
-            setHarvests(prevHarvests => prevHarvests.filter(harvest => harvest.id !== harvestId));
+    const handleDeleteConfirmation = (harvestId) => {
+        setSelectedHarvestId(harvestId);
+        setModalOpen(true);
+    };
+
+    const handleDeleteHarvest = async () => {
+        try {
+            await axios.delete(`http://localhost:8080/harvests/delete/${selectedHarvestId}`, { withCredentials: true });
+
+            setHarvests(prevHarvests => prevHarvests.filter(harvest => harvest.id !== selectedHarvestId));
             setSnackbarMessage('Hasat başarıyla silindi.');
             setSnackbarSeverity('success');
             setSnackbarOpen(true);
+            setModalOpen(false);
         } catch (error) {
             console.error('Hasat silme sırasında hata oluştu:', error);
             setSnackbarMessage('Silme işlemi sırasında bir hata oluştu.');
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
+            setModalOpen(false);
         }
     };
 
-
+    const handleModalClose = () => {
+        setModalOpen(false);
+    };
 
     if (!isAuthenticated) {
         return (
@@ -125,10 +131,10 @@ const HarvestList = () => {
                                         </TableCell>
                                         <TableCell align="right">{harvest.plantName}</TableCell>
                                         <TableCell align="right">{harvest.sowingField}</TableCell>
-                                        <TableCell align="right">{harvest.sowingType}</TableCell>
+                                        <TableCell align="right">{harvest.landType}</TableCell>
                                         <TableCell align="right">{harvest.sowingDate}</TableCell>
                                         <TableCell align="right">
-                                            <Button variant="contained" color="error" onClick={() => handleDeleteHarvest(harvest.id)}>
+                                            <Button variant="contained" color="error" onClick={() => handleDeleteConfirmation(harvest.id)}>
                                                 Hasatı Sil
                                             </Button>
                                         </TableCell>
@@ -147,6 +153,35 @@ const HarvestList = () => {
                         {snackbarMessage}
                     </Alert>
                 </Snackbar>
+
+                <Modal
+                    open={modalOpen}
+                    onClose={handleModalClose}
+                    closeAfterTransition
+                    BackdropComponent={Backdrop}
+                    BackdropProps={{
+                        timeout: 500,
+                    }}
+                >
+                    <Fade in={modalOpen}>
+                        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
+                            <Typography variant="h6" component="h2">
+                                Hasat İşlemini Silmek İstiyor musunuz?
+                            </Typography>
+                            <Typography sx={{ mt: 2 }}>
+                                Hasat işlemini sildiğinizde ekim işleminiz durur ve Ekimi silme işleminden sonra tekrar hasat edebilirsiniz. Sadece yanlışlık vb. durumlar için silmeniz tavsiye edilir.
+                            </Typography>
+                            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
+                                <Button variant="contained" color="secondary" onClick={handleModalClose} sx={{ mr: 2 }}>
+                                    İptal
+                                </Button>
+                                <Button variant="contained" color="error" onClick={handleDeleteHarvest}>
+                                    Sil
+                                </Button>
+                            </Box>
+                        </Box>
+                    </Fade>
+                </Modal>
             </Container>
         </ThemeProvider>
     );
