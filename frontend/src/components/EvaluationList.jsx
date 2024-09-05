@@ -77,6 +77,10 @@ const theme = createTheme({
         },
         MuiButton: {
             styleOverrides: {
+                root:{
+                    fontFamily: 'Poppins, sans-serif',
+                    textTransform: 'none',
+                },
                 containedPrimary: {
                     backgroundColor: '#ff6305',
                     '&:hover': {

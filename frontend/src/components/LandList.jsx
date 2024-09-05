@@ -7,7 +7,6 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
-import SortIcon from '@mui/icons-material/Sort';
 import '@fontsource/poppins';
 
 const theme = createTheme({
@@ -16,7 +15,7 @@ const theme = createTheme({
     },
     palette: {
         primary: {
-            main: '#ff8d00', // Detay butonları için turuncu renk
+            main: '#ff8d00', // Düzenle butonları için turuncu renk
         },
         secondary: {
             main: '#007a37', // Accordion başlığı için yeşil renk
@@ -39,8 +38,12 @@ const theme = createTheme({
         },
         MuiButton: {
             styleOverrides: {
+                root:{
+                    fontFamily: 'Poppins, sans-serif',
+                    textTransform: 'none',
+                },
                 containedPrimary: {
-                    backgroundColor: '#ff8d00', // Detay butonları için turuncu
+                    backgroundColor: '#ff8d00', // Düzenle butonları için turuncu
                     color: '#ffffff', // Beyaz yazı
                     '&:hover': {
                         backgroundColor: '#e67c00', // Hover rengi biraz daha koyu turuncu
@@ -333,9 +336,9 @@ const LandList = () => {
                                                 Köy/Mahalle: {land.location.localityName || 'N/A'}
                                             </Typography>
                                         </CardContent>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                                        <Box sx={{ display: 'flex', justifyContent: '',columnGap:2, mb: 2 }}>
                                             <Button variant="contained" color="primary" onClick={() => handleDetail(land.id)}>
-                                                Detay
+                                                Düzenle
                                             </Button>
                                             <Button variant="contained" color="error" onClick={() => handleDeleteClick(land)}>
                                                 Sil

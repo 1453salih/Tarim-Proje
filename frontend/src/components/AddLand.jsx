@@ -247,7 +247,7 @@ function AraziEkle() {
                         {araziTuruHata && <Typography color="error">Lütfen arazi türünü seçiniz.</Typography>}
                     </FormControl>
                     <FormControl fullWidth margin="normal" error={secilenIlHata}>
-                        <InputLabel>İl</InputLabel>
+                        <InputLabel>Şehir</InputLabel>
                         <Select
                             value={secilenIl}
                             onChange={(e) => {
