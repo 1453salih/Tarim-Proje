@@ -6,6 +6,8 @@ import salih_korkmaz.dnm_1005.dto.HarvestDTO;
 import salih_korkmaz.dnm_1005.repository.HarvestRepository;
 import salih_korkmaz.dnm_1005.service.HarvestService;
 
+import java.util.List;
+
 @RequestMapping("/harvests")
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
@@ -25,12 +27,12 @@ public class HarvestController {
 
     @DeleteMapping("/delete/{id}")
     public void deleteHarvest(@PathVariable Long id) {
-        System.out.println("Deleting Harvest with id: " + id); // Gelen ID'yi loglayın
+        System.out.println("Deleting Harvest with id: " + id);
         harvestService.deleteHarvest(id);
     }
-
-    @DeleteMapping("/delete-by-sowing/{sowingId}")
-    public void deleteHarvestBySowingId(@PathVariable Long sowingId) {
-        harvestService.deleteHarvestBySowingId(sowingId);
+    @GetMapping("/user/{userId}")
+    public List<HarvestDTO> getHarvestsByUserId(@PathVariable Long userId) {
+        return harvestService.getAllHarvestsByUserId(userId);
     }
+
 }

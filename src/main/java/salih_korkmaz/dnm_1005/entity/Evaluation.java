@@ -10,8 +10,8 @@ import java.time.LocalDate;
 
 @Data
 @Entity
-@Table(name = "evalouiton")
-public class Evaloution {
+@Table(name = "evaluation")
+public class Evaluation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,10 +31,10 @@ public class Evaloution {
 
     @Column(nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate evaloutionDate;
+    private LocalDate evaluationDate;
 
     @PrePersist
     protected void onCreate() {
-        this.evaloutionDate = LocalDate.now();
+        this.evaluationDate = LocalDate.now();
     }
 }

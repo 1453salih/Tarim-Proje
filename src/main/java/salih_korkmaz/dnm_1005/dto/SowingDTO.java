@@ -13,19 +13,21 @@ public class SowingDTO {
 
     private int sowingField;
 
-    private String sowingType;
+    private String landType;
 
-    @NotNull(message = "Plant ID cannot be null")
+    @NotNull(message = "Plant ID null olamaz")
     private Long plantId;
 
     private String plantName;
 
-    @NotNull(message = "Land ID cannot be null")
+    private int clayableLand;
+
+    @NotNull(message = "Land ID null olamaz")
     private Long landId;
 
     private String landName;
 
-    @NotNull(message = "Sowing date cannot be null")
+    @NotNull(message = "EKim tarihi null olamaz")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate sowingDate;
 }

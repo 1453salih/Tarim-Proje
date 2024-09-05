@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     TextField,
     Button,
@@ -14,126 +14,144 @@ import {
     Paper
 } from '@mui/material';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import BreadcrumbComponent from "./BreadCrumb.jsx";
 import ImageUploader from "./ImageUploader.jsx";
+import {createTheme, ThemeProvider} from '@mui/material/styles';
+import '@fontsource/poppins';
 
-function AddLand() {
-    const [landName, setLandName] = useState('');
-    const [landSize, setLandSize] = useState('');
-    const [selectedIl, setSelectedIl] = useState('');
-    const [selectedIlce, setSelectedIlce] = useState('');
-    const [selectedKoy, setSelectedKoy] = useState('');
-    const [imageUrl, setImageUrl] = useState('');
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
-    const [cities, setCities] = useState([]);
-    const [districts, setDistricts] = useState([]);
-    const [villages, setVillages] = useState([]);
+const tema = createTheme({
+    typography: {
+        fontFamily: 'Poppins, sans-serif',
+    },
+});
+
+function AraziEkle() {
+    const [araziAdi, setAraziAdi] = useState('');
+    const [araziBoyutu, setAraziBoyutu] = useState('');
+    const [secilenIl, setSecilenIl] = useState('');
+    const [secilenIlce, setSecilenIlce] = useState('');
+    const [secilenKoy, setSecilenKoy] = useState('');
+    const [resimUrl, setResimUrl] = useState('');
+    const [acikSnackbar, setAcikSnackbar] = useState(false);
+    const [snackbarMesaji, setSnackbarMesaji] = useState('');
+    const [snackbarCiddiyeti, setSnackbarCiddiyeti] = useState('success');
+    const [sehirler, setSehirler] = useState([]);
+    const [ilceler, setIlceler] = useState([]);
+    const [koyler, setKoyler] = useState([]);
 
     const navigate = useNavigate();
-
-    const [landNameError, setLandNameError] = useState(false);
-    const [landSizeError, setLandSizeError] = useState(false);
-    const [selectedIlError, setSelectedIlError] = useState(false);
-    const [selectedIlceError, setSelectedIlceError] = useState(false);
-    const [selectedKoyError, setSelectedKoyError] = useState(false);
+    const [araziTuru, setAraziTuru] = useState('');
+    const [araziTuruHata, setAraziTuruHata] = useState(false);
+    const [araziAdiHata, setAraziAdiHata] = useState(false);
+    const [araziBoyutuHata, setAraziBoyutuHata] = useState(false);
+    const [secilenIlHata, setSecilenIlHata] = useState(false);
+    const [secilenIlceHata, setSecilenIlceHata] = useState(false);
+    const [secilenKoyHata, setSecilenKoyHata] = useState(false);
 
     useEffect(() => {
-        const fetchCities = async () => {
+        const sehirleriGetir = async () => {
             try {
                 const response = await axios.get('http://localhost:8080/api/locations/cities');
-                setCities(response.data);
+                setSehirler(response.data);
             } catch (error) {
-                console.error("Error fetching cities:", error);
+                console.error("Şehirler alınırken hata oluştu:", error);
             }
         };
 
-        fetchCities();
+        sehirleriGetir();
     }, []);
 
     useEffect(() => {
-        if (selectedIl) {
-            const fetchDistricts = async () => {
+        if (secilenIl) {
+            const ilceleriGetir = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:8080/api/locations/districts/${selectedIl}`);
-                    setDistricts(response.data);
-                    setSelectedIlce('');
-                    setVillages([]);
-                    setSelectedKoy('');
+                    const response = await axios.get(`http://localhost:8080/api/locations/districts/${secilenIl}`);
+                    setIlceler(response.data);
+                    setSecilenIlce('');
+                    setKoyler([]);
+                    setSecilenKoy('');
                 } catch (error) {
-                    console.error("Error fetching districts:", error);
+                    console.error("İlçeler alınırken hata oluştu:", error);
                 }
             };
 
-            fetchDistricts();
+            ilceleriGetir();
         }
-    }, [selectedIl]);
+    }, [secilenIl]);
 
     useEffect(() => {
-        if (selectedIlce) {
-            const fetchLocalities = async () => {
+        if (secilenIlce) {
+            const koyleriGetir = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:8080/api/locations/localities/${selectedIlce}`);
-                    setVillages(response.data);
-                    setSelectedKoy('');
+                    const response = await axios.get(`http://localhost:8080/api/locations/localities/${secilenIlce}`);
+                    setKoyler(response.data);
+                    setSecilenKoy('');
                 } catch (error) {
-                    console.error("Error fetching localities:", error);
+                    console.error("Köyler alınırken hata oluştu:", error);
                 }
             };
 
-            fetchLocalities();
+            koyleriGetir();
         } else {
-            setVillages([]);
+            setKoyler([]);
         }
-    }, [selectedIlce]);
+    }, [secilenIlce]);
 
-    const handleAddLand = async (e) => {
+    const araziEkle = async (e) => {
         e.preventDefault();
 
-        let hasError = false;
+        console.log("Formdan gönderilen arazi türü:", araziTuru);
+        let hataVarMi = false;
 
-        if (!landName) setLandNameError(true), hasError = true;
-        else setLandNameError(false);
+        if (!araziAdi) setAraziAdiHata(true), hataVarMi = true;
+        else setAraziAdiHata(false);
 
-        if (!landSize) setLandSizeError(true), hasError = true;
-        else setLandSizeError(false);
+        if (!araziBoyutu) setAraziBoyutuHata(true), hataVarMi = true;
+        else setAraziBoyutuHata(false);
 
-        if (!selectedIl) setSelectedIlError(true), hasError = true;
-        else setSelectedIlError(false);
+        if (!secilenIl) setSecilenIlHata(true), hataVarMi = true;
+        else setSecilenIlHata(false);
 
-        if (!selectedIlce) setSelectedIlceError(true), hasError = true;
-        else setSelectedIlceError(false);
+        if (!secilenIlce) setSecilenIlceHata(true), hataVarMi = true;
+        else setSecilenIlceHata(false);
 
-        if (!selectedKoy) setSelectedKoyError(true), hasError = true;
-        else setSelectedKoyError(false);
+        if (!secilenKoy) setSecilenKoyHata(true), hataVarMi = true;
+        else setSecilenKoyHata(false);
 
-        if (hasError) {
-            setSnackbarMessage('Lütfen tüm alanları doldurun.');
-            setSnackbarSeverity('error');
-            setOpenSnackbar(true);
+        if (!araziTuru) {
+            setAraziTuruHata(true);
+            hataVarMi = true;
+        } else {
+            setAraziTuruHata(false);
+        }
+
+        if (hataVarMi) {
+            setSnackbarMesaji('Lütfen tüm alanları doldurun.');
+            setSnackbarCiddiyeti('error');
+            setAcikSnackbar(true);
             return;
         }
 
-        const userId = localStorage.getItem('userId');
-        if (!userId) {
-            setSnackbarMessage('Kullanıcı oturumu açık değil.');
-            setSnackbarSeverity('error');
-            setOpenSnackbar(true);
+        const kullaniciId = localStorage.getItem('userId');
+        if (!kullaniciId) {
+            setSnackbarMesaji('Kullanıcı oturumu açık değil.');
+            setSnackbarCiddiyeti('error');
+            setAcikSnackbar(true);
             return;
         }
 
-        const landData = {
-            name: landName,
-            landSize: parseInt(landSize),
-            localityId: selectedKoy,
-            userId: parseInt(userId),
+        const araziVerisi = {
+            name: araziAdi,
+            landSize: parseInt(araziBoyutu),
+            localityId: secilenKoy,
+            userId: parseInt(kullaniciId),
+            landType: araziTuru
         };
 
         const formData = new FormData();
-        formData.append('land', new Blob([JSON.stringify(landData)], { type: "application/json" }));
-        formData.append('file', imageUrl);
+        formData.append('land', new Blob([JSON.stringify(araziVerisi)], {type: "application/json"}));
+        formData.append('file', resimUrl);
 
         try {
             const response = await axios.post('http://localhost:8080/lands', formData, {
@@ -144,139 +162,160 @@ function AddLand() {
             });
 
             if (response.status === 201) {
-                setSnackbarMessage('Arazi başarıyla kaydedildi!');
-                setSnackbarSeverity('success');
-                setOpenSnackbar(true);
+                setSnackbarMesaji('Arazi başarıyla kaydedildi!');
+                setSnackbarCiddiyeti('success');
+                setAcikSnackbar(true);
                 setTimeout(() => navigate('/land-list'), 3000);
-                setLandName('');
-                setLandSize('');
-                setSelectedIl('');
-                setSelectedIlce('');
-                setSelectedKoy('');
-                setImageUrl('');
+                setAraziAdi('');
+                setAraziBoyutu('');
+                setAraziTuru('');
+                setSecilenIl('');
+                setSecilenIlce('');
+                setSecilenKoy('');
+                setResimUrl('');
             } else {
-                setSnackbarMessage('Arazi kaydedilemedi.');
-                setSnackbarSeverity('error');
-                setOpenSnackbar(true);
+                setSnackbarMesaji('Arazi kaydedilemedi.');
+                setSnackbarCiddiyeti('error');
+                setAcikSnackbar(true);
             }
         } catch (error) {
-            setSnackbarMessage('Hata: ' + error.message);
-            setSnackbarSeverity('error');
-            setOpenSnackbar(true);
+            setSnackbarMesaji('Hata: ' + error.message);
+            setSnackbarCiddiyeti('error');
+            setAcikSnackbar(true);
         }
     };
 
 
     const handleCloseSnackbar = () => {
-        setOpenSnackbar(false);
+        setAcikSnackbar(false);
     };
 
     return (
-        <Container maxWidth="sm">
-            <Box>
-                <BreadcrumbComponent pageName="Arazi Ekle"/>
-            </Box>
-            <Paper component="form" onSubmit={handleAddLand} sx={{mt: 3, p: 3}}>
-                <Typography variant="h4" component="h2" gutterBottom>
-                    Add Land
-                </Typography>
-                <TextField
-                    fullWidth
-                    label="Land Name"
-                    variant="outlined"
-                    margin="normal"
-                    value={landName}
-                    onChange={(e) => {
-                        setLandName(e.target.value);
-                        if (e.target.value) setLandNameError(false);
-                    }}
-                    error={landNameError}
-                    helperText={landNameError ? "Land name is required." : ""}
-                />
+        <ThemeProvider theme={tema}>
 
-                <TextField
-                    fullWidth
-                    label="Land Size (hectares)"
-                    variant="outlined"
-                    margin="normal"
-                    value={landSize}
-                    onChange={(e) => {
-                        setLandSize(e.target.value);
-                        if (e.target.value) setLandSizeError(false);
-                    }}
-                    error={landSizeError}
-                    helperText={landSizeError ? "Land size is required." : ""}
-                />
-
-                <FormControl fullWidth margin="normal" error={selectedIlError}>
-                    <InputLabel>İl</InputLabel>
-                    <Select
-                        value={selectedIl}
+            <Container maxWidth="sm" sx={{mb:5}}>
+                <Box>
+                    <BreadcrumbComponent pageName="Arazi Ekle"/>
+                </Box>
+                <Paper component="form" onSubmit={araziEkle} sx={{mt: 3, p: 3}}>
+                    <Typography variant="h4" component="h2" gutterBottom>
+                        Arazi Ekle
+                    </Typography>
+                    <TextField
+                        fullWidth
+                        label="Arazi Adı"
+                        variant="outlined"
+                        margin="normal"
+                        value={araziAdi}
                         onChange={(e) => {
-                            setSelectedIl(e.target.value);
-                            if (e.target.value) setSelectedIlError(false);
+                            setAraziAdi(e.target.value);
+                            if (e.target.value) setAraziAdiHata(false);
                         }}
-                    >
-                        {cities.map(city => (
-                            <MenuItem key={city.code} value={city.code}>{city.name}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                        error={araziAdiHata}
+                        helperText={araziAdiHata ? "Arazi adı gereklidir." : ""}
+                    />
 
-                <FormControl fullWidth margin="normal" error={selectedIlceError} disabled={!selectedIl}>
-                    <InputLabel>İlçe</InputLabel>
-                    <Select
-                        value={selectedIlce}
+                    <TextField
+                        fullWidth
+                        label="Arazi Boyutu (m²)"
+                        variant="outlined"
+                        margin="normal"
+                        value={araziBoyutu}
                         onChange={(e) => {
-                            setSelectedIlce(e.target.value);
-                            if (e.target.value) setSelectedIlceError(false);
+                            setAraziBoyutu(e.target.value);
+                            if (e.target.value) setAraziBoyutuHata(false);
                         }}
-                    >
-                        {districts.map(district => (
-                            <MenuItem key={district.code} value={district.code}>{district.name}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                        error={araziBoyutuHata}
+                        helperText={araziBoyutuHata ? "Arazi boyutu gereklidir." : ""}
+                    />
+                    <FormControl fullWidth margin="normal" error={araziTuruHata}>
+                        <InputLabel>Arazi Türü</InputLabel>
+                        <Select
+                            label="Arazi Türü"
+                            value={araziTuru}
+                            onChange={(e) => {
+                                setAraziTuru(e.target.value);
+                            }}
+                        >
+                            <MenuItem value="Tarla" key="Tarla">Tarla</MenuItem>
+                            <MenuItem value="Bağ" key="Bağ">Bağ</MenuItem>
+                            <MenuItem value="Bahçe" key="Bahçe">Bahçe</MenuItem>
+                            <MenuItem value="Zeytinlik" key="Zeytinlik">Zeytinlik</MenuItem>
+                            <MenuItem value="Çayır" key="Çayır">Çayır</MenuItem>
+                            <MenuItem value="Mera" key="Mera">Mera</MenuItem>
+                        </Select>
+                        {araziTuruHata && <Typography color="error">Lütfen arazi türünü seçiniz.</Typography>}
+                    </FormControl>
+                    <FormControl fullWidth margin="normal" error={secilenIlHata}>
+                        <InputLabel>Şehir</InputLabel>
+                        <Select
+                            value={secilenIl}
+                            onChange={(e) => {
+                                setSecilenIl(e.target.value);
+                                if (e.target.value) setSecilenIlHata(false);
+                            }}
+                        >
+                            {sehirler.map(sehir => (
+                                <MenuItem key={sehir.code} value={sehir.code}>{sehir.name}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
 
-                <FormControl fullWidth margin="normal" error={selectedKoyError}
-                             disabled={!selectedIlce || villages.length === 0}>
-                    <InputLabel>Köy/Mahalle</InputLabel>
-                    <Select
-                        value={selectedKoy}
-                        onChange={(e) => {
-                            setSelectedKoy(e.target.value);
-                            if (e.target.value) setSelectedKoyError(false);
-                        }}
-                    >
-                        {villages.map(locality => (
-                            <MenuItem key={locality.code} value={locality.code}>{locality.name}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                    <FormControl fullWidth margin="normal" error={secilenIlceHata} disabled={!secilenIl}>
+                        <InputLabel>İlçe</InputLabel>
+                        <Select
+                            value={secilenIlce}
+                            onChange={(e) => {
+                                setSecilenIlce(e.target.value);
+                                if (e.target.value) setSecilenIlceHata(false);
+                            }}
+                        >
+                            {ilceler.map(ilce => (
+                                <MenuItem key={ilce.code} value={ilce.code}>{ilce.name}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
 
-                <ImageUploader onImageUpload={setImageUrl} />
+                    <FormControl fullWidth margin="normal" error={secilenKoyHata}
+                                 disabled={!secilenIlce || koyler.length === 0}>
+                        <InputLabel>Köy/Mahalle</InputLabel>
+                        <Select
+                            value={secilenKoy}
+                            onChange={(e) => {
+                                setSecilenKoy(e.target.value);
+                                if (e.target.value) setSecilenKoyHata(false);
+                            }}
+                        >
+                            {koyler.map(koy => (
+                                <MenuItem key={koy.code} value={koy.code}>{koy.name}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
 
-                <Button type="submit" variant="contained" fullWidth sx={{
-                    mt: 2, backgroundColor: "#ff8a00",
-                    '&:hover': {
-                        backgroundColor: '#ff7a00',
-                    }
-                }}>
-                    Add Land
-                </Button>
-            </Paper>
+                    <ImageUploader onImageUpload={setResimUrl}/>
 
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={3000}
-                onClose={handleCloseSnackbar}
-            >
-                <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
-                    {snackbarMessage}
-                </Alert>
-            </Snackbar>
-        </Container>
+                    <Button type="submit" variant="contained" fullWidth sx={{
+                        mt: 2, backgroundColor: "#ff8a00",
+                        '&:hover': {
+                            backgroundColor: '#ff7a00',
+                        }
+                    }}>
+                        Arazi Ekle
+                    </Button>
+                </Paper>
+
+                <Snackbar
+                    open={acikSnackbar}
+                    autoHideDuration={3000}
+                    onClose={handleCloseSnackbar}
+                >
+                    <Alert onClose={handleCloseSnackbar} severity={snackbarCiddiyeti} sx={{width: '100%'}}>
+                        {snackbarMesaji}
+                    </Alert>
+                </Snackbar>
+            </Container>
+        </ThemeProvider>
     );
 }
 
-export default AddLand;
+export default AraziEkle;

@@ -67,10 +67,12 @@ public class AuthController {
         // Yeni HTTP-Only cookie oluşturlur.
         ResponseCookie cookie = ResponseCookie.from("jwt", token)
                 .httpOnly(true)
-                .secure(false)
+                .secure(false) // Tarayıcıda HTTPS olmadan çalışıyor isek false yapmalıymışız.
+                .sameSite("None") // SameSite None olarak ayarlandı. "Tarayıcıların çoğu SameSite politikasını Lax veya Strict olarak ayarlar. Bu, cross-site cookie'lerin engellenmesine neden olabilir."
                 .path("/")
                 .maxAge(7 * 24 * 60 * 60) // 7 gün
                 .build();
+        System.out.println("Cookie: " + cookie.toString());
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
@@ -112,6 +114,4 @@ public class AuthController {
         errorResponse.put("message", ex.getMessage());
         return errorResponse;
     }
-
-
 }

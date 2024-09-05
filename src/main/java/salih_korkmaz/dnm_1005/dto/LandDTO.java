@@ -15,14 +15,19 @@ public class LandDTO {
 
     private String imageUrl;
 
+    @NotNull(message = "Arazi tipi boş geçilemez")
+    private String landType;
+
     @NotNull(message = "Land size cannot be null")
     private int landSize;
 
+    private int clayableLand;
+
     @NotNull(message = "Locality ID cannot be null")
-    private Long localityId; // Mahalle ID'sini tutar
+    private Long localityId;
 
     @NotNull(message = "User ID cannot be null")
-    private Long userId; // User ID Değeri
+    private Long userId;
 
     private LocationDTO location; // Locality, District ve City bilgilerini tutar
 }

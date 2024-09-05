@@ -38,7 +38,7 @@ const SowingList = () => {
     useEffect(() => {
         axios.get('http://localhost:8080/sowings', {withCredentials: true})
             .then(response => {
-                console.log('Response:', response);
+                console.log('Cevap:', response);
                 setSowings(response.data);
 
                 // Hasat durumunu kontrol etmek için her ekim kaydı için istek yapıyoruz
@@ -50,12 +50,12 @@ const SowingList = () => {
                             }
                         })
                         .catch(error => {
-                            console.error('Error fetching harvested sowings:', error);
+                            console.error('Hasat edilen ekimleri alırken hata:', error);
                         });
                 });
             })
             .catch(error => {
-                console.error('Error fetching sowings:', error);
+                console.error('Ekimleri alırken hata:', error);
                 if (error.response && error.response.status === 401) {
                     setIsAuthenticated(false);
                 }
@@ -91,12 +91,12 @@ const SowingList = () => {
         axios.post('http://localhost:8080/harvests', harvestDto, { withCredentials: true })
             .then(response => {
                 console.log('Hasat işlemi başarılı:', response);
-                console.log('Response Data:', response.data);  // Tüm response.data içeriğini loglayalım
+                console.log('Cevap Verisi:', response.data);  // Tüm response.data içeriğini loglayalım
 
                 // Burada response.data.id kontrol ediliyor.
                 if (response.data && response.data.id) {
                     const harvestId = response.data.id;  // Doğru ID'yi alıyoruz
-                    console.log('Oluşturulan harvest ID:', harvestId);
+                    console.log('Oluşturulan hasat ID:', harvestId);
 
                     setSnackbarMessage('Hasat işlemi başarılı!');
                     setSnackbarSeverity('success');
@@ -108,8 +108,8 @@ const SowingList = () => {
                     // Yönlendirme işlemi harvestId ile
                     setTimeout(() => navigate(`/evaluation`, { state: { harvestId: harvestId } }), 1500);
                 } else {
-                    console.error('Harvest ID response data is missing:', response);
-                    setSnackbarMessage('Hasat işlemi başarılı, ancak Harvest ID alınamadı.');
+                    console.error('Hasat ID cevap verisinde eksik:', response);
+                    setSnackbarMessage('Hasat işlemi başarılı, ancak Hasat ID alınamadı.');
                     setSnackbarSeverity('warning');
                     setSnackbarOpen(true);
                 }
@@ -132,19 +132,19 @@ const SowingList = () => {
                 </Box>
                 <Box sx={{mt: 3}}>
                     <Typography variant="h4" component="h2" gutterBottom>
-                        Sowings List
+                        Ekimler Listesi
                     </Typography>
                     <TableContainer component={Paper}>
-                        <Table sx={{minWidth: 650}} aria-label="sowings table">
+                        <Table sx={{minWidth: 650}} aria-label="ekimler tablosu">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Name</TableCell>
-                                    <TableCell align="right">Plant</TableCell>
-                                    <TableCell align="right">Planted Area</TableCell>
-                                    <TableCell align="right">Uncultivated Area</TableCell>
-                                    <TableCell align="right">Sowing Type</TableCell>
-                                    <TableCell align="right">Date</TableCell>
-                                    <TableCell align="right">Actions</TableCell>
+                                    <TableCell>Ad</TableCell>
+                                    <TableCell align="center">Bitki</TableCell>
+                                    <TableCell align="center">Ekilen Alan</TableCell>
+                                    <TableCell align="center">Ekilmemiş Alan</TableCell>
+                                    <TableCell align="center">Ekim Türü</TableCell>
+                                    <TableCell align="center">Tarih</TableCell>
+                                    <TableCell align="center">İşlemler</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -153,11 +153,11 @@ const SowingList = () => {
                                         <TableCell component="th" scope="row">
                                             {sowing.landName}
                                         </TableCell>
-                                        <TableCell align="right">{sowing.plantName}</TableCell>
-                                        <TableCell align="right">{sowing.sowingField}</TableCell>
-                                        <TableCell align="right">TODO:</TableCell>
-                                        <TableCell align="right">{sowing.sowingType}</TableCell>
-                                        <TableCell align="right">{sowing.sowingDate}</TableCell>
+                                        <TableCell align="center">{sowing.plantName}</TableCell>
+                                        <TableCell align="center">{sowing.sowingField}</TableCell>
+                                        <TableCell align="center">{sowing.clayableLand}</TableCell>
+                                        <TableCell align="center">{sowing.landType}</TableCell>
+                                        <TableCell align="center">{sowing.sowingDate}</TableCell>
                                         <TableCell align="right" sx={{
                                             display: 'flex',
                                             alignItems: 'center',

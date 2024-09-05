@@ -14,13 +14,13 @@ import {
     Snackbar,
     Alert,
     Rating,
-    Paper, InputLabel, Select, MenuItem, FormControl, InputAdornment, TextField
+    Paper, InputAdornment, TextField
 } from '@mui/material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom'; // useParams ekliyoruz
 import axios from "axios";
 
-const Evaluation = () => {
-    const location = useLocation();
+const EvaluationEdit = () => {
+    const { id } = useParams(); // Parametre olarak gelen değerlendirme id'sini alıyoruz
     const navigate = useNavigate();
     const [harvestId, setHarvestId] = useState(null);
     const [harvestCondition, setHarvestCondition] = useState('');
@@ -31,14 +31,27 @@ const Evaluation = () => {
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
+    // Mevcut değerlendirme verilerini almak için useEffect kullanıyoruz
     useEffect(() => {
-        if (location.state && location.state.harvestId) {
-            setHarvestId(location.state.harvestId);
-        } else {
-            console.error('Harvest ID is missing');
-            navigate('/sowings');
-        }
-    }, [location, navigate]);
+        const fetchEvaluation = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/evaluations/api/${id}`, { withCredentials: true });
+                const data = response.data;
+
+                // Değerlendirme verilerini state'e aktar
+                setHarvestId(data.harvestId);
+                setHarvestCondition(data.harvestCondition);
+                setProductQuality(data.productQuality);
+                setProductQuantity(data.productQuantity);
+                setOverallRating(data.overallRating);
+            } catch (error) {
+                console.error('Veriler alınırken hata oluştu:', error);
+            }
+        };
+
+        fetchEvaluation();
+    }, [id]);
+
 
     const handleCheckboxChange = (setter, value) => () => {
         setter(value);
@@ -48,11 +61,11 @@ const Evaluation = () => {
         e.preventDefault();
 
         if (!harvestId) {
-            console.error('Harvest ID is null');
+            console.error('Hasat ID null');
             return;
         }
 
-        const newEvaluation = {
+        const updatedEvaluation = {
             harvestId,
             harvestCondition,
             productQuality,
@@ -61,25 +74,26 @@ const Evaluation = () => {
         };
 
         try {
-            const response = await axios.post('http://localhost:8080/evaluations', newEvaluation, { withCredentials: true });
+            const response = await axios.put(`http://localhost:8080/evaluations/${id}`, updatedEvaluation, { withCredentials: true });
 
             if(response.status === 200){
-                setSnackbarMessage('Evaluation was carried out successfully.');
+                setSnackbarMessage('Değerlendirme başarıyla güncellendi.');
                 setSnackbarSeverity('success');
                 setSnackbarOpen(true);
-                setTimeout(() => navigate('/'), 3000);
+                setTimeout(() => navigate('/evaluation-list'), 3000);
             } else {
-                setSnackbarMessage('Failed to save the evaluation.');
+                setSnackbarMessage('Değerlendirme kaydedilemedi.');
                 setSnackbarSeverity('error');
                 setSnackbarOpen(true);
             }
         } catch (error) {
-            console.error('Error occurred:', error);
-            setSnackbarMessage('Error: ' + error.message);
+            console.error('Hata oluştu:', error);
+            setSnackbarMessage('Hata: ' + error.message);
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
         }
     };
+
 
     const handleSnackbarClose = () => {
         setSnackbarOpen(false);
@@ -89,7 +103,7 @@ const Evaluation = () => {
         <Container maxWidth="xl">
             <Box sx={{mt:4}}>
                 <Typography variant="h4" component="h2" gutterBottom>
-                    Değerlendirme Formu
+                    Değerlendirme Güncelleme Formu
                 </Typography>
 
                 <TableContainer component={Paper} sx={{mt: 4}}>
@@ -157,7 +171,7 @@ const Evaluation = () => {
                                     <Rating
                                         name="overall-rating"
                                         value={overallRating}
-                                        precision={0.5} // Yarım yıldızların verilmesine olanak tanır
+                                        precision={0.5}
                                         onChange={(event, newValue) => {
                                             if (newValue !== null) {
                                                 setOverallRating(newValue);
@@ -177,7 +191,7 @@ const Evaluation = () => {
 
                 <Box sx={{mt: 4, textAlign: 'center'}}>
                     <Button variant="contained" color="primary" onClick={handleSubmit}>
-                        Gönder
+                        Güncelle
                     </Button>
                 </Box>
 
@@ -195,4 +209,4 @@ const Evaluation = () => {
     );
 };
 
-export default Evaluation;
+export default EvaluationEdit;

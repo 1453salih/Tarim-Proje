@@ -48,10 +48,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/locations/**").permitAll()
                         .requestMatchers("/recommendations/**").permitAll()
                         .requestMatchers("/harvests/**").permitAll()
-                        .requestMatchers("/evaloutions/**").permitAll()
-                        .requestMatchers("/evaloutions/harvest/**").permitAll()
+                        .requestMatchers("/evaluations/**").permitAll()
+                        .requestMatchers("/evaluations/harvest/**").permitAll()
                         .requestMatchers("/harvests/delete-by-sowing/**").permitAll()
-                        .requestMatchers("/auth/logout").permitAll() // Buraya ekleyin
+                        .requestMatchers("/auth/logout").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -2,7 +2,9 @@ package salih_korkmaz.dnm_1005.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import salih_korkmaz.dnm_1005.dto.LandDTO;
 import salih_korkmaz.dnm_1005.dto.SowingDTO;
+import salih_korkmaz.dnm_1005.entity.Land;
 import salih_korkmaz.dnm_1005.entity.Sowing;
 import salih_korkmaz.dnm_1005.entity.User;
 import salih_korkmaz.dnm_1005.service.HarvestService;
@@ -20,17 +22,31 @@ public class SowingController {
     private final SowingService sowingService;
     private final UserService userService;
     private final HarvestService harvestService;
+    private final LandService landService;
 
-    public SowingController(SowingService sowingService, UserService userService, LandService landService, HarvestService harvestService) {
+    public SowingController(SowingService sowingService, UserService userService, HarvestService harvestService, LandService landService) {
         this.sowingService = sowingService;
         this.userService = userService;
         this.harvestService = harvestService;
+        this.landService = landService;
     }
 
     @PostMapping
     public SowingDTO createSowing(@RequestBody SowingDTO sowingDto) {
+        // Arazi kullanılabilir alanı güncellemek için alınır.
+        LandDTO land = landService.getLandById(sowingDto.getLandId());
+
+        // Ekilebilir alan hesaplanır.
+        double remainingLand = land.getClayableLand() - sowingDto.getSowingField();
+
+        // Sadece ClayableLand(Ekilebilir Alan) güncellenir.
+        landService.updateClayableLand(land.getId(), remainingLand);
+
+        // Ekim kaydı yapılır.
         return sowingService.saveSowing(sowingDto);
     }
+
+
 
     @GetMapping("/detail/{id}")
     public SowingDTO getSowingById(@PathVariable Long id) {
@@ -38,7 +54,7 @@ public class SowingController {
     }
     @PutMapping("/update/{id}")
     public Sowing updateSowing(@PathVariable Long id, @RequestBody SowingDTO sowingDto) {
-        // LandService'i kullanarak araziyi günceller
+        // LandService'i kullanarak araziyi günceller.
         return sowingService.updateSowing(id, sowingDto);
     }
     @GetMapping

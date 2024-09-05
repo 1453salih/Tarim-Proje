@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import salih_korkmaz.dnm_1005.dto.LandDTO;
-import salih_korkmaz.dnm_1005.dto.LocationDTO;
 import salih_korkmaz.dnm_1005.entity.Land;
 import salih_korkmaz.dnm_1005.entity.Locality;
 import salih_korkmaz.dnm_1005.entity.User;
@@ -39,24 +38,23 @@ public class LandService {
     }
 
     public Land saveLand(LandDTO landDto, MultipartFile imageFile) {
+        // Kullanıcı ve locality bulunur.
         User user = userRepository.findById(landDto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı!"));
 
         Locality locality = localityRepository.findById(landDto.getLocalityId())
-                .orElseThrow(() -> new RuntimeException("Locality not found"));
+                .orElseThrow(() -> new RuntimeException("Mahalle/Köy bulunamadı."));
 
-        Land land = new Land();
-        land.setName(landDto.getName());
-        land.setLandSize(landDto.getLandSize());
-        land.setUser(user);
-        land.setLocality(locality);
+        // DTO'dan entity'ye dönüşüm.
+        Land land = landMapper.toEntity(landDto, user, locality);
 
+        // Resim dosyası varsa işlenir.
         if (imageFile != null && !imageFile.isEmpty()) {
-            // Resmi kayder ve URL'yi alır
             String imageUrl = uploadImage(imageFile);
             land.setImage(imageUrl);
         }
 
+        // Entity kaydedilir.
         return landRepository.save(land);
     }
 
@@ -88,14 +86,24 @@ public class LandService {
         return landRepository.save(existingLand);
     }
 
+    public void updateClayableLand(Long landId, double remainingLand) {
+        Land land = landRepository.findById(landId).orElseThrow(() -> new RuntimeException("Land not found"));
+
+        // Eğer ClayableLand int ise, double'ı int'e çevirelim
+        //Burada bir anlamadığım nokta parametre int olunca controllerda error veriyor.
+        land.setClayableLand((int) remainingLand);
+
+        landRepository.save(land);
+    }
+
+
 
 
     public LandDTO getLandById(Long id) {
         Land land = landRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Land not found"));
-        LandDTO landDTO = landMapper.toDTO(land);
 
-        return landDTO;
+        return landMapper.toDTO(land);
     }
 
 

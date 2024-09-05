@@ -46,7 +46,6 @@ public class SowingService {
                .orElseThrow(() -> new RuntimeException("Sowing not found"));
 
        existingSowing.setSowingField(sowingDto.getSowingField());
-       existingSowing.setSowingType(sowingDto.getSowingType());
        existingSowing.setSowingDate(sowingDto.getSowingDate());
 
         if (sowingDto.getLandId() != null) {
@@ -81,12 +80,12 @@ public class SowingService {
     }
     public SowingDTO getSowingById(Long id) {
         Sowing sowing = sowingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sowing not found"));
+                .orElseThrow(() -> new RuntimeException("Ekim bulunamadı"));
         return sowingMapper.toDto(sowing);
     }
 
     public Sowing findSowingById(Long sowingId) {
         return sowingRepository.findById(sowingId)
-                .orElseThrow(() -> new RuntimeException("Sowing not found"));
+                .orElseThrow(() -> new RuntimeException("EKim bulunamadı"));
     }
 }
