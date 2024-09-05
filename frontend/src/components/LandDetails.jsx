@@ -19,7 +19,7 @@ const LandDetails = () => {
     const [districts, setDistricts] = useState([]);
     const [villages, setVillages] = useState([]);
     const navigate = useNavigate();
-
+    //
     //* Hem Json verisi hem de dosya gönderilebilmesini sağlar.
     const handleSave = () => {
         const updatedLand = {
