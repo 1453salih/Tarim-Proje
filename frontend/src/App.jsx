@@ -20,7 +20,7 @@ import EvaluationEdit from "./components/EvaluationEdit";
 
 
 
-import Spinner from './Spinner/Spinner'; // Spinner bileşeninin yolunu doğru ayarlayın
+import Spinner from './Spinner/Spinner';
 
 
 import './App.css';
@@ -44,8 +44,14 @@ function App() {
                     method: 'GET',
                     credentials: 'include',
                 });
+
                 if (response.ok) {
-                    setIsLoggedIn(true);
+                    const data = await response.json();
+                    if (data.isValid) {
+                        setIsLoggedIn(true);
+                    } else {
+                        setIsLoggedIn(false);
+                    }
                 } else {
                     setIsLoggedIn(false);
                 }
@@ -53,7 +59,7 @@ function App() {
                 console.error('Error checking authentication:', error);
                 setIsLoggedIn(false);
             } finally {
-                setLoading(false);
+                setLoading(false);  // Yükleme bittiğinde durumu güncelle
             }
         };
 
@@ -61,8 +67,12 @@ function App() {
     }, []);
 
     if (loading) {
-        return <Spinner />;
+        return <Spinner />;  // Yüklenirken spinner ya da başka bir yükleme göstergesi döndürebilirsiniz
     }
+
+
+
+
 
     return (
         <Router>

@@ -13,8 +13,7 @@ import {
     Checkbox,
     Snackbar,
     Alert,
-    Rating,
-    Paper, InputLabel, Select, MenuItem, FormControl, InputAdornment, TextField
+    Paper, InputAdornment, TextField
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from "axios";
@@ -23,10 +22,12 @@ const Evaluation = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [harvestId, setHarvestId] = useState(null);
-    const [harvestCondition, setHarvestCondition] = useState('');
+    const [weatherCondition, setWeatherCondition] = useState('');
     const [productQuality, setProductQuality] = useState('');
-    const [overallRating, setOverallRating] = useState(0);
     const [productQuantity, setProductQuantity] = useState(0);
+    const [irrigation, setIrrigation] = useState(null);
+    const [fertilisation, setFertilisation] = useState(null);
+    const [spraying, setSpraying] = useState(null);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -40,11 +41,7 @@ const Evaluation = () => {
         }
     }, [location, navigate]);
 
-    const handleCheckboxChange = (setter, value) => () => {
-        setter(value);
-    };
-
-    const handleSubmit = async(e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!harvestId) {
@@ -54,17 +51,19 @@ const Evaluation = () => {
 
         const newEvaluation = {
             harvestId,
-            harvestCondition,
+            weatherCondition,
             productQuality,
             productQuantity: parseFloat(productQuantity),
-            overallRating: parseFloat(overallRating)
+            irrigation: irrigation === true ? 1 : 0,
+            fertilisation: fertilisation === true ? 1 : 0,
+            spraying: spraying === true ? 1 : 0
         };
 
         try {
             const response = await axios.post('http://localhost:8080/evaluations', newEvaluation, { withCredentials: true });
 
-            if(response.status === 200){
-                setSnackbarMessage('Evaluation was carried out successfully.');
+            if (response.status === 200) {
+                setSnackbarMessage('Değerlendirme başarıyla gerçekleştirilmiştir.');
                 setSnackbarSeverity('success');
                 setSnackbarOpen(true);
                 setTimeout(() => navigate('/'), 3000);
@@ -87,52 +86,57 @@ const Evaluation = () => {
 
     return (
         <Container maxWidth="xl">
-            <Box sx={{mt:4}}>
+            <Box sx={{ mt: 4 }}>
                 <Typography variant="h4" component="h2" gutterBottom>
                     Değerlendirme Formu
                 </Typography>
 
-                <TableContainer component={Paper} sx={{mt: 4}}>
+                <TableContainer component={Paper} sx={{ mt: 4 }}>
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell sx={{borderRight: '1px solid #ddd'}}></TableCell>
-                                <TableCell align="center" sx={{borderRight: '1px solid #ddd'}}>Çok Kötü</TableCell>
-                                <TableCell align="center" sx={{borderRight: '1px solid #ddd'}}>Kötü</TableCell>
-                                <TableCell align="center" sx={{borderRight: '1px solid #ddd'}}>Orta</TableCell>
-                                <TableCell align="center" sx={{borderRight: '1px solid #ddd'}}>İyi</TableCell>
+                                <TableCell sx={{ borderRight: '1px solid #ddd' }}></TableCell>
+                                <TableCell align="center" sx={{ borderRight: '1px solid #ddd' }}>Çok Kötü</TableCell>
+                                <TableCell align="center" sx={{ borderRight: '1px solid #ddd' }}>Kötü</TableCell>
+                                <TableCell align="center" sx={{ borderRight: '1px solid #ddd' }}>Orta</TableCell>
+                                <TableCell align="center" sx={{ borderRight: '1px solid #ddd' }}>İyi</TableCell>
                                 <TableCell align="center">Çok İyi</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
+                            {/* Hasat Koşulları */}
                             <TableRow>
-                                <TableCell component="th" scope="row" sx={{borderRight: '1px solid #ddd'}}>
+                                <TableCell component="th" scope="row" sx={{ borderRight: '1px solid #ddd' }}>
                                     Hasat Koşulları
                                 </TableCell>
                                 {['Çok Kötü', 'Kötü', 'Orta', 'İyi', 'Çok İyi'].map((label) => (
-                                    <TableCell align="center" key={label} sx={{borderRight: '1px solid #ddd'}}>
+                                    <TableCell align="center" key={label} sx={{ borderRight: '1px solid #ddd' }}>
                                         <Checkbox
-                                            checked={harvestCondition === label}
-                                            onChange={handleCheckboxChange(setHarvestCondition, label)}
+                                            checked={weatherCondition === label}
+                                            onChange={() => setWeatherCondition(label)}
                                         />
                                     </TableCell>
                                 ))}
                             </TableRow>
+
+                            {/* Ürün Kalitesi */}
                             <TableRow>
-                                <TableCell component="th" scope="row" sx={{borderRight: '1px solid #ddd'}}>
+                                <TableCell component="th" scope="row" sx={{ borderRight: '1px solid #ddd' }}>
                                     Ürün Kalitesi
                                 </TableCell>
                                 {['Çok Kötü', 'Kötü', 'Orta', 'İyi', 'Çok İyi'].map((label) => (
-                                    <TableCell align="center" key={label} sx={{borderRight: '1px solid #ddd'}}>
+                                    <TableCell align="center" key={label} sx={{ borderRight: '1px solid #ddd' }}>
                                         <Checkbox
                                             checked={productQuality === label}
-                                            onChange={handleCheckboxChange(setProductQuality, label)}
+                                            onChange={() => setProductQuality(label)}
                                         />
                                     </TableCell>
                                 ))}
                             </TableRow>
+
+                            {/* Ürün Miktarı */}
                             <TableRow>
-                                <TableCell component="th" scope="row" sx={{borderRight: '1px solid #ddd'}}>
+                                <TableCell component="th" scope="row" sx={{ borderRight: '1px solid #ddd' }}>
                                     Ürün Miktarı
                                 </TableCell>
                                 <TableCell colSpan={5} align="center">
@@ -149,33 +153,82 @@ const Evaluation = () => {
                                     />
                                 </TableCell>
                             </TableRow>
-                            <TableRow>
-                                <TableCell component="th" scope="row" sx={{borderRight: '1px solid #ddd'}}>
-                                    Genel Değerlendirme
-                                </TableCell>
-                                <TableCell colSpan={5} align="center">
-                                    <Rating
-                                        name="overall-rating"
-                                        value={overallRating}
-                                        precision={0.5} // Yarım yıldızların verilmesine olanak tanır
-                                        onChange={(event, newValue) => {
-                                            if (newValue !== null) {
-                                                setOverallRating(newValue);
-                                            }
-                                        }}
-                                        icon={<span style={{fontSize: '2rem'}}>★</span>}
-                                        emptyIcon={<span style={{fontSize: '2rem'}}>☆</span>}
-                                    />
+                        </TableBody>
+                    </Table>
+                </TableContainer>
 
+                {/* Sulama, Gübreleme, İlaçlama Değerlendirme Tablosu */}
+                <TableContainer component={Paper} sx={{ mt: 4 }}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell sx={{ borderRight: '1px solid #ddd' }}></TableCell>
+                                <TableCell align="center" sx={{ borderRight: '1px solid #ddd' }}>Yapılmadı</TableCell>
+                                <TableCell align="center">Yapıldı</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {/* Sulama */}
+                            <TableRow>
+                                <TableCell component="th" scope="row" sx={{ borderRight: '1px solid #ddd' }}>
+                                    Sulama
+                                </TableCell>
+                                <TableCell align="center" sx={{ borderRight: '1px solid #ddd' }}>
+                                    <Checkbox
+                                        checked={irrigation === false}
+                                        onChange={() => setIrrigation(false)}
+                                    />
+                                </TableCell>
+                                <TableCell align="center">
+                                    <Checkbox
+                                        checked={irrigation === true}
+                                        onChange={() => setIrrigation(true)}
+                                    />
                                 </TableCell>
                             </TableRow>
 
+                            {/* Gübreleme */}
+                            <TableRow>
+                                <TableCell component="th" scope="row" sx={{ borderRight: '1px solid #ddd' }}>
+                                    Gübreleme
+                                </TableCell>
+                                <TableCell align="center" sx={{ borderRight: '1px solid #ddd' }}>
+                                    <Checkbox
+                                        checked={fertilisation === false}
+                                        onChange={() => setFertilisation(false)}
+                                    />
+                                </TableCell>
+                                <TableCell align="center">
+                                    <Checkbox
+                                        checked={fertilisation === true}
+                                        onChange={() => setFertilisation(true)}
+                                    />
+                                </TableCell>
+                            </TableRow>
+
+                            {/* İlaçlama */}
+                            <TableRow>
+                                <TableCell component="th" scope="row" sx={{ borderRight: '1px solid #ddd' }}>
+                                    İlaçlama
+                                </TableCell>
+                                <TableCell align="center" sx={{ borderRight: '1px solid #ddd' }}>
+                                    <Checkbox
+                                        checked={spraying === false}
+                                        onChange={() => setSpraying(false)}
+                                    />
+                                </TableCell>
+                                <TableCell align="center">
+                                    <Checkbox
+                                        checked={spraying === true}
+                                        onChange={() => setSpraying(true)}
+                                    />
+                                </TableCell>
+                            </TableRow>
                         </TableBody>
                     </Table>
-
                 </TableContainer>
 
-                <Box sx={{mt: 4, textAlign: 'center'}}>
+                <Box sx={{ mt: 4, textAlign: 'center' }}>
                     <Button variant="contained" color="primary" onClick={handleSubmit}>
                         Gönder
                     </Button>
@@ -186,7 +239,7 @@ const Evaluation = () => {
                     autoHideDuration={3000}
                     onClose={handleSnackbarClose}
                 >
-                    <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{width: '100%'}}>
+                    <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
                         {snackbarMessage}
                     </Alert>
                 </Snackbar>

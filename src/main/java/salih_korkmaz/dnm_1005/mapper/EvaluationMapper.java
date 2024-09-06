@@ -11,8 +11,10 @@ public class EvaluationMapper {
     public EvaluationDTO toDTO(Evaluation evaluation){
         EvaluationDTO evaluationDTO = new EvaluationDTO();
         evaluationDTO.setId(evaluation.getId());
-        evaluationDTO.setHarvestCondition(evaluation.getHarvestCondition());
-        evaluationDTO.setOverallRating(evaluation.getOverallRating());
+        evaluationDTO.setWeatherCondition(evaluation.getWeatherCondition());
+        evaluationDTO.setFertilisation(evaluation.getFertilisation());
+        evaluationDTO.setIrrigation(evaluation.getIrrigation());
+        evaluationDTO.setSpraying(evaluation.getSpraying());
         evaluationDTO.setHarvestId(evaluation.getHarvest().getId());  //harvestId
         evaluationDTO.setProductQuality(evaluation.getProductQuality());
         evaluationDTO.setProductQuantity(evaluation.getProductQuantity());
@@ -30,8 +32,10 @@ public class EvaluationMapper {
         harvest.setId(evaluationDTO.getHarvestId());
         evaluation.setHarvest(harvest);
 
-        evaluation.setHarvestCondition(evaluationDTO.getHarvestCondition());
-        evaluation.setOverallRating(evaluationDTO.getOverallRating());
+        evaluation.setWeatherCondition(evaluationDTO.getWeatherCondition());
+        evaluation.setFertilisation(evaluationDTO.getFertilisation());
+        evaluation.setIrrigation(evaluationDTO.getIrrigation());
+        evaluation.setSpraying(evaluationDTO.getSpraying());
         evaluation.setProductQuality(evaluationDTO.getProductQuality());
         evaluation.setProductQuantity(evaluationDTO.getProductQuantity());
 

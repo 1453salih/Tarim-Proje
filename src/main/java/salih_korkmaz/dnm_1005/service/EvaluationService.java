@@ -36,22 +36,25 @@ public class EvaluationService {
         return evaluationMapper.toDTO(savedEvaluation);
     }
 
-    public Evaluation updateEvaluation (Long id, @Valid EvaluationDTO evaluationDto){
+    public Evaluation updateEvaluation(Long id, @Valid EvaluationDTO evaluationDto) {
         Evaluation existingEvaluation = evaluationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Değerlendirme bulunamadı."));
 
-        existingEvaluation.setHarvestCondition(evaluationDto.getHarvestCondition());
-        existingEvaluation.setProductQuality(evaluationDto.getProductQuality());
-        existingEvaluation.setOverallRating(evaluationDto.getOverallRating());
-        existingEvaluation.setProductQuantity(evaluationDto.getProductQuantity());
+        Evaluation updatedEvaluation = evaluationMapper.toEntity(evaluationDto);
 
-        if(evaluationDto.getHarvestId() != null){
+        // Mevcut entity'nin bazı alanlarını koruyabiliriz burada.
+        updatedEvaluation.setId(existingEvaluation.getId());
+
+        // Diğer custom işlemler (örneğin harvest işlemi)
+        if (evaluationDto.getHarvestId() != null) {
             Harvest harvest = Optional.ofNullable(harvestService.findHarvestById(evaluationDto.getHarvestId()))
-                    .orElseThrow(() -> new RuntimeException(("Ekim bulunamadı")));
-            existingEvaluation.setHarvest(harvest);
+                    .orElseThrow(() -> new RuntimeException("Ekim bulunamadı"));
+            updatedEvaluation.setHarvest(harvest);
         }
-        return evaluationRepository.save(existingEvaluation);
+
+        return evaluationRepository.save(updatedEvaluation);
     }
+
 
     public Evaluation findEvaluationById(Long evaluationId){
         return evaluationRepository.findById(evaluationId)

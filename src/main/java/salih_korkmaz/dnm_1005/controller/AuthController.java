@@ -1,5 +1,6 @@
 package salih_korkmaz.dnm_1005.controller;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -14,12 +15,10 @@ import salih_korkmaz.dnm_1005.util.JwtUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin(origins = "*")
 public class AuthController {
-
 
     private final UserService userService;
     private final JwtUtil jwtUtil;
@@ -33,15 +32,25 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request, @CookieValue(name = "jwt", required = false) String jwt) {
         if (jwt != null && jwtUtil.validateToken(jwt, jwtUtil.extractEmail(jwt))) {
             String email = jwtUtil.extractEmail(jwt);
-            return ResponseEntity.ok(new LoginResponse(jwt, email));
+            String userId = userService.findByEmail(email).getId().toString(); // userId'yi de ekleyin
+            return ResponseEntity.ok(new LoginResponse(jwt, email, userId));
         }
 
         // Login işlemi
         LoginResponse response = userService.login(request);
         String token = response.getToken();
+        String refreshToken = jwtUtil.generateRefreshToken(response.getEmail());
 
-        // Yeni HTTP-Only cookie oluşturlur.
-        ResponseCookie cookie = ResponseCookie.from("jwt", token)
+        // Yeni HTTP-Only cookie oluşturulur (access token)
+        ResponseCookie jwtCookie = ResponseCookie.from("jwt", token)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(60 * 60) // 1 saat
+                .build();
+
+        // Yeni HTTP-Only cookie oluşturulur (refresh token)
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshJwt", refreshToken)
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
@@ -49,63 +58,124 @@ public class AuthController {
                 .build();
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                 .body(response);
     }
-
-
 
 
     @PostMapping("/signup")
     public ResponseEntity<LoginResponse> signup(@RequestBody LoginRequest request) {
         LoginResponse response = userService.signup(request);
         String token = response.getToken();
+        String refreshToken = jwtUtil.generateRefreshToken(response.getEmail());
 
-        // Token'ın oluşturulup oluşturulmadığını kontrol edin
-        System.out.println("Generated Token in Signup: " + token);
-
-        // Yeni HTTP-Only cookie oluşturlur.
-        ResponseCookie cookie = ResponseCookie.from("jwt", token)
+        // Yeni HTTP-Only cookie oluşturulur (access token)
+        ResponseCookie jwtCookie = ResponseCookie.from("jwt", token)
                 .httpOnly(true)
-                .secure(false) // Tarayıcıda HTTPS olmadan çalışıyor isek false yapmalıymışız.
-                .sameSite("None") // SameSite None olarak ayarlandı. "Tarayıcıların çoğu SameSite politikasını Lax veya Strict olarak ayarlar. Bu, cross-site cookie'lerin engellenmesine neden olabilir."
+                .secure(false)
+                .path("/")
+                .maxAge(60 * 60) // 1 saat
+                .build();
+
+        // Yeni HTTP-Only cookie oluşturulur (refresh token)
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshJwt", refreshToken)
+                .httpOnly(true)
+                .secure(false)
                 .path("/")
                 .maxAge(7 * 24 * 60 * 60) // 7 gün
                 .build();
-        System.out.println("Cookie: " + cookie.toString());
 
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body(response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        // JWT ve refresh token silmek için cookie süresini sıfırlıyoruz
+        ResponseCookie jwtCookie = ResponseCookie.from("jwt", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0) // Süreyi sıfır yaparak cookie'yi siliyoruz
+                .build();
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshJwt", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0) // Süreyi sıfır yaparak refresh token cookie'sini siliyoruz
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body("Logged out");
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<LoginResponse> refreshToken(@CookieValue(name = "refreshJwt", required = false) String refreshToken) {
+        if (refreshToken != null && jwtUtil.validateRefreshToken(refreshToken, jwtUtil.extractEmail(refreshToken))) {
+            String email = jwtUtil.extractEmail(refreshToken);
+            String newAccessToken = jwtUtil.generateToken(email);
+            String userId = userService.findByEmail(email).getId().toString(); // userId eklendi
+
+            // Yeni JWT cookie'si oluştur
+            ResponseCookie jwtCookie = ResponseCookie.from("jwt", newAccessToken)
+                    .httpOnly(true)
+                    .secure(false)
+                    .path("/")
+                    .maxAge(60 * 60) // 1 saat
+                    .build();
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                    .body(new LoginResponse(newAccessToken, email, userId)); // userId eklendi
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    }
+
+
+    @GetMapping("/validate-token")
+    public ResponseEntity<?> validateToken(@CookieValue(name = "jwt", required = false) String jwt) {
+        Map<String, Boolean> response = new HashMap<>();
+
+        if (jwt != null) {
+            try {
+                // Token geçerliliği kontrol ediliyor
+                String email = jwtUtil.extractEmail(jwt);
+                if (jwtUtil.validateToken(jwt, email)) {
+                    response.put("isValid", true);
+                    return ResponseEntity.ok(response);
+                }
+            } catch (ExpiredJwtException e) {
+                // Token süresi dolmuş, bu durumda refresh token kontrol edilebilir
+                response.put("isValid", false);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            } catch (Exception e) {
+                // Token geçersiz ya da başka bir hata meydana gelmiş olabilir
+                response.put("isValid", false);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+        }
+
+        // Geçersiz veya boş token için cookie temizleniyor
+        ResponseCookie cookie = ResponseCookie.from("jwt", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0) // Cookie'yi silmek için süreyi sıfırlıyoruz
+                .build();
+
+        response.put("isValid", false);
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(response);
     }
 
-
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        ResponseCookie cookie = ResponseCookie.from("jwt", "")
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .maxAge(0)
-                .build();
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body("Logged out");
-    }
-
-    @GetMapping("/validate-token")
-    public ResponseEntity<Map<String, Boolean>> validateToken(@CookieValue(name = "jwt", required = false) String jwt) {
-        Map<String, Boolean> response = new HashMap<>();
-
-        if (jwt != null && jwtUtil.validateToken(jwt, jwtUtil.extractEmail(jwt))) {
-            response.put("isValid", true);
-            return ResponseEntity.ok(response);
-        }
-
-        response.put("isValid", false);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-    }
 
     @ExceptionHandler(EmailAlreadyInUseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -3,7 +3,6 @@ package salih_korkmaz.dnm_1005.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Generated;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -17,11 +16,15 @@ public class Evaluation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String harvestCondition;
+    private String weatherCondition; //Hava Koşulları
+
+    private String irrigation;
+
+    private String fertilisation;
+
+    private String spraying;
 
     private String productQuality;
-
-    private double overallRating;
 
     private double productQuantity;
 

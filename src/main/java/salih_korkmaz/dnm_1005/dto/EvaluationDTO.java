@@ -5,8 +5,10 @@ import lombok.Data;
 public class EvaluationDTO {
     private Long id;
     private Long harvestId;
-    private String harvestCondition;
+    private String weatherCondition;
+    private String irrigation;
+    private String fertilisation;
+    private String spraying;
     private String productQuality;
     private double productQuantity;
-    private double overallRating;
 }

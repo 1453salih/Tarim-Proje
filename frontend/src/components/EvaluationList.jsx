@@ -131,7 +131,7 @@ const EvaluationList = () => {
         plantName: '',
         sowingDate: null,
         harvestDate: null,
-        harvestCondition: '',
+        weatherCondition: '',
         productQuality: '',
         productQuantityMin: '',
         productQuantityMax: '',
@@ -160,7 +160,7 @@ const EvaluationList = () => {
         const filteredData = evaluations.filter(evaluation => {
             const sowingDateMatch = filter.sowingDate === null || dayjs(evaluation.sowingDate).isSame(dayjs(filter.sowingDate), 'day');
             const harvestDateMatch = filter.harvestDate === null || dayjs(evaluation.harvestDate).isSame(dayjs(filter.harvestDate), 'day');
-            const harvestConditionMatch = filter.harvestCondition === '' || evaluation.harvestCondition.toLowerCase() === filter.harvestCondition.toLowerCase();
+            const weatherConditionMatch = filter.weatherCondition === '' || evaluation.weatherCondition.toLowerCase() === filter.weatherCondition.toLowerCase();
             const productQualityMatch = filter.productQuality === '' || evaluation.productQuality.toLowerCase() === filter.productQuality.toLowerCase();
             const productQuantityMatch =
                 (filter.productQuantityMin === '' || evaluation.productQuantity >= parseFloat(filter.productQuantityMin)) &&
@@ -170,7 +170,7 @@ const EvaluationList = () => {
                 evaluation.plantName.toLowerCase().includes(filter.plantName.toLowerCase()) &&
                 sowingDateMatch &&
                 harvestDateMatch &&
-                harvestConditionMatch &&
+                weatherConditionMatch &&
                 productQualityMatch &&
                 productQuantityMatch;
         });
@@ -350,14 +350,14 @@ const EvaluationList = () => {
                     <TextField
                         select
                         variant="outlined"
-                        name="harvestCondition"
-                        value={filter.harvestCondition}
+                        name="weatherCondition"
+                        value={filter.weatherCondition}
                         onChange={handleFilterChange}
                         label="Hasat Durumu"
                         InputProps={{
-                            endAdornment: filter.harvestCondition && (
+                            endAdornment: filter.weatherCondition && (
                                 <InputAdornment position="end">
-                                    <IconButton onClick={() => setFilter({ ...filter, harvestCondition: '' })}>
+                                    <IconButton onClick={() => setFilter({ ...filter, weatherCondition: '' })}>
                                         <ClearIcon />
                                     </IconButton>
                                 </InputAdornment>
@@ -509,9 +509,9 @@ const EvaluationList = () => {
                                             </TableCell>
                                             <TableCell>
                                                 <TableSortLabel
-                                                    active={sortConfig.key === 'harvestCondition'}
+                                                    active={sortConfig.key === 'weatherCondition'}
                                                     direction={sortConfig.direction}
-                                                    onClick={() => handleSortRequest('harvestCondition')}
+                                                    onClick={() => handleSortRequest('weatherCondition')}
                                                 >
                                                     Hasat Durumu
                                                 </TableSortLabel>
@@ -580,7 +580,7 @@ const EvaluationList = () => {
                                                 </TableCell>
                                                 <TableCell>{dayjs(evaluation.sowingDate).format('DD/MM/YYYY')}</TableCell>
                                                 <TableCell>{dayjs(evaluation.harvestDate).format('DD/MM/YYYY')}</TableCell>
-                                                <TableCell>{evaluation.harvestCondition}</TableCell>
+                                                <TableCell>{evaluation.weatherCondition}</TableCell>
                                                 <TableCell>{evaluation.productQuality}</TableCell>
                                                 <TableCell>{evaluation.productQuantity}</TableCell>
                                                 <TableCell>

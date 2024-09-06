@@ -14,7 +14,7 @@ public class EvaluationDetailsDTO {
     private LocalDate sowingDate;
     private LocalDate harvestDate;
     private LocalDate evaluationDate;
-    private String harvestCondition;
+    private String weatherCondition;
     private String productQuality;
     private double productQuantity;
     private long harvestId;

@@ -21,7 +21,7 @@ public class EvaluationDetailsMapper {
         dto.setSowingDate(sowing.getSowingDate());
         dto.setHarvestDate(harvest.getHarvestDate());
         dto.setEvaluationDate(evaluation.getEvaluationDate());
-        dto.setHarvestCondition(evaluation.getHarvestCondition());
+        dto.setWeatherCondition(evaluation.getWeatherCondition());
         dto.setProductQuality(evaluation.getProductQuality());
         dto.setProductQuantity(evaluation.getProductQuantity());
         dto.setHarvestId(harvest.getId());

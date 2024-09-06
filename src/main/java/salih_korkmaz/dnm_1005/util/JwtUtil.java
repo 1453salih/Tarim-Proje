@@ -2,11 +2,12 @@ package salih_korkmaz.dnm_1005.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,14 +16,20 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    // Güvenli bir secret key oluşturuluyor HS256 türünde
-    //! Bu kısım her sunucu kapatılıp açıldığında oturumun yönetilmesi açısından sıkıntı çıkarıyor.
-    //! Sunucu kapatılıp açıldığı anda secret key kısmında uyumaşlık oluyor.
-    private final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final SecretKey SECRET_KEY;
+    private final SecretKey REFRESH_SECRET_KEY;
 
-    // Bu metodu artık e-posta üzerinden çalışacak şekilde düzenliyoruz
+    // Secret key'leri application.properties dosyasından alıyoruz
+    public JwtUtil(
+            @Value("${jwt.secret}") String jwtSecret,
+            @Value("${jwt.refresh.secret}") String jwtRefreshSecret) {
+        // Secret key'leri base64 string'lerden üretiyoruz
+        this.SECRET_KEY = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+        this.REFRESH_SECRET_KEY = Keys.hmacShaKeyFor(jwtRefreshSecret.getBytes(StandardCharsets.UTF_8));
+    }
+
     public String extractEmail(String token) {
-        return extractClaim(token, Claims::getSubject); // getSubject metodu e-posta bilgisini taşıyacak
+        return extractClaim(token, Claims::getSubject);
     }
 
     public Date extractExpiration(String token) {
@@ -46,27 +53,32 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
-    // Kullanıcı adı yerine e-posta kullanarak token oluşturuyoruz
     public String generateToken(String email) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, email); // subject artık e-posta olacak
+        return createToken(claims, email, SECRET_KEY, 1000L * 60 * 60); // 1 saatlik access token
     }
 
-    private String createToken(Map<String, Object> claims, String subject) {
+    public String generateRefreshToken(String email) {
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, email, REFRESH_SECRET_KEY, 1000L * 60 * 60 * 24 * 7); // 7 günlük refresh token
+    }
+
+    private String createToken(Map<String, Object> claims, String subject, SecretKey key, long expirationTime) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(subject) // subject e-posta olarak set ediliyor
+                .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 365))
-                .signWith(SECRET_KEY)
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(key)  // Doğru secret key ile imzalanıyor
                 .compact();
     }
 
-    // Token doğrulamasında e-posta kullanılıyor
     public Boolean validateToken(String token, String email) {
-        final String extractedEmail = extractEmail(token); // Kullanıcı adı yerine e-posta çıkarılıyor
+        final String extractedEmail = extractEmail(token);
         return (extractedEmail.equals(email) && !isTokenExpired(token));
     }
 
-
+    public Boolean validateRefreshToken(String token, String email) {
+        return validateToken(token, email);
+    }
 }

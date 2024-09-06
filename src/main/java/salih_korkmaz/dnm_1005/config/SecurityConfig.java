@@ -73,6 +73,7 @@ public class SecurityConfig {
         config.setAllowedHeaders(List.of("*")); // İzin verilen header'lar
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // İzin verilen HTTP metodları
 
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;

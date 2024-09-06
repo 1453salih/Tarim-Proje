@@ -29,34 +29,28 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            //? Her girişte yeni bir token oluşturur
             String token = jwtUtil.generateToken(user.getEmail());
-            return new LoginResponse(token, user.getId().toString());
+            return new LoginResponse(token, user.getEmail(), user.getId().toString()); // userId eklendi
         } else {
             throw new RuntimeException("Invalid credentials");
         }
     }
 
-
-
     public LoginResponse signup(LoginRequest request) {
-        // E-posta adresinin kullanımda olup olmadığını kontrol eder
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new EmailAlreadyInUseException("This email is already in use");
         }
 
-        // Yeni bir kullanıcı oluşturur ve kaydeder
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
 
-        // Token oluşturulur
         String token = jwtUtil.generateToken(user.getEmail());
 
-        // Kullanıcıya ait token ve userId'yi içeren bir yanıt döndürülür
-        return new LoginResponse(token, user.getId().toString());
+        return new LoginResponse(token, user.getEmail(), user.getId().toString()); // userId eklendi
     }
+
 
 
 
