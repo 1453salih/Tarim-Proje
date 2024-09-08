@@ -165,7 +165,7 @@ const SowingList = () => {
                                         }}>
                                             <Button variant="contained" color="primary"
                                                     onClick={() => handleDetail(sowing.id)} sx={{ml: 1}}>
-                                                Detay
+                                                Düzenle
                                             </Button>
                                             {harvestedSowingIds.includes(sowing.id) ? (
                                                 <Button variant="contained" color="secondary" disabled sx={{ minWidth:'140px'}}>

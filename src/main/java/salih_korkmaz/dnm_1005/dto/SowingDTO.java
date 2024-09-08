@@ -20,7 +20,7 @@ public class SowingDTO {
 
     private String plantName;
 
-    private int clayableLand;
+    private double clayableLand;
 
     @NotNull(message = "Land ID null olamaz")
     private Long landId;

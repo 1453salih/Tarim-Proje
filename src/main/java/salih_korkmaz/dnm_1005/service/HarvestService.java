@@ -17,23 +17,32 @@ public class HarvestService {
     private final SowingService sowingService;
     private final HarvestMapper harvestMapper;
     private final HarvestRepository harvestRepository;
+    private final LandService landService;
 
-    public HarvestService(SowingService sowingService, HarvestMapper harvestMapper,HarvestRepository harvestRepository) {
+    public HarvestService(SowingService sowingService, HarvestMapper harvestMapper, HarvestRepository harvestRepository, LandService landService) {
         this.sowingService = sowingService;
         this.harvestMapper = harvestMapper;
         this.harvestRepository = harvestRepository;
+        this.landService = landService;
     }
 
-    public HarvestDTO saveHarvest(HarvestDTO harvestDto){
-        //Sowing nesnesi döndürülür.
+    @Transactional
+    public HarvestDTO saveHarvest(HarvestDTO harvestDto) {
         Sowing sowing = sowingService.findSowingById(harvestDto.getSowingId());
 
         Harvest harvest = harvestMapper.toEntity(harvestDto);
         harvest.setSowing(sowing);
-
         Harvest savedHarvest = harvestRepository.save(harvest);
+
+        // Hasat yapıldığında ekim yapılan alanı tekrar ekilebilir hale getir.
+        Long landId = sowing.getLand().getId();
+        double sowingField = sowing.getSowingField();
+        landService.addToClayableLand(landId, sowingField);  // Ekim yapılan alanı tekrar ekilebilir hale getir.
+
         return harvestMapper.toDTO(savedHarvest);
     }
+
+
 
     public Harvest findHarvestById(Long harvestId){
         System.out.println("Finding Harvest with id: " + harvestId);
@@ -47,10 +56,21 @@ public class HarvestService {
         return harvestRepository.existsBySowingId(sowingId);
     }
 
+    @Transactional
     public void deleteHarvest(Long harvestId) {
         Harvest harvest = findHarvestById(harvestId);
+        Sowing sowing = harvest.getSowing();
+
+        // Hasat silindiğinde ekim alanı tekrar kullanılmadığı için alanı azalt.
+        Long landId = sowing.getLand().getId();
+        double sowingField = sowing.getSowingField();
+        landService.subtractFromClayableLand(landId, sowingField);  // Alanı tekrar kullanılmaz hale getir.
+
         harvestRepository.delete(harvest);
     }
+
+
+
 
     public List<Harvest> getHarvestsByUserId(Long userId) {
         return harvestRepository.findBySowingLandUserId(userId);

@@ -24,7 +24,7 @@ public class Land {
     @Column(nullable = false)
     private String landType;
 
-    private int clayableLand;
+    private double clayableLand;
 
     @Column(nullable = true)
     String image;

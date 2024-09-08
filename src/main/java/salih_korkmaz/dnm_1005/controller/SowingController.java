@@ -33,18 +33,19 @@ public class SowingController {
 
     @PostMapping
     public SowingDTO createSowing(@RequestBody SowingDTO sowingDto) {
-        // Arazi kullanılabilir alanı güncellemek için alınır.
+        // Arazi kullanılabilir alanı almak için arazi bilgisi alınır.
         LandDTO land = landService.getLandById(sowingDto.getLandId());
 
-        // Ekilebilir alan hesaplanır.
-        double remainingLand = land.getClayableLand() - sowingDto.getSowingField();
+        // Ekim yapılacak alan kadar clayableLand azaltılır.
+        double sowingField = sowingDto.getSowingField();
 
-        // Sadece ClayableLand(Ekilebilir Alan) güncellenir.
-        landService.updateClayableLand(land.getId(), remainingLand);
+        // Mevcut clayableLand değerinden ekim alanını çıkar.
+        landService.subtractFromClayableLand(land.getId(), sowingField);
 
         // Ekim kaydı yapılır.
         return sowingService.saveSowing(sowingDto);
     }
+
 
 
 
@@ -71,4 +72,10 @@ public class SowingController {
         boolean hasatEdildiMi = harvestService.existsBySowingId(sowingId);
         return ResponseEntity.ok(hasatEdildiMi);
     }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteSowing(@PathVariable Long id) {
+        sowingService.deleteSowing(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

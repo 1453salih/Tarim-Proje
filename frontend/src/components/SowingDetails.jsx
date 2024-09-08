@@ -12,18 +12,34 @@ import {
     DialogTitle, FormControl, InputAdornment, InputLabel, MenuItem,
     Paper, Select,
     Snackbar,
-    TextField, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
+    TextField, Grid
 } from "@mui/material";
 import {useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
 import RecommendationsTable from "./RecommendationsTable";
+import {createTheme, ThemeProvider} from "@mui/material/styles";
+import '@fontsource/poppins';
 
+const theme = createTheme({
+    typography: {
+        fontFamily: 'Poppins, sans-serif',
+    },
+    components: {
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    fontFamily: 'Poppins, sans-serif',
+                    textTransform: 'none',
+                }
+            },
+        },
+    },
+});
 const SowingDetails = () => {
     const {id} = useParams();
     const [sowing, setSowing] = useState(null);
     const [landId, setLandId] = useState('');
     const [plantId, setPlantId] = useState('');
-    const [isEditing, setIsEditing] = useState(false);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -32,28 +48,12 @@ const SowingDetails = () => {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [plants, setPlants] = useState([]);
     const [lands, setLands] = useState([]);
-    const [recommendations, setRecommendations] = useState([]);
     const [landType, setLandType] = useState('');
+    const [initialSowingField, setInitialSowingField] = useState(0);
 
     const navigate = useNavigate();
 
-    // Kategorileri, bitkileri ve arazileri çekmek için kullanılan useEffect hookları
-    useEffect(() => {
-        if (plantId) {
-            const fetchPlantCategoryDetails = async () => {
-                try {
-                    const response = await axios.get(`http://localhost:8080/categories/by-plant/${plantId}`, {withCredentials: true});
-                    const plantCategory = response.data;
-                    console.log(plantCategory);
-                    setSelectedCategory(plantCategory.id); // Kategori bilgisini set et
-                } catch (error) {
-                    console.error("Error Fetching Plant Details", error);
-                }
-            };
-            fetchPlantCategoryDetails();
-        }
-    }, [plantId]);
-
+    // Kategorileri, bitkileri ve arazileri çekmek için useEffect hookları
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -65,20 +65,6 @@ const SowingDetails = () => {
         };
         fetchCategories();
     }, []);
-
-    useEffect(() => {
-        if (selectedCategory) {
-            const fetchPlantsByCategory = async () => {
-                try {
-                    const response = await axios.get(`http://localhost:8080/plants/by-category?categoryId=${selectedCategory}`, {withCredentials: true});
-                    setPlants(response.data);
-                } catch (error) {
-                    console.error("Error Fetching Plants", error);
-                }
-            };
-            fetchPlantsByCategory();
-        }
-    }, [selectedCategory]);
 
     useEffect(() => {
         const fetchPlantsAndLands = async () => {
@@ -96,20 +82,26 @@ const SowingDetails = () => {
         fetchPlantsAndLands();
     }, []);
 
-    // Ekim detaylarını ve önerileri çekmek için kullanılan useEffect hookları
+    // Seçilen bitkinin kategori bilgisini getir ve kategori dropdown'ına ata
     useEffect(() => {
         axios.get(`http://localhost:8080/sowings/detail/${id}`, {withCredentials: true})
             .then(response => {
                 setSowing(response.data);
                 setLandId(response.data.landId);
                 setPlantId(response.data.plantId);
-                setSelectedCategory(response.data.categoryId);
-                setLandType(response.data.landType); // Sowing Type burada set ediliyor
+                setLandType(response.data.landType);
+
+                // Sayfa açıldığında gelen ekim alanı kaydediliyor
+                setInitialSowingField(parseFloat(response.data.sowingField));
+
+                return axios.get(`http://localhost:8080/categories/by-plant/${response.data.plantId}`, {withCredentials: true});
+            })
+            .then(categoryResponse => {
+                setSelectedCategory(categoryResponse.data.id);
             })
             .catch(error => console.error('Error fetching sowing details:', error));
     }, [id]);
 
-    // Kaydetme ve silme işlemleri için kullanılan fonksiyonlar
     const handleSave = async () => {
         if (!plantId || !sowing.sowingDate || !landId || !sowing.sowingField || !landType) {
             setSnackbarMessage('Please fill in all the fields.');
@@ -118,30 +110,36 @@ const SowingDetails = () => {
             return;
         }
 
-        // Seçilen arazinin ekilebilir alanını bulmak için arazi verileri içinde filtreleme
         const selectedLand = lands.find(land => land.id === parseInt(landId));
 
-        if (selectedLand && parseFloat(sowing.sowingField) > parseFloat(selectedLand.clayableLand)) {
-            setSnackbarMessage(`Sowing field (${sowing.sowingField} m²) cannot be larger than the clayable land (${selectedLand.clayableLand} m²).`);
+        // İlk gelen ekim alanı ile ekilebilir alan toplanıyor.
+        const totalSowingField = initialSowingField;
+        const totalLandField = parseFloat(selectedLand.clayableLand);
+        const updateLimit = totalSowingField+totalLandField
+        // Eğer yazılan değer önceki değer + ekilebilir alan değerinden büyükse ekim yapılamaz.
+        if (selectedLand && sowing.sowingField > updateLimit) {
+            setSnackbarMessage(`Ekim alanı (${totalSowingField} m²) ekilebilir araziden daha büyük olamaz (${updateLimit} m²).`);
             setSnackbarSeverity('error');
             setOpenSnackbar(true);
             return;
+        }else{
+            console.log("Program kafayı yedi.")
         }
 
         const updatedSowing = {
             ...sowing,
             plantId: parseInt(plantId),
             landId: parseInt(landId),
-            landType: landType // landType güncellenmiş olarak dahil ediliyor
+            landType: landType
         };
 
         try {
             const response = await axios.put(`http://localhost:8080/sowings/update/${id}`, updatedSowing, {withCredentials: true});
             if (response.status === 200) {
-                setSnackbarMessage('Sowing updated successfully!');
+                setSnackbarMessage('Ekim başarıyla güncellendi!');
                 setSnackbarSeverity('success');
                 setOpenSnackbar(true);
-                setTimeout(() => navigate('/sowing-list'), 3000);
+                setTimeout(() => navigate('/sowing-list'), 500);
             } else {
                 setSnackbarMessage('Failed to update the Sowing.');
                 setSnackbarSeverity('error');
@@ -154,26 +152,30 @@ const SowingDetails = () => {
         }
     };
 
-
-
-
     const handleDelete = async () => {
         try {
-            const response = await axios.delete(`http://localhost:8080/sowings/delete/${id}`, {withCredentials: true});
-            if (response.status === 200) {
-                setSnackbar({open: true, message: 'Sowing deleted successfully!', severity: 'success'});
-                setTimeout(() => navigate('/sowing-list'), 3000);
+            const response = await axios.delete(`http://localhost:8080/sowings/delete/${id}`, { withCredentials: true });
+            if (response.status === 200 || response.status === 204) {
+                setSnackbarMessage('Ekim başarıyla silindi!');
+                setSnackbarSeverity('success');
+                setOpenSnackbar(true);
+
+                // Modalı kapat
+                handleCloseDeleteDialog();
+
+                setTimeout(() => navigate('/sowing-list'), 500);
             } else {
-                setSnackbar({open: true, message: 'Failed to delete the Sowing.', severity: 'error'});
+                setSnackbarMessage('Ekim silinemedi.');
+                setSnackbarSeverity('error');
+                setOpenSnackbar(true);
             }
         } catch (error) {
-            setSnackbar({open: true, message: 'Error: ' + error.message, severity: 'error'});
+            setSnackbarMessage('Hata: ' + error.message);
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
         }
     };
 
-    const handleEditToggle = () => {
-        setIsEditing(!isEditing);
-    };
 
     const handleCloseSnackbar = () => {
         setOpenSnackbar(false);
@@ -195,188 +197,176 @@ const SowingDetails = () => {
         }));
     };
 
+    const handleCancel = () => {
+        navigate('/sowing-list');  // İptal işlemi.
+    };
+
     if (!sowing) {
         return <Typography>Loading...</Typography>;
     }
 
     return (
-        <Container maxWidth="lg">
-            <BreadcrumbComponent pageName="Ekimlerim"/>
-            <Grid container spacing={4}>
-                <Grid item xs={12} md={6}>
-                    <Box>
-                        <Paper elevation={3} sx={{p: 2}}>
-                            <Typography variant="h4" component="h2" gutterBottom>
-                                {isEditing ? 'Ekim Bilgilerini Düzenle' : `${sowing.landName} - ${sowing.plantName} Detayları`}
-                            </Typography>
-                            {isEditing ? (
-                                <>
-                                    <FormControl fullWidth margin="normal">
-                                        <InputLabel>Kategori</InputLabel>
-                                        <Select
-                                            label="Kategori"
-                                            value={selectedCategory}
-                                            onChange={(e) => setSelectedCategory(e.target.value)}
-                                        >
-                                            {categories.length > 0 ? (
-                                                categories.map((category) => (
-                                                    <MenuItem key={category.id} value={category.id}>
-                                                        {category.categoryName}
-                                                    </MenuItem>
-                                                ))
-                                            ) : (
-                                                <MenuItem disabled>
-                                                    Not Found
+        <ThemeProvider theme={theme}>
+
+
+            <Container maxWidth="lg">
+                <BreadcrumbComponent pageName="Ekim Güncelle"/>
+                <Grid container spacing={4}>
+                    <Grid item xs={12} md={6}>
+                        <Box>
+                            <Paper elevation={3} sx={{p: 2}}>
+                                <Typography variant="h4" component="h2" gutterBottom>
+                                    Ekim Bilgilerini Düzenle
+                                </Typography>
+                                <FormControl fullWidth margin="normal">
+                                    <InputLabel>Kategori</InputLabel>
+                                    <Select
+                                        label="Kategori"
+                                        value={selectedCategory}  // Doğru kategori burada gösteriliyor
+                                        onChange={(e) => setSelectedCategory(e.target.value)}
+                                    >
+                                        {categories.length > 0 ? (
+                                            categories.map((category) => (
+                                                <MenuItem key={category.id} value={category.id}>
+                                                    {category.categoryName}
                                                 </MenuItem>
-                                            )}
-                                        </Select>
-                                    </FormControl>
+                                            ))
+                                        ) : (
+                                            <MenuItem disabled>Not Found</MenuItem>
+                                        )}
+                                    </Select>
+                                </FormControl>
 
-                                    <FormControl fullWidth margin="normal">
-                                        <InputLabel>Bitki</InputLabel>
-                                        <Select
-                                            label="Bitki"
-                                            value={plantId}
-                                            onChange={(e) => setPlantId(e.target.value)}
-                                            disabled={!selectedCategory}
-                                        >
-                                            {plants.map((plant) => (
-                                                <MenuItem key={plant.id} value={plant.id}>{plant.name}</MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
+                                <FormControl fullWidth margin="normal">
+                                    <InputLabel>Bitki</InputLabel>
+                                    <Select
+                                        label="Bitki"
+                                        value={plantId}
+                                        onChange={(e) => setPlantId(e.target.value)}
+                                        disabled={!selectedCategory}
+                                    >
+                                        {plants.map((plant) => (
+                                            <MenuItem key={plant.id} value={plant.id}>{plant.name}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
 
-                                    <FormControl fullWidth margin="normal">
-                                        <InputLabel>Arazi</InputLabel>
-                                        <Select
-                                            label="Arazi"
-                                            value={landId}
-                                            onChange={(e) => setLandId(e.target.value)}
-                                        >
-                                            {lands.map((land) => (
-                                                <MenuItem key={land.id} value={land.id}>{land.name}</MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
+                                <FormControl fullWidth margin="normal">
+                                    <InputLabel>Arazi</InputLabel>
+                                    <Select
+                                        label="Arazi"
+                                        value={landId}
+                                        onChange={(e) => setLandId(e.target.value)}
+                                    >
+                                        {lands.map((land) => (
+                                            <MenuItem key={land.id} value={land.id}>{land.name}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
 
-                                    <FormControl fullWidth margin="normal">
-                                        <InputLabel>Land Type</InputLabel>
-                                        <Select
-                                            label="Land Type"
-                                            value={landType}
-                                            onChange={(e) => {
-                                                console.log("Selected Sowing Type: ", e.target.value); // Konsola seçilen değeri yazdırır
-                                                setLandType(e.target.value);
-                                            }}
-                                        >
-                                            <MenuItem value="Tarla" key="Tarla">Tarla</MenuItem>
-                                            <MenuItem value="Bağ" key="Bağ">Bağ</MenuItem>
-                                            <MenuItem value="Bahçe" key="Bahçe">Bahçe</MenuItem>
-                                            <MenuItem value="Zeytinlik" key="Zeytinlik">Zeytinlik</MenuItem>
-                                            <MenuItem value="Çayır" key="Çayır">Çayır</MenuItem>
-                                            <MenuItem value="Mera" key="Mera">Mera</MenuItem>
-                                        </Select>
-                                    </FormControl>
+                                <FormControl fullWidth margin="normal">
+                                    <InputLabel>Arazi Tipi</InputLabel>
+                                    <Select
+                                        label="Land Type"
+                                        value={landType}
+                                        onChange={(e) => setLandType(e.target.value)}
+                                    >
+                                        <MenuItem value="Tarla">Tarla</MenuItem>
+                                        <MenuItem value="Bağ">Bağ</MenuItem>
+                                        <MenuItem value="Bahçe">Bahçe</MenuItem>
+                                        <MenuItem value="Zeytinlik">Zeytinlik</MenuItem>
+                                        <MenuItem value="Çayır">Çayır</MenuItem>
+                                        <MenuItem value="Mera">Mera</MenuItem>
+                                    </Select>
+                                </FormControl>
 
-                                    <TextField
-                                        fullWidth
-                                        label="Ekim Alanı"
-                                        name="sowingField"
-                                        value={sowing.sowingField}
-                                        onChange={handleChange}
-                                        margin="normal"
-                                        type="number"
-                                        InputProps={{
-                                            endAdornment: <InputAdornment position="end">m²</InputAdornment>,
-                                        }}
-                                        inputProps={{min: 0}}
-                                    />
-                                    <TextField
-                                        fullWidth
-                                        label="Ekim Tarihi"
-                                        name="sowingDate"
-                                        value={sowing.sowingDate}
-                                        onChange={handleChange}
-                                        margin="normal"
-                                        type="date"
-                                        InputLabelProps={{shrink: true}}
-                                    />
-                                </>
-                            ) : (
-                                <>
+                                <TextField
+                                    fullWidth
+                                    label="Ekim Alanı"
+                                    name="sowingField"
+                                    value={sowing.sowingField}
+                                    onChange={handleChange}
+                                    margin="normal"
+                                    type="number"
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position="end">m²</InputAdornment>,
+                                    }}
+                                    inputProps={{min: 0}}
+                                />
+                                <TextField
+                                    fullWidth
+                                    label="Ekim Tarihi"
+                                    name="sowingDate"
+                                    value={sowing.sowingDate}
+                                    onChange={handleChange}
+                                    margin="normal"
+                                    type="date"
+                                    InputLabelProps={{shrink: true}}
+                                />
+                                <Grid container spacing={2} sx={{marginTop: 3}}>
+                                    <Grid item xs={6}>
+                                        <Box sx={{textAlign: 'left'}}>
+                                            <Button variant="contained" color="primary" onClick={handleSave}>
+                                                Kaydet
+                                            </Button>
+                                            <Button variant="contained" color="error" onClick={handleOpenDeleteDialog}
+                                                    sx={{marginLeft: 2}}>
+                                                Sil
+                                            </Button>
+                                        </Box>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Box sx={{textAlign: 'right'}}>
+                                            <Button variant="contained" color="inherit" onClick={handleCancel}>
+                                                İptal
+                                            </Button>
+                                        </Box>
+                                    </Grid>
+                                </Grid>
 
-                                    <Typography variant="h6">Ekim Alanı: {sowing.sowingField} m²</Typography>
-                                    <Typography variant="h6">Ekim Türü: {sowing.landType}</Typography>
-                                    <Typography variant="h6">Bitki: {sowing.plantName}</Typography>
-                                    <Typography variant="h6">Arazi: {sowing.landName}</Typography>
-                                    <Typography variant="h6">Ekim Tarihi: {sowing.sowingDate}</Typography>
-                                </>
-                            )}
-                        </Paper>
-                        <Box sx={{marginTop: 3}}>
-                            {isEditing ? (
-                                <>
-                                    <Button variant="contained" color="primary" onClick={handleSave}>
-                                        Kaydet
-                                    </Button>
-                                    <Button variant="contained" color="secondary" onClick={handleEditToggle}
-                                            sx={{marginLeft: 2}}>
-                                        İptal
-                                    </Button>
-                                </>
-                            ) : (
-                                <>
-                                    <Button variant="contained" color="primary" onClick={handleEditToggle}>
-                                        Düzenle
-                                    </Button>
-                                    <Button variant="contained" color="error" onClick={handleOpenDeleteDialog}
-                                            sx={{marginLeft: 2}}>
-                                        Sil
-                                    </Button>
-                                </>
-                            )}
+                            </Paper>
+
                         </Box>
-                    </Box>
+                    </Grid>
+
+                    <RecommendationsTable landId={landId}/>
+
                 </Grid>
-                {isEditing ? (
-                    <RecommendationsTable landId={landId} />
-                ) : null}
 
-            </Grid>
+                <Snackbar
+                    open={openSnackbar}
+                    autoHideDuration={3000}
+                    onClose={handleCloseSnackbar}
+                    anchorOrigin={{vertical: 'top', horizontal: 'center'}}
+                >
+                    <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{width: '100%'}}>
+                        {snackbarMessage}
+                    </Alert>
+                </Snackbar>
 
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={3000}
-                onClose={handleCloseSnackbar}
-                anchorOrigin={{vertical: 'top', horizontal: 'center'}}
-            >
-                <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{width: '100%'}}>
-                    {snackbarMessage}
-                </Alert>
-            </Snackbar>
-
-            <Dialog
-                open={openDeleteDialog}
-                onClose={handleCloseDeleteDialog}
-                aria-labelledby="delete-dialog-title"
-                aria-describedby="delete-dialog-description"
-            >
-                <DialogTitle id="delete-dialog-title">Silmek istediğinizden emin misiniz?</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="delete-dialog-description">
-                        Bu işlem geri alınamaz. Silmek istediğinizden emin misiniz?
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseDeleteDialog} color="primary">
-                        İptal
-                    </Button>
-                    <Button onClick={handleDelete} color="error" autoFocus>
-                        Sil
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </Container>
+                <Dialog
+                    open={openDeleteDialog}
+                    onClose={handleCloseDeleteDialog}
+                    aria-labelledby="delete-dialog-title"
+                    aria-describedby="delete-dialog-description"
+                >
+                    <DialogTitle id="delete-dialog-title">Silmek istediğinizden emin misiniz?</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="delete-dialog-description">
+                            Bu işlem geri alınamaz. Silmek istediğinizden emin misiniz?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseDeleteDialog} color="primary">
+                            İptal
+                        </Button>
+                        <Button onClick={handleDelete} color="error" autoFocus>
+                            Sil
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </Container>
+        </ThemeProvider>
     );
 };
 

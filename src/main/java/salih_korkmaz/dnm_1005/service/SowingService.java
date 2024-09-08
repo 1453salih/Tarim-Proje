@@ -31,8 +31,8 @@ public class SowingService {
     }
 
     public SowingDTO saveSowing(SowingDTO sowingDto) {
-        Plant plant = plantService.findPlantById(sowingDto.getPlantId());  // Plant nesnesi döndürülüyor
-        Land land = landService.findLandById(sowingDto.getLandId());  // Aynı şekilde Land için de eklenebilir
+        Plant plant = plantService.findPlantById(sowingDto.getPlantId());  // Plant nesnesi döndürülüyor.
+        Land land = landService.findLandById(sowingDto.getLandId());  // Aynı şekilde Land için de eklenebilir.
 
         Sowing sowing = sowingMapper.toEntity(sowingDto);
         sowing.setPlant(plant);
@@ -41,20 +41,33 @@ public class SowingService {
         Sowing savedSowing = sowingRepository.save(sowing);
         return sowingMapper.toDto(savedSowing);
     }
-    public Sowing updateSowing (Long id, @Valid SowingDTO sowingDto) {
-       Sowing existingSowing = sowingRepository.findById(id)
-               .orElseThrow(() -> new RuntimeException("Sowing not found"));
+    public Sowing updateSowing(Long id, @Valid SowingDTO sowingDto) {
+        Sowing existingSowing = sowingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sowing not found"));
 
-       existingSowing.setSowingField(sowingDto.getSowingField());
-       existingSowing.setSowingDate(sowingDto.getSowingDate());
+        // Önceki ekim alanını alır.
+        double oldSowingField = existingSowing.getSowingField();
 
-        if (sowingDto.getLandId() != null) {
-            Land land = Optional.ofNullable(landService.findLandById(sowingDto.getLandId()))
-                    .orElseThrow(() -> new RuntimeException("Land not found"));
-            existingSowing.setLand(land);
+        // Yeni ekim alanı ile eski ekim alanı farkını hesaplar.
+        double newSowingField = sowingDto.getSowingField();
+        double fieldDifference = newSowingField - oldSowingField;
+
+        // Araziyi getir
+        Land land = Optional.ofNullable(landService.findLandById(sowingDto.getLandId()))
+                .orElseThrow(() -> new RuntimeException("Land not found"));
+
+        // Eğer fark pozitifse, ekilebilir alanı azaltır (subtractFromClayableLand), negatifse ekler (addToClayableLand).
+        if (fieldDifference > 0) {
+            landService.subtractFromClayableLand(land.getId(), fieldDifference);
+        } else if (fieldDifference < 0) {
+            landService.addToClayableLand(land.getId(), Math.abs(fieldDifference));
         }
 
-        if(sowingDto.getPlantId() != null) {
+        // Diğer alanları günceller.
+        existingSowing.setSowingField((int) newSowingField);//Backendde İnt türünde tanımlı set edilen değer.
+        existingSowing.setSowingDate(sowingDto.getSowingDate());
+
+        if (sowingDto.getPlantId() != null) {
             Plant plant = Optional.ofNullable(plantService.findPlantById(sowingDto.getPlantId()))
                     .orElseThrow(() -> new RuntimeException("Plant not found"));
             existingSowing.setPlant(plant);
@@ -62,6 +75,7 @@ public class SowingService {
 
         return sowingRepository.save(existingSowing);
     }
+
 
 
 
@@ -88,4 +102,21 @@ public class SowingService {
         return sowingRepository.findById(sowingId)
                 .orElseThrow(() -> new RuntimeException("EKim bulunamadı"));
     }
+
+    public void deleteSowing(Long id) {
+        // Silinecek ekim kaydını bulur.
+        Sowing existingSowing = sowingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Sowing not found"));
+
+        // İlgili araziyi bulur.
+        Land land = existingSowing.getLand();
+
+        // Ekim alanını ekilebilir alana geri ekler.
+        double sowingField = existingSowing.getSowingField();
+        landService.addToClayableLand(land.getId(), sowingField);
+
+        // Ekim kaydını siler.
+        sowingRepository.delete(existingSowing);
+    }
+
 }

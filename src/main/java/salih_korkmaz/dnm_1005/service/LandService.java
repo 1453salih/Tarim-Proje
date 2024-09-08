@@ -59,42 +59,88 @@ public class LandService {
     }
 
     public Land updateLand(Long id, @Valid LandDTO landDto, MultipartFile file) {
+        // Mevcut araziyi al.
         Land existingLand = landRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Land not found"));
 
+        // Mevcut arazi büyüklüğünü kaydet.
+        double currentLandSize = existingLand.getLandSize();
+
+        // Yeni arazi büyüklüğünü güncelle.
         existingLand.setName(landDto.getName());
         existingLand.setLandSize(landDto.getLandSize());
 
+        // Kullanıcıyı güncelleme işlemi
         if (landDto.getUserId() != null) {
             User user = userRepository.findById(landDto.getUserId())
                     .orElseThrow(() -> new RuntimeException("User not found"));
             existingLand.setUser(user);
         }
 
+        // Yerleşimi güncelleme işlemi
         if (landDto.getLocalityId() != null) {
             Locality locality = localityRepository.findById(landDto.getLocalityId())
                     .orElseThrow(() -> new RuntimeException("Locality not found"));
             existingLand.setLocality(locality);
         }
 
-        // Dosya yükleme işlemi
+        // Görsel dosya yükleme işlemi
         if (file != null && !file.isEmpty()) {
-            String imageUrl = uploadImage(file); // Görsel yüklenir ve URL döndürülür
-            existingLand.setImage(imageUrl); // Görsel URL'si Land objesine set edilir
+            String imageUrl = uploadImage(file);
+            existingLand.setImage(imageUrl);
         }
 
+        // Arazi büyüklüğündeki değişikliği kontrol eder
+        double newLandSize = landDto.getLandSize();
+        double sizeDifference = newLandSize - currentLandSize;
+
+        if (sizeDifference != 0) {
+            double currentClayableLand = existingLand.getClayableLand();
+
+            // Eğer arazi büyüklüğü artıyorsa ekilebilir alanı artırır.
+            if (sizeDifference > 0) {
+                existingLand.setClayableLand(currentClayableLand + sizeDifference);
+            }
+            // Eğer arazi büyüklüğü azalıyorsa, ekilebilir alanı azaltır.
+            else if (sizeDifference < 0) {
+                double updatedClayableLand = currentClayableLand + sizeDifference; // Bu durumda sizeDifference negatif olacak
+                existingLand.setClayableLand(Math.max(0, updatedClayableLand)); // 0'dan küçük olamaz
+            }
+        }
+
+        // Arazinin güncellenmiş halini kaydet.
         return landRepository.save(existingLand);
     }
 
-    public void updateClayableLand(Long landId, double remainingLand) {
+
+    public void addToClayableLand(Long landId, double amount) {
         Land land = landRepository.findById(landId).orElseThrow(() -> new RuntimeException("Land not found"));
 
-        // Eğer ClayableLand int ise, double'ı int'e çevirelim
-        //Burada bir anlamadığım nokta parametre int olunca controllerda error veriyor.
-        land.setClayableLand((int) remainingLand);
+        // Mevcut clayableLand değerini al ve artır.
+        double currentClayableLand = land.getClayableLand();
+        double updatedClayableLand = currentClayableLand + amount;
 
+        // Güncellenen clayableLand değerini ayarla.
+        land.setClayableLand(updatedClayableLand);
+
+        // Yeni değeri kaydet.
         landRepository.save(land);
     }
+
+    public void subtractFromClayableLand(Long landId, double amount) {
+        Land land = landRepository.findById(landId).orElseThrow(() -> new RuntimeException("Land not found"));
+
+        // Mevcut clayableLand değerini al ve azalt.
+        double currentClayableLand = land.getClayableLand();
+        double updatedClayableLand = currentClayableLand - amount;
+
+        // Güncellenen clayableLand değerini ayarla.
+        land.setClayableLand(updatedClayableLand);
+
+        // Yeni değeri kaydet.
+        landRepository.save(land);
+    }
+
 
 
 
@@ -133,5 +179,7 @@ public class LandService {
             throw new RuntimeException("Failed to store image", e);
         }
     }
+
+
 
 }

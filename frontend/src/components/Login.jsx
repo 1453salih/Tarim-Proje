@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { TextField, Link, Grid, Box, Typography, Container, Paper, FormControlLabel, Checkbox, Button } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { green } from '@mui/material/colors';
-import Spinner from '../Spinner/Spinner'; // Spinner bileşenini import ediyoruz
+import Spinner from '../Spinner/Spinner';
 
 const theme = createTheme();
 
@@ -12,42 +12,65 @@ function Login({ setIsLoggedIn }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);  // Başlangıçta loading false
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    const validateEmail = (email) => {
+        // Basit e-posta doğrulama regex'i
+        const re = /\S+@\S+\.\S+/;
+        return re.test(email);
+    };
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setLoading(true);  // Giriş işlemi başladığında loading true
+
+        // Form doğrulamaları
+        if (!email || !password) {
+            setError('Lütfen tüm alanları doldurun.');
+            return;
+        }
+
+        if (!validateEmail(email)) {
+            setError('Geçerli bir e-posta adresi giriniz.');
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+
         try {
             const response = await axios.post('http://localhost:8080/auth/login', { email, password }, { withCredentials: true });
             if (response.status === 200) {
                 const data = response.data;
                 localStorage.setItem('userId', data.userId);
-                setError('');
                 setIsLoggedIn(true);
                 navigate('/home');
             } else {
-                setError('Invalid credentials');
+                setError('Geçersiz kimlik bilgileri.');
             }
         } catch (error) {
-            setError('An error occurred');
+            if (error.response && error.response.data && error.response.data.message) {
+                setError(error.response.data.message);
+            } else {
+                setError('Bir hata oluştu. Lütfen tekrar deneyiniz.');
+            }
             console.error('Error:', error);
         } finally {
-            setLoading(false);  // Giriş işlemi tamamlandığında loading false
+            setLoading(false);
         }
     };
 
     return (
         <ThemeProvider theme={theme}>
-            {loading ? (  // Eğer loading true ise spinner göster
+            {loading ? (
                 <Spinner />
-            ) : (  // Eğer loading false ise form göster
+            ) : (
                 <Container component="main" maxWidth="md" sx={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Paper elevation={6} sx={{ display: 'flex', borderRadius: 2, overflow: 'hidden', width: '100%' }}>
                         <Box
                             sx={{
                                 width: '45%',
-                                backgroundImage: 'url(../src/assets/loginCard1.png)', // Sol tarafta gösterilecek fotoğrafın yolu
+                                backgroundImage: 'url(../src/assets/loginCard1.png)',
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                                 backgroundColor: green[500],
@@ -95,6 +118,8 @@ function Login({ setIsLoggedIn }) {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     sx={{ backgroundColor: '#f9f9f9', borderRadius: '8px' }}
+                                    error={!!error && !validateEmail(email)}
+                                    helperText={!!error && !validateEmail(email) ? 'Geçerli bir e-posta adresi giriniz.' : ''}
                                 />
                                 <TextField
                                     variant="outlined"
@@ -109,6 +134,8 @@ function Login({ setIsLoggedIn }) {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     sx={{ backgroundColor: '#f9f9f9', borderRadius: '8px' }}
+                                    error={!!error && password.length < 6}
+                                    helperText={!!error && password.length < 6 ? 'Şifre en az 6 karakter olmalıdır.' : ''}
                                 />
                                 <FormControlLabel
                                     control={<Checkbox value="remember" color="primary" />}

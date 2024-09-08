@@ -21,7 +21,7 @@ public class LandDTO {
     @NotNull(message = "Land size cannot be null")
     private int landSize;
 
-    private int clayableLand;
+    private double clayableLand;
 
     @NotNull(message = "Locality ID cannot be null")
     private Long localityId;
