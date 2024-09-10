@@ -6,7 +6,7 @@
 
 <h3>Arazi Listesi Görsel</h3>
 
-![image](https://github.com/user-attachments/assets/09493e20-acb8-47dc-b262-adf6ea342ff5)
+-
 
 <h3>Arazi Ekleme Formu</h3>
 
