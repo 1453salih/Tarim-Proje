@@ -16,4 +16,5 @@ public class RecommendationDTO {
     private String plantName;
     private String plantImage;
     private LocalityDTO locality;
+    private double cropPerSquareMeter;
 }

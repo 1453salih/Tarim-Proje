@@ -19,4 +19,6 @@ public class PlantDTO {
 
     @NotNull(message = "Category name cannot be null")
     private String categoryName;
+
+    private double yieldPerSquareMeter;
 }

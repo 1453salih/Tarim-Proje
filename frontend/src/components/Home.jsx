@@ -7,7 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
-
+import BreadcrumbComponent from "./BreadCrumb.jsx";
 import card1 from '../assets/card1.webp';
 import card2 from '../assets/card2.webp';
 import card3 from '../assets/card3.webp';

@@ -169,6 +169,10 @@ function AddSowing() {
         setSnackbar(prev => ({ ...prev, open: false }));
     };
 
+    const handleCancel = () => {
+        navigate('/home');  // İptal işlemi.
+    };
+
     return (
         <ThemeProvider theme={theme}>
             <Container maxWidth="lg">
@@ -177,7 +181,7 @@ function AddSowing() {
                     <Grid item xs={12} md={6}>
                         <Paper component="form" onSubmit={handleAddSowing} sx={{ p: 5 }} elevation={6}>
                             <Typography variant="h5" component="h3" gutterBottom>
-                                Add Sowing
+                                Ekim Yap
                             </Typography>
 
                             <FormControl fullWidth margin="normal" error={plantIdError}>
@@ -264,13 +268,23 @@ function AddSowing() {
                                 fullWidth
                                 sx={{
                                     mt: 2,
+                                    mb:1,
                                     backgroundColor: orange[700],
                                     '&:hover': {
                                         backgroundColor: orange[900],
                                     },
                                 }}
                             >
-                                Add Sowing
+                                Ekim Yap
+                            </Button>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                fullWidth
+                                color='error'
+                                onClick={handleCancel}
+                            >
+                                İptal
                             </Button>
                         </Paper>
                     </Grid>

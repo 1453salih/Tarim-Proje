@@ -1,5 +1,6 @@
 package salih_korkmaz.dnm_1005.service;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -48,20 +49,23 @@ public class LandService {
         // DTO'dan entity'ye dönüşüm.
         Land land = landMapper.toEntity(landDto, user, locality);
 
-        // Resim dosyası varsa işlenir.
+        // Resim dosyası varsa işlenir, yoksa varsayılan resim atanır.
         if (imageFile != null && !imageFile.isEmpty()) {
             String imageUrl = uploadImage(imageFile);
             land.setImage(imageUrl);
+        } else {
+            land.setImage("../../src/assets/DefaultImage/defaultLand.png");
         }
 
         // Entity kaydedilir.
         return landRepository.save(land);
     }
 
+
     public Land updateLand(Long id, @Valid LandDTO landDto, MultipartFile file) {
         // Mevcut araziyi al.
         Land existingLand = landRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Land not found"));
+                .orElseThrow(() -> new RuntimeException("Arazi bulunamadı"));
 
         // Mevcut arazi büyüklüğünü kaydet.
         double currentLandSize = existingLand.getLandSize();
@@ -73,14 +77,14 @@ public class LandService {
         // Kullanıcıyı güncelleme işlemi
         if (landDto.getUserId() != null) {
             User user = userRepository.findById(landDto.getUserId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
             existingLand.setUser(user);
         }
 
         // Yerleşimi güncelleme işlemi
         if (landDto.getLocalityId() != null) {
             Locality locality = localityRepository.findById(landDto.getLocalityId())
-                    .orElseThrow(() -> new RuntimeException("Locality not found"));
+                    .orElseThrow(() -> new RuntimeException("Lokasyon bulunamadı"));
             existingLand.setLocality(locality);
         }
 
@@ -114,7 +118,7 @@ public class LandService {
 
 
     public void addToClayableLand(Long landId, double amount) {
-        Land land = landRepository.findById(landId).orElseThrow(() -> new RuntimeException("Land not found"));
+        Land land = landRepository.findById(landId).orElseThrow(() -> new RuntimeException("Arazi bulunamadı"));
 
         // Mevcut clayableLand değerini al ve artır.
         double currentClayableLand = land.getClayableLand();
@@ -128,7 +132,7 @@ public class LandService {
     }
 
     public void subtractFromClayableLand(Long landId, double amount) {
-        Land land = landRepository.findById(landId).orElseThrow(() -> new RuntimeException("Land not found"));
+        Land land = landRepository.findById(landId).orElseThrow(() -> new RuntimeException("Arazi bulunamadı"));
 
         // Mevcut clayableLand değerini al ve azalt.
         double currentClayableLand = land.getClayableLand();
@@ -147,7 +151,7 @@ public class LandService {
 
     public LandDTO getLandById(Long id) {
         Land land = landRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Land not found"));
+                .orElseThrow(() -> new RuntimeException("Arazi bulunamadı"));
 
         return landMapper.toDTO(land);
     }
@@ -160,26 +164,31 @@ public class LandService {
 
     public Land findLandById(Long id) {
         return landRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Land not found"));
+                .orElseThrow(() -> new RuntimeException("Arazi bulunamadı"));
     }
 
     public Locality getLocalityByLandId(Long landId) {
         return landRepository.findById(landId)
                 .map(Land::getLocality)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid land ID: " + landId));
+                .orElseThrow(() -> new IllegalArgumentException("Geçersiz arazi ID: " + landId));
     }
     public String uploadImage(MultipartFile file) {
         try {
-            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            Path path = Paths.get(uploadDir + File.separator + fileName);
-            Files.createDirectories(path.getParent());
+            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename(); // Benzersiz dosya adı.
+            Path path = Paths.get(uploadDir + File.separator + fileName);// kaydedilecek yol.
+            Files.createDirectories(path.getParent());//Dizin mevcut değilse dizini oluşturur.
             Files.write(path, file.getBytes());
             return "../../src/assets/Lands/" + fileName;
         } catch (IOException e) {
-            throw new RuntimeException("Failed to store image", e);
+            throw new RuntimeException("Görüntü depolanamadı", e);
         }
     }
 
 
+    @Transactional
+    public void deleteLand(Long id) {
+        Land land = landRepository.findById(id).orElseThrow(() -> new RuntimeException("Arazi bulunamadı"));
+        landRepository.delete(land);  // Arazi silinir
+    }
 
 }

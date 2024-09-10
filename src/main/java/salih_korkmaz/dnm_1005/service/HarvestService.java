@@ -34,10 +34,10 @@ public class HarvestService {
         harvest.setSowing(sowing);
         Harvest savedHarvest = harvestRepository.save(harvest);
 
-        // Hasat yapıldığında ekim yapılan alanı tekrar ekilebilir hale getir.
+        // Hasat yapıldığında ekim yapılan alanı tekrar ekilebilir hale getirir.
         Long landId = sowing.getLand().getId();
         double sowingField = sowing.getSowingField();
-        landService.addToClayableLand(landId, sowingField);  // Ekim yapılan alanı tekrar ekilebilir hale getir.
+        landService.addToClayableLand(landId, sowingField);  // Ekim yapılan alanı tekrar ekilebilir hale getirir.
 
         return harvestMapper.toDTO(savedHarvest);
     }
@@ -51,7 +51,7 @@ public class HarvestService {
     }
 
 
-    // Yeni metot: Belirli bir ekim için hasat edilip edilmediğini kontrol eder
+    // Yeni metot: Belirli bir ekim için hasat edilip edilmediğini kontrol eder.
     public boolean existsBySowingId(Long sowingId) {
         return harvestRepository.existsBySowingId(sowingId);
     }
@@ -61,10 +61,10 @@ public class HarvestService {
         Harvest harvest = findHarvestById(harvestId);
         Sowing sowing = harvest.getSowing();
 
-        // Hasat silindiğinde ekim alanı tekrar kullanılmadığı için alanı azalt.
+        // Hasat silindiğinde ekim alanı tekrar kullanılmadığı için alanı azaltır.
         Long landId = sowing.getLand().getId();
         double sowingField = sowing.getSowingField();
-        landService.subtractFromClayableLand(landId, sowingField);  // Alanı tekrar kullanılmaz hale getir.
+        landService.subtractFromClayableLand(landId, sowingField);  // Alanı tekrar kullanılmaz hale getirir.
 
         harvestRepository.delete(harvest);
     }
@@ -79,7 +79,7 @@ public class HarvestService {
     public List<HarvestDTO> getAllHarvestsByUserId(Long userId) {
         List<Harvest> harvests = harvestRepository.findBySowingLandUserId(userId);
         return harvests.stream()
-                .map(harvestMapper::toDTO)  // Tek adımda mapper'ı kullan
+                .map(harvestMapper::toDTO)
                 .collect(Collectors.toList());
     }
 

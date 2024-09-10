@@ -39,6 +39,7 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 
 import '@fontsource/poppins';
+import NoResult from "./NoResults.jsx";
 
 const theme = createTheme({
     typography: {
@@ -91,19 +92,19 @@ const theme = createTheme({
         },
         MuiTableSortLabel: {
             styleOverrides: {
-                icon: {
-                    color: '#ff6305 !important', // İkonu turuncu yap
-                },
-                active: {
-                    color: '#ff6305', // Aktifken turuncu yap
-                },
                 root: {
+                    '&.Mui-active': {
+                        color: '#ff6305', // Aktif durumda turuncu renk
+                    },
                     '&:hover': {
-                        color: '#000000', // Hover durumunda siyah yap
+                        color: '#000000', // Hover durumunda siyah renk
                         '& .MuiTableSortLabel-icon': {
-                            color: '#000000 !important', // İkonu hover'da siyah yap
+                            color: '#000000 !important', // İkon hover durumunda siyah
                         },
                     },
+                },
+                icon: {
+                    color: '#ff6305 !important', // İkon turuncu renk
                 },
             },
         },
@@ -260,7 +261,7 @@ const EvaluationList = () => {
     };
 
     const renderFilters = () => (
-        <Accordion defaultExpanded>
+        <Accordion defaultExpanded sx={{border: '1px solid #007a37'}}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography>Filtreler</Typography>
             </AccordionSummary>
@@ -465,8 +466,8 @@ const EvaluationList = () => {
                             {renderFilters()}
                         </Box>
                         <Box sx={{ width: isMobile ? '100%' : '75%' }}>
-                            <TableContainer component={Paper}  sx={{borderColor: theme.palette.primary.main }}>
-                                <Table>
+                            <TableContainer component={Paper}  sx={{borderColor: theme.palette.primary.main }} sx={{border: '1px solid #007a37'}}>
+                                <Table >
                                     <TableHead>
                                         <TableRow>
                                             <TableCell>
@@ -538,65 +539,73 @@ const EvaluationList = () => {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {filteredEvaluations.map((evaluation) => (
-                                            <TableRow key={evaluation.id} sx={{ '&:hover': { backgroundColor: '#fff7e6' } }}>
-                                                <TableCell>{evaluation.landName}</TableCell>
-                                                <TableCell>
-                                                    {imageLoading[evaluation.id] !== false && (
-                                                        <Skeleton variant="rectangular" width={50} height={50} />
-                                                    )}
-                                                    <img
-                                                        src={evaluation.landImageUrl || '/path/to/placeholder-image.jpg'}
-                                                        alt="Arazi Fotoğrafı"
-                                                        style={{
-                                                            width: 50,
-                                                            height: 50,
-                                                            display: imageLoading[evaluation.id] === false ? 'block' : 'none',
-                                                            objectFit: 'cover',
-                                                            borderRadius: '4px'
-                                                        }}
-                                                        onLoad={() => handleImageLoad(evaluation.id)}
-                                                        onError={() => handleImageError(evaluation.id)}
-                                                    />
+                                        {filteredEvaluations.length === 0 ? (
+                                            <TableRow>
+                                                <TableCell colSpan={10}>
+                                                    <NoResult />
                                                 </TableCell>
-                                                <TableCell>{evaluation.plantName}</TableCell>
-                                                <TableCell>
-                                                    {imageLoading[evaluation.id] !== false && (
-                                                        <Skeleton variant="rectangular" width={50} height={50} />
-                                                    )}
-                                                    <img
-                                                        src={evaluation.plantImageUrl || '/path/to/placeholder-image.jpg'}
-                                                        alt="Bitki Fotoğrafı"
-                                                        style={{
-                                                            width: 50,
-                                                            height: 50,
-                                                            display: imageLoading[evaluation.id] === false ? 'block' : 'none',
-                                                            objectFit: 'cover',
-                                                            borderRadius: '4px'
-                                                        }}
-                                                        onLoad={() => handleImageLoad(evaluation.id)}
-                                                        onError={() => handleImageError(evaluation.id)}
-                                                    />
-                                                </TableCell>
-                                                <TableCell>{dayjs(evaluation.sowingDate).format('DD/MM/YYYY')}</TableCell>
-                                                <TableCell>{dayjs(evaluation.harvestDate).format('DD/MM/YYYY')}</TableCell>
-                                                <TableCell>{evaluation.weatherCondition}</TableCell>
-                                                <TableCell>{evaluation.productQuality}</TableCell>
-                                                <TableCell>{evaluation.productQuantity}</TableCell>
-                                                <TableCell>
-                                                    <Button
-                                                        variant="contained"
-                                                        color="primary"
-                                                        onClick={() => handleDetail(evaluation.evaluationId || evaluation.id)} // evaluationId ya da id'yi kontrol edin
-                                                        sx={{ color: 'white' }}
-                                                    >
-                                                        Düzenle
-                                                    </Button>
-                                                </TableCell>
-
                                             </TableRow>
-                                        ))}
+                                        ) : (
+                                            filteredEvaluations.map((evaluation) => (
+                                                <TableRow key={evaluation.id} sx={{ '&:hover': { backgroundColor: '#fff7e6' } }}>
+                                                    <TableCell>{evaluation.landName}</TableCell>
+                                                    <TableCell>
+                                                        {imageLoading[evaluation.id] !== false && (
+                                                            <Skeleton variant="rectangular" width={50} height={50} />
+                                                        )}
+                                                        <img
+                                                            src={evaluation.landImageUrl || '/path/to/placeholder-image.jpg'}
+                                                            alt="Arazi Fotoğrafı"
+                                                            style={{
+                                                                width: 50,
+                                                                height: 50,
+                                                                display: imageLoading[evaluation.id] === false ? 'block' : 'none',
+                                                                objectFit: 'cover',
+                                                                borderRadius: '4px'
+                                                            }}
+                                                            onLoad={() => handleImageLoad(evaluation.id)}
+                                                            onError={() => handleImageError(evaluation.id)}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>{evaluation.plantName}</TableCell>
+                                                    <TableCell>
+                                                        {imageLoading[evaluation.id] !== false && (
+                                                            <Skeleton variant="rectangular" width={50} height={50} />
+                                                        )}
+                                                        <img
+                                                            src={evaluation.plantImageUrl || '/path/to/placeholder-image.jpg'}
+                                                            alt="Bitki Fotoğrafı"
+                                                            style={{
+                                                                width: 50,
+                                                                height: 50,
+                                                                display: imageLoading[evaluation.id] === false ? 'block' : 'none',
+                                                                objectFit: 'cover',
+                                                                borderRadius: '4px'
+                                                            }}
+                                                            onLoad={() => handleImageLoad(evaluation.id)}
+                                                            onError={() => handleImageError(evaluation.id)}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>{dayjs(evaluation.sowingDate).format('DD/MM/YYYY')}</TableCell>
+                                                    <TableCell>{dayjs(evaluation.harvestDate).format('DD/MM/YYYY')}</TableCell>
+                                                    <TableCell>{evaluation.weatherCondition}</TableCell>
+                                                    <TableCell>{evaluation.productQuality}</TableCell>
+                                                    <TableCell>{evaluation.productQuantity}</TableCell>
+                                                    <TableCell>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="primary"
+                                                            onClick={() => handleDetail(evaluation.evaluationId || evaluation.id)}
+                                                            sx={{ color: 'white' }}
+                                                        >
+                                                            Düzenle
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
                                     </TableBody>
+
                                 </Table>
                             </TableContainer>
                         </Box>

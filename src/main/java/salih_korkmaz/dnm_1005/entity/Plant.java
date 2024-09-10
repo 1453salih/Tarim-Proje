@@ -34,5 +34,6 @@ public class Plant {
     @JsonIgnore  // Döngüyü kırmak için
     private List<Recommendation> recommendations;
 
+    private double yieldPerSquareMeter;
 
 }

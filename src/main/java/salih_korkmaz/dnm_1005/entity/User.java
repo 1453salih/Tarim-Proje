@@ -19,9 +19,22 @@ public class User {
     @Column(unique = true, nullable = false,length = 100)
     private String email;
 
+    private String phone;
+
+    private String name;
+
+    private String surName;
+
+    private String address;
+
+    private String gender;
 
     @Column(nullable = false)
     private String password;
+
+    @ManyToOne
+    @JoinColumn(name = "locality_code", referencedColumnName = "code")
+    private Locality locality;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference("user-land")

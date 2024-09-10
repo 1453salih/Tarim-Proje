@@ -38,7 +38,7 @@ public class Land {
     @JsonBackReference("user-land")
     private User user;
 
-    @OneToMany(mappedBy = "land", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "land", cascade = CascadeType.DETACH, orphanRemoval = false)
     @JsonBackReference("land-sowing")
     private List<Sowing> sowings;
 }

@@ -190,6 +190,10 @@ function AraziEkle() {
         setAcikSnackbar(false);
     };
 
+    const handleCancel = () => {
+        navigate('/home');  // İptal işlemi.
+    };
+
     return (
         <ThemeProvider theme={tema}>
 
@@ -301,6 +305,14 @@ function AraziEkle() {
                         }
                     }}>
                         Arazi Ekle
+                    </Button>
+                    <Button type="submit" variant="contained" fullWidth onClick={handleCancel} sx={{
+                        mt: 2, backgroundColor: "#ff0008",
+                        '&:hover': {
+                            backgroundColor: '#ff0008',
+                        }
+                    }}>
+                        İptal
                     </Button>
                 </Paper>
 

@@ -24,6 +24,7 @@ import Spinner from './Spinner/Spinner';
 
 
 import './App.css';
+import EditProfile from "./components/EditProfile.jsx";
 
 
 function NavbarWrapper({ isLoggedIn, setIsLoggedIn }) {
@@ -95,6 +96,7 @@ function App() {
                 <Route path="/harvest-list" element={isLoggedIn ? <HarvestList /> : <Navigate to="/login" />} />
                 <Route path="/evaluation-list" element={isLoggedIn ? <EvaluationList /> : <Navigate to="/login" />} />
                 <Route path="/evaluation/edit/:id" element={isLoggedIn ? <EvaluationEdit /> : <Navigate to="/login" />} />
+                <Route path="/edit-profile" element={isLoggedIn ? <EditProfile /> : <Navigate to="/login" />} />
             </Routes>
         </Router>
     );

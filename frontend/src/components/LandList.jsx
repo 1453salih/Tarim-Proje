@@ -153,8 +153,9 @@ const LandList = () => {
     };
 
     const handleDeleteConfirm = () => {
+        console.log(selectedLand.id);
         if (selectedLand) {
-            axios.delete(`/lands/delete/${selectedLand.id}`)
+            axios.delete(`http://localhost:8080/lands/delete/${selectedLand.id}`)
                 .then(() => {
                     setLands(lands.filter(land => land.id !== selectedLand.id)); // Silinen araziyi listeden çıkar
                     setOpenDialog(false); // Modal'ı kapat

@@ -52,7 +52,7 @@ function Login({ setIsLoggedIn }) {
             if (error.response && error.response.data && error.response.data.message) {
                 setError(error.response.data.message);
             } else {
-                setError('Bir hata oluştu. Lütfen tekrar deneyiniz.');
+                setError('Kullanıcı adı veya şifre hatalı');
             }
             console.error('Error:', error);
         } finally {

@@ -13,6 +13,7 @@ public class PlantMapper {
         plantDTO.setId(plant.getId());
         plantDTO.setName(plant.getName());
         plantDTO.setImage(plant.getImage());
+        plantDTO.setYieldPerSquareMeter(plant.getYieldPerSquareMeter());
 
         if (plant.getPlantCategory() != null) {
             plantDTO.setCategoryName(plant.getPlantCategory().getCategoryName());

@@ -1,13 +1,17 @@
 package salih_korkmaz.dnm_1005.service;
 
 import org.springframework.stereotype.Service;
+import salih_korkmaz.dnm_1005.dto.EvaluationDTO;
 import salih_korkmaz.dnm_1005.dto.RecommendationDTO;
+import salih_korkmaz.dnm_1005.entity.Harvest;
 import salih_korkmaz.dnm_1005.entity.Locality;
+import salih_korkmaz.dnm_1005.entity.Recommendation;
 import salih_korkmaz.dnm_1005.mapper.RecommendationMapper;
 import salih_korkmaz.dnm_1005.repository.LocalityRepository;
 import salih_korkmaz.dnm_1005.repository.RecommendationRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -16,11 +20,13 @@ public class RecommendationService {
     private final RecommendationRepository recommendationRepository;
     private final RecommendationMapper recommendationMapper;
     private final LocalityRepository localityRepository;
+    private final HarvestService harvestService;
 
-    public RecommendationService(RecommendationRepository recommendationRepository, RecommendationMapper recommendationMapper, LocalityRepository localityRepository) {
+    public RecommendationService(RecommendationRepository recommendationRepository, RecommendationMapper recommendationMapper, LocalityRepository localityRepository, HarvestService harvestService) {
         this.recommendationRepository = recommendationRepository;
         this.recommendationMapper = recommendationMapper;
         this.localityRepository = localityRepository;
+        this.harvestService = harvestService;
     }
 
     public List<RecommendationDTO> getRecommendationsByLocalityCode(Long localityCode) {
