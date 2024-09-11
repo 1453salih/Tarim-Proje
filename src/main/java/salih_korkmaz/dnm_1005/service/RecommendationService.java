@@ -20,18 +20,16 @@ public class RecommendationService {
     private final RecommendationRepository recommendationRepository;
     private final RecommendationMapper recommendationMapper;
     private final LocalityRepository localityRepository;
-    private final HarvestService harvestService;
 
-    public RecommendationService(RecommendationRepository recommendationRepository, RecommendationMapper recommendationMapper, LocalityRepository localityRepository, HarvestService harvestService) {
+    public RecommendationService(RecommendationRepository recommendationRepository, RecommendationMapper recommendationMapper, LocalityRepository localityRepository) {
         this.recommendationRepository = recommendationRepository;
         this.recommendationMapper = recommendationMapper;
         this.localityRepository = localityRepository;
-        this.harvestService = harvestService;
     }
 
     public List<RecommendationDTO> getRecommendationsByLocalityCode(Long localityCode) {
         Locality locality = localityRepository.findById(localityCode)
-                .orElseThrow(() -> new RuntimeException("Locality not found for code: " + localityCode));
+                .orElseThrow(() -> new RuntimeException("Kod için yer bulunamadı: " + localityCode));
         return recommendationRepository.findByLocality(locality).stream()
                 .map(recommendationMapper::toDTO)
                 .collect(Collectors.toList());

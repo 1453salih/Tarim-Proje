@@ -106,7 +106,7 @@ public class SowingService {
     public void deleteSowing(Long id) {
         // Silinecek ekim kaydını bulur.
         Sowing existingSowing = sowingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sowing not found"));
+                .orElseThrow(() -> new RuntimeException("Ekim bulunamadı"));
 
         // İlgili araziyi bulur.
         Land land = existingSowing.getLand();

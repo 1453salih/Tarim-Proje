@@ -29,13 +29,13 @@ public class PlantCategoryService {
 
     public PlantCategoryDTO getPlantCategoryById(Long id) {
         PlantCategory plantCategory = plantCategoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Plant Category Not Found"));
+                .orElseThrow(() -> new RuntimeException("Bitki kategorisi bulunamadı"));
         return plantCategoryMapper.toDTO(plantCategory);
     }
 
     public PlantCategoryDTO getPlantCategoryByPlantId(Long plantId) {
         PlantCategory plantCategory = plantCategoryRepository.findCategoryByPlantId(plantId)
-                .orElseThrow(() -> new RuntimeException("Plant Category Not Found for Plant ID: " + plantId));
+                .orElseThrow(() -> new RuntimeException("Bitki ID için Bitki Kategorisi Bulunamadı:" + plantId));
         return plantCategoryMapper.toDTO(plantCategory);
     }
 }

@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import AddLand from './components/AddLand';
-import Profile from './components/Profile';
+// import Profile from './components/Profile';
 import Settings from './components/Settings';
 import Contact from './components/Contact';
 import Signup from './components/Signup';
@@ -24,7 +24,7 @@ import Spinner from './Spinner/Spinner';
 
 
 import './App.css';
-import EditProfile from "./components/EditProfile.jsx";
+// import EditProfile from "./components/EditProfile.jsx";
 
 
 function NavbarWrapper({ isLoggedIn, setIsLoggedIn }) {
@@ -82,7 +82,7 @@ function App() {
                 <Route path="/" element={<Navigate to={isLoggedIn ? "/home" : "/login"} />} />
                 <Route path="/home" element={isLoggedIn ? <Home /> : <Navigate to="/login" />} />
                 <Route path="/add-land" element={isLoggedIn ? <AddLand /> : <Navigate to="/login" />} />
-                <Route path="/profile" element={isLoggedIn ? <Profile /> : <Navigate to="/login" />} />
+                {/*<Route path="/profile" element={isLoggedIn ? <Profile /> : <Navigate to="/login" />} />*/}
                 <Route path="/settings" element={isLoggedIn ? <Settings /> : <Navigate to="/login" />} />
                 <Route path="/contact" element={isLoggedIn ? <Contact /> : <Navigate to="/login" />} />
                 <Route path="/signup" element={<Signup />} />
@@ -96,7 +96,7 @@ function App() {
                 <Route path="/harvest-list" element={isLoggedIn ? <HarvestList /> : <Navigate to="/login" />} />
                 <Route path="/evaluation-list" element={isLoggedIn ? <EvaluationList /> : <Navigate to="/login" />} />
                 <Route path="/evaluation/edit/:id" element={isLoggedIn ? <EvaluationEdit /> : <Navigate to="/login" />} />
-                <Route path="/edit-profile" element={isLoggedIn ? <EditProfile /> : <Navigate to="/login" />} />
+                {/*<Route path="/edit-profile" element={isLoggedIn ? <EditProfile /> : <Navigate to="/login" />} />*/}
             </Routes>
         </Router>
     );

@@ -32,7 +32,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request, @CookieValue(name = "jwt", required = false) String jwt) {
         if (jwt != null && jwtUtil.validateToken(jwt, jwtUtil.extractEmail(jwt))) {
             String email = jwtUtil.extractEmail(jwt);
-            String userId = userService.findByEmail(email).getId().toString(); // userId'yi de ekleyin
+            String userId = userService.findByEmail(email).getId().toString();
             return ResponseEntity.ok(new LoginResponse(jwt, email, userId));
         }
 
@@ -41,7 +41,6 @@ public class AuthController {
         String token = response.getToken();
         String refreshToken = jwtUtil.generateRefreshToken(response.getEmail());
 
-        // Yeni HTTP-Only cookie oluşturulur (access token)
         ResponseCookie jwtCookie = ResponseCookie.from("jwt", token)
                 .httpOnly(true)
                 .secure(false)
@@ -49,7 +48,6 @@ public class AuthController {
                 .maxAge(60 * 60) // 1 saat
                 .build();
 
-        // Yeni HTTP-Only cookie oluşturulur (refresh token)
         ResponseCookie refreshCookie = ResponseCookie.from("refreshJwt", refreshToken)
                 .httpOnly(true)
                 .secure(false)
@@ -70,7 +68,7 @@ public class AuthController {
         String token = response.getToken();
         String refreshToken = jwtUtil.generateRefreshToken(response.getEmail());
 
-        // Yeni HTTP-Only cookie oluşturulur (access token)
+
         ResponseCookie jwtCookie = ResponseCookie.from("jwt", token)
                 .httpOnly(true)
                 .secure(false)
@@ -78,7 +76,6 @@ public class AuthController {
                 .maxAge(60 * 60) // 1 saat
                 .build();
 
-        // Yeni HTTP-Only cookie oluşturulur (refresh token)
         ResponseCookie refreshCookie = ResponseCookie.from("refreshJwt", refreshToken)
                 .httpOnly(true)
                 .secure(false)
@@ -99,14 +96,14 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
-                .maxAge(0) // Süreyi sıfır yaparak cookie'yi siliyoruz
+                .maxAge(0)
                 .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshJwt", "")
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
-                .maxAge(0) // Süreyi sıfır yaparak refresh token cookie'sini siliyoruz
+                .maxAge(0)
                 .build();
 
         return ResponseEntity.ok()
@@ -120,9 +117,8 @@ public class AuthController {
         if (refreshToken != null && jwtUtil.validateRefreshToken(refreshToken, jwtUtil.extractEmail(refreshToken))) {
             String email = jwtUtil.extractEmail(refreshToken);
             String newAccessToken = jwtUtil.generateToken(email);
-            String userId = userService.findByEmail(email).getId().toString(); // userId eklendi
+            String userId = userService.findByEmail(email).getId().toString();
 
-            // Yeni JWT cookie'si oluştur
             ResponseCookie jwtCookie = ResponseCookie.from("jwt", newAccessToken)
                     .httpOnly(true)
                     .secure(false)
@@ -132,7 +128,7 @@ public class AuthController {
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                    .body(new LoginResponse(newAccessToken, email, userId)); // userId eklendi
+                    .body(new LoginResponse(newAccessToken, email, userId));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
@@ -152,11 +148,11 @@ public class AuthController {
                     return ResponseEntity.ok(response);
                 }
             } catch (ExpiredJwtException e) {
-                // Token süresi dolmuş, bu durumda refresh token kontrol edilebilir
+
                 response.put("isValid", false);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
             } catch (Exception e) {
-                // Token geçersiz ya da başka bir hata meydana gelmiş olabilir
+                // Token geçersiz ya da hata varsa.
                 response.put("isValid", false);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
@@ -167,7 +163,7 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(false)
                 .path("/")
-                .maxAge(0) // Cookie'yi silmek için süreyi sıfırlıyoruz
+                .maxAge(0)
                 .build();
 
         response.put("isValid", false);

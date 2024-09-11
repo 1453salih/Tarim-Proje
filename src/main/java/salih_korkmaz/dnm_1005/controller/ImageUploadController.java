@@ -36,7 +36,7 @@ public class ImageUploadController {
 
             return new ResponseEntity<>(imageUrl, HttpStatus.OK);
         } catch (IOException e) {
-            return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Resim yüklenemedi.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

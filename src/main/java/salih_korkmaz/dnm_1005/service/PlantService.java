@@ -41,13 +41,13 @@ public class PlantService {
 
     public PlantDTO getPlantById(Long id) {
         Plant plant = plantRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Plant not found"));
+                .orElseThrow(() -> new RuntimeException("Bitki bulunamadı"));
         return plantMapper.toDTO(plant);
     }
 
     public Plant findPlantById(Long id) {
         return plantRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Plant not found"));
+                .orElseThrow(() -> new RuntimeException("Bitki bulunamadı"));
     }
 
 }

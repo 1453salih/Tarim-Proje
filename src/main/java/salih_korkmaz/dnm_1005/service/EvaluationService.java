@@ -194,4 +194,4 @@ public class EvaluationService {
             recommendationRepository.save(recommendation);
         }
     }
-}//PUSH İÇİN YAZILDI
+}

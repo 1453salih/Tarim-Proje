@@ -26,19 +26,19 @@ public class UserService {
 
     public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı."));
 
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             String token = jwtUtil.generateToken(user.getEmail());
             return new LoginResponse(token, user.getEmail(), user.getId().toString()); // userId eklendi
         } else {
-            throw new RuntimeException("Invalid credentials");
+            throw new RuntimeException("Geçersiz kimlik bilgileri.");
         }
     }
 
     public LoginResponse signup(LoginRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new EmailAlreadyInUseException("This email is already in use");
+            throw new EmailAlreadyInUseException("Bu e-posta zaten kullanılıyor.");
         }
 
         User user = new User();
@@ -48,7 +48,7 @@ public class UserService {
 
         String token = jwtUtil.generateToken(user.getEmail());
 
-        return new LoginResponse(token, user.getEmail(), user.getId().toString()); // userId eklendi
+        return new LoginResponse(token, user.getEmail(), user.getId().toString());
     }
 
 
@@ -57,7 +57,7 @@ public class UserService {
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
     }
 
 
