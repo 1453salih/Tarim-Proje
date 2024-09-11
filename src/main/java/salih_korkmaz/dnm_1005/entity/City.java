@@ -9,7 +9,8 @@ import lombok.Data;
 
 import java.util.List;
 
-
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Entity
 @Table(name = "cities")
