@@ -32,7 +32,7 @@ public class District {
     @JsonManagedReference  // City serileştirilecek
     private City city;
 
-    @OneToMany(mappedBy = "district")
+    @OneToMany(mappedBy = "district",cascade = CascadeType.ALL)
     @JsonBackReference  // Localities geri referans olarak işaretleniyor
     private List<Locality> localities;
 

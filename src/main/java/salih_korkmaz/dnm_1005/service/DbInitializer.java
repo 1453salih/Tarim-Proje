@@ -36,7 +36,7 @@ public class DbInitializer {
             cityRepository.deleteAll();
         }
 
-        FileInputStream excelFile = new FileInputStream("C:\\Users\\Salih KORKMAZ\\IdeaProjects\\Tarim-Proje1\\src\\main\\resources\\cities.xlsx");
+        FileInputStream excelFile = new FileInputStream("C:\\Users\\Salih KORKMAZ\\IdeaProjects\\Tarim-Proje1\\src\\main\\resources\\db\\cities.xlsx");
         Workbook workbook = new XSSFWorkbook(excelFile);
         Sheet sheet = workbook.getSheetAt(0);
 
@@ -78,7 +78,7 @@ public class DbInitializer {
             districtRepository.deleteAll();
         }
 
-        FileInputStream excelFile = new FileInputStream("C:\\Users\\Salih KORKMAZ\\IdeaProjects\\Tarim-Proje1\\src\\main\\resources\\districts.xlsx");
+        FileInputStream excelFile = new FileInputStream("C:\\Users\\Salih KORKMAZ\\IdeaProjects\\Tarim-Proje1\\src\\main\\resources\\db\\districts.xlsx");
         Workbook workbook = new XSSFWorkbook(excelFile);
         Sheet sheet = workbook.getSheetAt(0);
 
@@ -120,7 +120,7 @@ public class DbInitializer {
             localityRepository.deleteAll();
         }
 
-        FileInputStream excelFile = new FileInputStream("C:\\Users\\Salih KORKMAZ\\IdeaProjects\\Tarim-Proje1\\src\\main\\resources\\localities.xlsx");
+        FileInputStream excelFile = new FileInputStream("C:\\Users\\Salih KORKMAZ\\IdeaProjects\\Tarim-Proje1\\src\\main\\resources\\db\\localities.xlsx");
         Workbook workbook = new XSSFWorkbook(excelFile);
         Sheet sheet = workbook.getSheetAt(0);
 

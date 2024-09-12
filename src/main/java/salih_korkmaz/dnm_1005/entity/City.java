@@ -1,10 +1,7 @@
 package salih_korkmaz.dnm_1005.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,7 +24,7 @@ public class City {
     private String latitude;
     private String longitude;
 
-    @OneToMany(mappedBy = "city")
+    @OneToMany(mappedBy = "city" ,cascade = CascadeType.ALL)
     @JsonManagedReference // Bu taraf serileştirilecek
     private List<District> districts;
 }
