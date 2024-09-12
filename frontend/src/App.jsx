@@ -68,7 +68,7 @@ function App() {
     }, []);
 
     if (loading) {
-        return <Spinner />;  // Yüklenirken spinner ya da başka bir yükleme göstergesi döndürebilirsiniz
+        return <Spinner />;
     }
 
 

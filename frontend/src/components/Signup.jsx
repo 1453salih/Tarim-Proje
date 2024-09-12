@@ -46,7 +46,7 @@ function Signup() {
                     <Box
                         sx={{
                             width: '45%',
-                            backgroundImage: 'url(../src/assets/loginCard1.png)', // Sol tarafta gösterilecek fotoğrafın yolu
+                            backgroundImage: 'url(../src/assets/login.png)', // Sol tarafta gösterilecek fotoğrafın yolu
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             backgroundColor: '#1c7946',

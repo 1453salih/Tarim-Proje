@@ -1,14 +1,34 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { TextField, Link, Grid, Box, Typography, Container, Paper, FormControlLabel, Checkbox, Button } from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { green } from '@mui/material/colors';
+import {useNavigate} from 'react-router-dom';
+import {
+    TextField,
+    Link,
+    Grid,
+    Box,
+    Typography,
+    Container,
+    Paper,
+    FormControlLabel,
+    Checkbox,
+    Button,
+    Alert
+} from '@mui/material';
+import {createTheme, ThemeProvider} from '@mui/material/styles';
+import {green} from '@mui/material/colors';
 import Spinner from '../Spinner/Spinner';
+import LoginWithGoogle from "./Buttons/LoginWithGoogle.jsx";
+import SquareButton from "./Buttons/Button.jsx";
+import '@fontsource/poppins';
+import {typography} from "@mui/system";
 
-const theme = createTheme();
+const theme = createTheme({
+    typography: {
+        fontFamily: 'Poppins, sans-serif',
+    },
+});
 
-function Login({ setIsLoggedIn }) {
+function Login({setIsLoggedIn}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -16,7 +36,6 @@ function Login({ setIsLoggedIn }) {
     const navigate = useNavigate();
 
     const validateEmail = (email) => {
-        // Basit e-posta doğrulama regex'i
         const re = /\S+@\S+\.\S+/;
         return re.test(email);
     };
@@ -24,7 +43,6 @@ function Login({ setIsLoggedIn }) {
     const handleLogin = async (e) => {
         e.preventDefault();
 
-        // Form doğrulamaları
         if (!email || !password) {
             setError('Lütfen tüm alanları doldurun.');
             return;
@@ -39,7 +57,10 @@ function Login({ setIsLoggedIn }) {
         setError('');
 
         try {
-            const response = await axios.post('http://localhost:8080/auth/login', { email, password }, { withCredentials: true });
+            const response = await axios.post('http://localhost:8080/auth/login', {
+                email,
+                password
+            }, {withCredentials: true});
             if (response.status === 200) {
                 const data = response.data;
                 localStorage.setItem('userId', data.userId);
@@ -63,47 +84,60 @@ function Login({ setIsLoggedIn }) {
     return (
         <ThemeProvider theme={theme}>
             {loading ? (
-                <Spinner />
+                <Spinner/>
             ) : (
-                <Container component="main" maxWidth="md" sx={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Paper elevation={6} sx={{ display: 'flex', borderRadius: 2, overflow: 'hidden', width: '100%' }}>
+                <Container component="main" maxWidth="lg"
+                           sx={{height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                    <Paper elevation={6} sx={{
+                        display: 'flex',
+                        flexDirection: {xs: 'column', md: 'row'},
+                        borderRadius: 2,
+                        overflow: 'hidden',
+                        width: '100%'
+                    }}>
                         <Box
                             sx={{
-                                width: '45%',
-                                backgroundImage: 'url(../src/assets/loginCard1.png)',
+                                width: {xs: '100%', md: '60%'},
+                                height: {xs: '200px', md: 'auto'},
+                                backgroundImage: 'url(../src/assets/login.png)',
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                                 backgroundColor: green[500],
+                                display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 color: 'white',
                                 padding: 3,
                             }}
-                        >
-                        </Box>
+                        />
                         <Box
                             sx={{
-                                width: { xs: '100%', md: '55%' },
+                                width: {xs: '100%', md: '40%'},
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                padding: 4,
+                                padding: {xs: 2, md: 4},
                                 backgroundColor: '#fff',
                             }}
                         >
-                            <Typography component="h1" variant="h5" sx={{ color: '#1c7946', fontWeight: 'bold', mb: 1 }}>
+                            <Typography component="h1" variant="h5" sx={{
+                                color: '#1c7946',
+                                fontWeight: 'bold',
+                                mb: 1,
+                                fontFamily: 'Poppins,sans-serif'
+                            }}>
                                 Ekim Rehberi
                             </Typography>
-                            <Typography variant="body1" sx={{ color: 'gray', mb: 3 }}>
+                            <Typography variant="body1" sx={{color: 'gray', mb: 3}}>
                                 Hesabınızla Giriş Yapın
                             </Typography>
                             <Box
                                 component="form"
                                 onSubmit={handleLogin}
                                 noValidate
-                                sx={{ mt: 1 }}
+                                sx={{width: '100%', mt: 1}}
                             >
                                 <TextField
                                     variant="outlined"
@@ -117,7 +151,7 @@ function Login({ setIsLoggedIn }) {
                                     autoFocus
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    sx={{ backgroundColor: '#f9f9f9', borderRadius: '8px' }}
+                                    sx={{backgroundColor: '#f9f9f9', borderRadius: '8px'}}
                                     error={!!error && !validateEmail(email)}
                                     helperText={!!error && !validateEmail(email) ? 'Geçerli bir e-posta adresi giriniz.' : ''}
                                 />
@@ -133,49 +167,33 @@ function Login({ setIsLoggedIn }) {
                                     autoComplete="current-password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    sx={{ backgroundColor: '#f9f9f9', borderRadius: '8px' }}
+                                    sx={{backgroundColor: '#f9f9f9', borderRadius: '8px'}}
                                     error={!!error && password.length < 6}
                                     helperText={!!error && password.length < 6 ? 'Şifre en az 6 karakter olmalıdır.' : ''}
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox value="remember" color="primary" />}
+                                    control={<Checkbox value="remember" color="primary"/>}
                                     label="Beni Hatırla"
-                                    sx={{ mb: 2 }}
+                                    sx={{mb: 2}}
                                 />
-                                <Box sx={{ minHeight: '24px', mb: 2 }}>
+                                <Box sx={{minHeight: '24px', mb: 2}}>
                                     {error && (
-                                        <Typography variant="body2" color="error" align="center">
-                                            {error}
-                                        </Typography>
+                                        <Alert severity="error">{error}</Alert>
                                     )}
                                 </Box>
-                                <Button
-                                    type="submit"
-                                    fullWidth
-                                    variant="contained"
-                                    color="primary"
-                                    sx={{ mt: 1, mb: 1, backgroundColor: '#1c7946', borderRadius: '8px' }}
-                                >
-                                    Giriş Yap
-                                </Button>
-                                <Button
-                                    fullWidth
-                                    variant="outlined"
-                                    color="error"
-                                    sx={{ mt: 1, mb: 2, borderRadius: '8px' }}
-                                >
-                                    Google ile Giriş Yap
-                                </Button>
-                                <Grid container>
+
+                                <SquareButton title="Giriş Yap" onClick={handleLogin}></SquareButton>
+                                <LoginWithGoogle onSignIn="./home"></LoginWithGoogle>
+                                <Grid container sx={{display: 'flex', justifyContent: 'center'}}>
                                     <Grid item xs>
-                                        <Link href="#" variant="body2" sx={{ color: 'gray' }}>
+                                        <Link href="#" variant="body2" sx={{color: 'gray'}}>
                                             Şifremi Unuttum
                                         </Link>
                                     </Grid>
                                     <Grid item>
-                                        <Typography variant="body2" sx={{ mt: 2, textAlign: 'center' }}>
+                                        <Typography variant="body2" sx={{mt: 2, textAlign: 'center'}}>
                                             Üye değil misiniz?{' '}
-                                            <Link href="/signup" variant="body2" sx={{ color: '#1c7946' }}>
+                                            <Link href="/signup" variant="body2" sx={{color: '#1c7946'}}>
                                                 Buradan kayıt olun.
                                             </Link>
                                         </Typography>
