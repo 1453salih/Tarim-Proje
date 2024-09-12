@@ -81,12 +81,18 @@
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <!-- Excel ile kaydetme işlemi için kullanıldı. -->
         <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-mysql</artifactId>
-            <version>10.17.2</version> <!-- Flyway'in uygun sürümünü belirtin -->
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.3.0</version>
         </dependency>
 
+        <!--        <dependency>-->
+<!--            <groupId>org.flywaydb</groupId>-->
+<!--            <artifactId>flyway-mysql</artifactId>-->
+<!--            <version>10.17.2</version> &lt;!&ndash; Flyway'in uygun sürümünü belirtin &ndash;&gt;-->
+<!--        </dependency>-->
     </dependencies>
     <build>
         <plugins>
@@ -94,16 +100,16 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-maven-plugin</artifactId>
-                <version>10.17.0</version>
-                <configuration>
-                    <url>jdbc:mysql://localhost:3306/tkk_proje</url>
-                    <user>root</user>
-                    <password>1453</password>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.flywaydb</groupId>-->
+<!--                <artifactId>flyway-maven-plugin</artifactId>-->
+<!--                <version>10.17.0</version>-->
+<!--                <configuration>-->
+<!--                    <url>jdbc:mysql://localhost:3306/tkk_proje</url>-->
+<!--                    <user>root</user>-->
+<!--                    <password>1453</password>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 </project>
