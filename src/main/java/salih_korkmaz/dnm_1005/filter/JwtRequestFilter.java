@@ -60,7 +60,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 // Token expired durumunda refresh token kullanarak yeni bir access token oluşturulur.
                 if (refreshToken != null && jwtUtil.validateRefreshToken(refreshToken, jwtUtil.extractEmail(refreshToken))) {
                     email = jwtUtil.extractEmail(refreshToken);
-                    String newAccessToken = jwtUtil.generateToken(email);
+                    String userId = jwtUtil.extractUserId(refreshToken);
+                    System.out.println(userId);//Kaldır
+                    String newAccessToken = jwtUtil.generateToken(email,userId);
 
                     // Yeni JWT cookie'si oluştur
                     ResponseCookie newJwtCookie = ResponseCookie.from("jwt", newAccessToken)

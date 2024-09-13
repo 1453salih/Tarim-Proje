@@ -29,7 +29,7 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı."));
 
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            String token = jwtUtil.generateToken(user.getEmail());
+            String token = jwtUtil.generateToken(user.getEmail(),user.getId().toString());
             return new LoginResponse(token, user.getEmail(), user.getId().toString()); // userId eklendi
         } else {
             throw new RuntimeException("Geçersiz kimlik bilgileri.");
@@ -46,7 +46,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
 
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail(),user.getId().toString());
 
         return new LoginResponse(token, user.getEmail(), user.getId().toString());
     }

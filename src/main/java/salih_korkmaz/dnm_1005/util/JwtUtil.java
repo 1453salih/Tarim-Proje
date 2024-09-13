@@ -32,6 +32,10 @@ public class JwtUtil {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public String extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("userId", String.class));
+    }
+
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
@@ -51,10 +55,11 @@ public class JwtUtil {
 
     public Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
-    }
+        }
 
-    public String generateToken(String email) {
+    public String generateToken(String email,String userId) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId); // userId'yi token'a ekliyoruz
         return createToken(claims, email, SECRET_KEY, 1000L * 60 * 60); // 1 saatlik access token
     }
 
