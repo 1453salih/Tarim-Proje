@@ -2,7 +2,6 @@ package salih_korkmaz.dnm_1005.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.Resource;
@@ -15,7 +14,6 @@ import salih_korkmaz.dnm_1005.repository.CityRepository;
 import salih_korkmaz.dnm_1005.repository.DistrictRepository;
 import salih_korkmaz.dnm_1005.repository.LocalityRepository;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -46,13 +44,9 @@ public class DbInitializer {
 
 
             Resource resource = resourceLoader.getResource("classpath:" + "db\\cities.xlsx");
-            //InputStream inputStream = resource.getInputStream();
             try(InputStream inputStream = resource.getInputStream();
                 Workbook workbook = new XSSFWorkbook(inputStream)) {
 
-                //FileInputStream excelFile = new FileInputStream("claspath:db\\cities.xlsx");
-                //FileInputStream excelFile = new FileInputStream("db\\cities.xlsx");
-                //Workbook workbook = new XSSFWorkbook(inputStream);
                 Sheet sheet = workbook.getSheetAt(0);
 
                 for (Row row : sheet) {
@@ -64,22 +58,22 @@ public class DbInitializer {
                         code = Integer.parseInt(row.getCell(0).getStringCellValue());
                     }
 
-                    String name = row.getCell(1).getStringCellValue();
+                    String name = row.getCell(3).getStringCellValue();
 
                     String latitude = "";
-                    if (row.getCell(3).getCellType() == CellType.STRING) {
-                        latitude = row.getCell(3).getStringCellValue();
+                    if (row.getCell(1).getCellType() == CellType.STRING) {
+                        latitude = row.getCell(1).getStringCellValue();
                     }
-                    else if (row.getCell(3).getCellType() == CellType.NUMERIC) {
-                        latitude = String.valueOf(row.getCell(3).getNumericCellValue());
+                    else if (row.getCell(1).getCellType() == CellType.NUMERIC) {
+                        latitude = String.valueOf(row.getCell(1).getNumericCellValue());
                     }
 
                     String longitude = "";
-                    if (row.getCell(4).getCellType() == CellType.STRING) {
-                        longitude = row.getCell(4).getStringCellValue();
+                    if (row.getCell(2).getCellType() == CellType.STRING) {
+                        longitude = row.getCell(2).getStringCellValue();
                     }
-                    else if (row.getCell(4).getCellType() == CellType.NUMERIC) {
-                        longitude = String.valueOf(row.getCell(4).getNumericCellValue());
+                    else if (row.getCell(2).getCellType() == CellType.NUMERIC) {
+                        longitude = String.valueOf(row.getCell(2).getNumericCellValue());
                     }
 
                     City city = new City(code, name, "", "", latitude, longitude, new ArrayList<>());
@@ -88,8 +82,6 @@ public class DbInitializer {
             } catch (IOException e){
 
             }
-            //workbook.close();
-            //inputStream.close();
         }
     }
 
@@ -101,8 +93,6 @@ public class DbInitializer {
             try(InputStream inputStream = resource.getInputStream();
                 Workbook workbook = new XSSFWorkbook(inputStream)) {
 
-                //                FileInputStream excelFile = new FileInputStream("C:\\Users\\Salih KORKMAZ\\IdeaProjects\\Tarim-Proje1\\src\\main\\resources\\db\\districts.xlsx");
-                //            Workbook workbook = new XSSFWorkbook(excelFile);
                 Sheet sheet = workbook.getSheetAt(0);
 
                 for (Row row : sheet) {
@@ -131,16 +121,13 @@ public class DbInitializer {
                         continue;
                     }
 
-                    District district = new District(code, latitude, longitude, name, "", "", parentCity, new ArrayList<>());
+                    District district = new District(code, name, latitude, longitude, "", "", parentCity, new ArrayList<>());
                     districtRepository.save(district);
                 }
             }
             catch (IOException e){
                 e.printStackTrace();
             }
-            //workbook.close();
-            //excelFile.close();
-
         }
 
     }
@@ -148,13 +135,10 @@ public class DbInitializer {
 
     private void addLocalities() throws IOException {
         List<Locality> localityList = localityRepository.findAll();
-        if (!localityList.isEmpty()) {
+        if (localityList.isEmpty()) {
             Resource resource = resourceLoader.getResource("classpath:" + "db\\localities.xlsx");
             try(InputStream inputStream = resource.getInputStream();
                 Workbook workbook = new XSSFWorkbook(inputStream)) {
-
-                //                FileInputStream excelFile = new FileInputStream("C:\\Users\\Salih KORKMAZ\\IdeaProjects\\Tarim-Proje1\\src\\main\\resources\\db\\localities.xlsx");
-                //            Workbook workbook = new XSSFWorkbook(excelFile);
                 Sheet sheet = workbook.getSheetAt(0);
 
                 for (Row row : sheet) {
@@ -196,8 +180,6 @@ public class DbInitializer {
             catch (IOException e) {
                 e.printStackTrace();
             }
-//            workbook.close();
-//            excelFile.close();
         }
 
     }

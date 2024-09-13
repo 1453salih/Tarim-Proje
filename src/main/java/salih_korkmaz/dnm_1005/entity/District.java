@@ -28,7 +28,7 @@ public class District {
 
 
     @ManyToOne
-    @JoinColumn(name = "parentcode", referencedColumnName = "code", insertable = false, updatable = false)
+    @JoinColumn(name = "parentcode", referencedColumnName = "code")
     @JsonManagedReference  // City serileştirilecek
     private City city;
 
