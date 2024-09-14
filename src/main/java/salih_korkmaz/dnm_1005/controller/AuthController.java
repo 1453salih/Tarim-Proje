@@ -32,13 +32,15 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request, @CookieValue(name = "jwt", required = false) String jwt) {
         if (jwt != null && jwtUtil.validateToken(jwt, jwtUtil.extractEmail(jwt))) {
             String email = jwtUtil.extractEmail(jwt);
-            String userId = userService.findByEmail(email).getId().toString();
+            String userId = jwtUtil.extractUserId(jwt);
+            //String userId = userService.findByEmail(email).getId().toString(); Zaten Token içerisinde olduğu için kaldırıldı.
             return ResponseEntity.ok(new LoginResponse(jwt, email, userId));
         }
 
         // Login işlemi
         LoginResponse response = userService.login(request);
-        String token = response.getToken();
+        String userId = userService.findByEmail(response.getEmail()).getId().toString();
+        String token = jwtUtil.generateToken(response.getEmail(),userId);
         String refreshToken = jwtUtil.generateRefreshToken(response.getEmail());
 
         ResponseCookie jwtCookie = ResponseCookie.from("jwt", token)
@@ -65,7 +67,8 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<LoginResponse> signup(@RequestBody LoginRequest request) {
         LoginResponse response = userService.signup(request);
-        String token = response.getToken();
+        String userId = userService.findByEmail(response.getEmail()).getId().toString();
+        String token = jwtUtil.generateToken(response.getEmail(),userId);
         String refreshToken = jwtUtil.generateRefreshToken(response.getEmail());
 
 
@@ -116,8 +119,8 @@ public class AuthController {
     public ResponseEntity<LoginResponse> refreshToken(@CookieValue(name = "refreshJwt", required = false) String refreshToken) {
         if (refreshToken != null && jwtUtil.validateRefreshToken(refreshToken, jwtUtil.extractEmail(refreshToken))) {
             String email = jwtUtil.extractEmail(refreshToken);
-            String newAccessToken = jwtUtil.generateToken(email);
             String userId = userService.findByEmail(email).getId().toString();
+            String newAccessToken = jwtUtil.generateToken(email,userId);
 
             ResponseCookie jwtCookie = ResponseCookie.from("jwt", newAccessToken)
                     .httpOnly(true)

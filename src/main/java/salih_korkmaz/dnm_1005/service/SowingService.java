@@ -76,22 +76,13 @@ public class SowingService {
         return sowingRepository.save(existingSowing);
     }
 
-
-
-
-
-    public List<SowingDTO> getAllSowings() {
-        return sowingRepository.findAll().stream()
-                .map(sowingMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
     public List<SowingDTO> getSowingsByUser(Long userId) {
         List<Sowing> sowings = sowingRepository.findByUserId(userId);
         return sowings.stream()
                 .map(sowingMapper::toDto)
                 .collect(Collectors.toList());
     }
+
     public SowingDTO getSowingById(Long id) {
         Sowing sowing = sowingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ekim bulunamadı"));
@@ -118,5 +109,8 @@ public class SowingService {
         // Ekim kaydını siler.
         sowingRepository.delete(existingSowing);
     }
-
 }
+
+
+
+

@@ -79,8 +79,8 @@ public class DbInitializer {
                     City city = new City(code, name, "", "", latitude, longitude, new ArrayList<>());
                     cityRepository.save(city);
                 }
-            } catch (IOException e){
-
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
     }
@@ -125,8 +125,8 @@ public class DbInitializer {
                     districtRepository.save(district);
                 }
             }
-            catch (IOException e){
-                e.printStackTrace();
+            catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
 
@@ -178,9 +178,8 @@ public class DbInitializer {
                 }
             }
             catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
-
     }
 }
