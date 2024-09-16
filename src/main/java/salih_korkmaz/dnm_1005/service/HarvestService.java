@@ -26,6 +26,18 @@ public class HarvestService {
         this.landService = landService;
     }
 
+    public Harvest findHarvestById(Long harvestId){
+        return harvestRepository.findById(harvestId)
+                .orElseThrow(()-> new RuntimeException("Hasat bulunamadı."));
+    }
+
+
+
+    // Yeni metot: Belirli bir ekim için hasat edilip edilmediğini kontrol eder.
+    public boolean existsBySowingId(Long sowingId) {
+        return harvestRepository.existsBySowingId(sowingId);
+    }
+
     @Transactional
     public HarvestDTO saveHarvest(HarvestDTO harvestDto) {
         Sowing sowing = sowingService.findSowingById(harvestDto.getSowingId());
@@ -42,20 +54,6 @@ public class HarvestService {
         return harvestMapper.toDTO(savedHarvest);
     }
 
-
-
-    public Harvest findHarvestById(Long harvestId){
-        System.out.println("Finding Harvest with id: " + harvestId);
-        return harvestRepository.findById(harvestId)
-                .orElseThrow(()-> new RuntimeException("Harvest not found"));
-    }
-
-
-    // Yeni metot: Belirli bir ekim için hasat edilip edilmediğini kontrol eder.
-    public boolean existsBySowingId(Long sowingId) {
-        return harvestRepository.existsBySowingId(sowingId);
-    }
-
     @Transactional
     public void deleteHarvest(Long harvestId) {
         Harvest harvest = findHarvestById(harvestId);
@@ -67,13 +65,6 @@ public class HarvestService {
         landService.subtractFromClayableLand(landId, sowingField);  // Alanı tekrar kullanılmaz hale getirir.
 
         harvestRepository.delete(harvest);
-    }
-
-
-
-
-    public List<Harvest> getHarvestsByUserId(Long userId) {
-        return harvestRepository.findBySowingLandUserId(userId);
     }
 
     public List<HarvestDTO> getAllHarvestsByUserId(Long userId) {

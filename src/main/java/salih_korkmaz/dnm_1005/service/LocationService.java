@@ -1,5 +1,6 @@
 package salih_korkmaz.dnm_1005.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import salih_korkmaz.dnm_1005.dto.CityDTO;
 import salih_korkmaz.dnm_1005.dto.DistrictDTO;
@@ -9,10 +10,10 @@ import salih_korkmaz.dnm_1005.mapper.CityMapper;
 import salih_korkmaz.dnm_1005.mapper.DistrictMapper;
 import salih_korkmaz.dnm_1005.mapper.LocalityMapper;
 import salih_korkmaz.dnm_1005.repository.CityRepository;
-import salih_korkmaz.dnm_1005.repository.DistrictRepository;
 import salih_korkmaz.dnm_1005.repository.LocalityRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,16 +24,14 @@ public class LocationService {
     private final DistrictMapper districtMapper;
     private final CityMapper cityMapper;
     private final LocalityMapper localityMapper;
-    private final LocationService locationService;
     private final LocalityRepository localityRepository;
 
-    public LocationService(CityRepository cityRepository, DistrictService districtService, DistrictMapper districtMapper, CityMapper cityMapper, LocalityMapper localityMapper, LocationService locationService, LocalityRepository localityRepository) {
+    public LocationService(CityRepository cityRepository, DistrictService districtService, DistrictMapper districtMapper, CityMapper cityMapper, LocalityMapper localityMapper, LocalityRepository localityRepository) {
         this.cityRepository = cityRepository;
         this.districtService = districtService;
         this.districtMapper = districtMapper;
         this.cityMapper = cityMapper;
         this.localityMapper = localityMapper;
-        this.locationService = locationService;
         this.localityRepository = localityRepository;
     }
 
@@ -45,12 +44,14 @@ public class LocationService {
     }
 
     public List<LocalityDTO> getLocalitiesByDistrictCode(long districtCode) {
-        return locationService.findByDistrictCode(districtCode).stream().map(localityMapper::toDTO).collect(Collectors.toList());
+        return localityRepository.findByDistrictCode(districtCode).stream().map(localityMapper::toDTO).collect(Collectors.toList());
     }
 
     public Locality findById(Long localityCode) {
-        return locationService.findById(localityCode);
+        return localityRepository.findById(localityCode)
+                .orElseThrow(() -> new EntityNotFoundException("Locality not found"));
     }
+
 
     public List<Locality> findByDistrictCode(long districtCode) {
         return localityRepository.findByDistrictCode(districtCode);
