@@ -61,6 +61,9 @@ public class RecommendationService {
 
     // Başarı oranını hesaplayan işlev
     public double calculateSuccessRate(EvaluationDTO evaluationDTO, Harvest harvest, double currentSuccessRate) {
+
+        //* Katsayılar ayarlanabilir ileride o bölgedeki kullanıcı sayısına göre oran ayarlanabilir böylece kişilerin yaptığı etki daha stabil olabilir.
+
         double productQualityCoefficient = 0.5;
         double yieldCoefficient = 0.5;
         double weatherCoefficient = 1;

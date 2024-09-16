@@ -8,6 +8,7 @@ import salih_korkmaz.dnm_1005.entity.*;
 import salih_korkmaz.dnm_1005.mapper.EvaluationDetailsMapper;
 import salih_korkmaz.dnm_1005.mapper.EvaluationMapper;
 import salih_korkmaz.dnm_1005.repository.EvaluationRepository;
+import salih_korkmaz.dnm_1005.repository.RecommendationRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,13 +20,15 @@ public class EvaluationService {
     private final EvaluationMapper evaluationMapper;
     private final EvaluationRepository evaluationRepository;
     private final EvaluationDetailsMapper evaluationDetailsMapper;
+    private final RecommendationRepository recommendationRepository;
     private final RecommendationService recommendationService;
 
-    public EvaluationService(HarvestService harvestService, EvaluationMapper evaluationMapper, EvaluationRepository evaluationRepository, EvaluationDetailsMapper evaluationDetailsMapper, RecommendationService recommendationService) {
+    public EvaluationService(HarvestService harvestService, EvaluationMapper evaluationMapper, EvaluationRepository evaluationRepository, EvaluationDetailsMapper evaluationDetailsMapper, RecommendationRepository recommendationRepository, RecommendationService recommendationService) {
         this.harvestService = harvestService;
         this.evaluationMapper = evaluationMapper;
         this.evaluationRepository = evaluationRepository;
         this.evaluationDetailsMapper = evaluationDetailsMapper;
+        this.recommendationRepository = recommendationRepository;
         this.recommendationService = recommendationService;
     }
 
@@ -35,10 +38,26 @@ public class EvaluationService {
         evaluation.setHarvest(harvest);
         Evaluation savedEvaluation = evaluationRepository.save(evaluation);
 
-        recommendationService.updateSuccessRate(evaluationDTO, harvest, 70);
+        Optional<Recommendation> optionalRecommendation = recommendationRepository.findByPlantAndLocality(
+                harvest.getSowing().getPlant(),
+                harvest.getSowing().getLand().getLocality()
+        );
+
+        if (optionalRecommendation.isPresent()) {
+            Recommendation recommendation = optionalRecommendation.get();
+            recommendationService.updateSuccessRate(evaluationDTO, harvest, recommendation.getSuccesRate());
+        } else {
+            Recommendation newRecommendation = new Recommendation();
+            newRecommendation.setPlant(harvest.getSowing().getPlant());
+            newRecommendation.setLocality(harvest.getSowing().getLand().getLocality());
+            newRecommendation.setSuccesRate(70); // Varsayılan başarı oranı
+            recommendationRepository.save(newRecommendation);
+            recommendationService.updateSuccessRate(evaluationDTO, harvest, 70); // Varsayılan başarı oranı kullanılıyor
+        }
 
         return evaluationMapper.toDTO(savedEvaluation);
     }
+
 
     public Evaluation updateEvaluation(Long id, @Valid EvaluationDTO evaluationDto) {
         Evaluation existingEvaluation = evaluationRepository.findById(id)
