@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import salih_korkmaz.dnm_1005.dto.CityDTO;
 import salih_korkmaz.dnm_1005.dto.DistrictDTO;
 import salih_korkmaz.dnm_1005.dto.LocalityDTO;
+import salih_korkmaz.dnm_1005.entity.Locality;
 import salih_korkmaz.dnm_1005.mapper.CityMapper;
 import salih_korkmaz.dnm_1005.mapper.DistrictMapper;
 import salih_korkmaz.dnm_1005.mapper.LocalityMapper;
@@ -18,19 +19,21 @@ import java.util.stream.Collectors;
 public class LocationService {
 
     private final CityRepository cityRepository;
-    private final DistrictRepository districtRepository;
-    private final LocalityRepository localityRepository;
+    private final DistrictService  districtService;
     private final DistrictMapper districtMapper;
     private final CityMapper cityMapper;
     private final LocalityMapper localityMapper;
+    private final LocationService locationService;
+    private final LocalityRepository localityRepository;
 
-    public LocationService(CityRepository cityRepository, DistrictRepository districtRepository, LocalityRepository localityRepository, DistrictMapper districtMapper, CityMapper cityMapper, LocalityMapper localityMapper) {
+    public LocationService(CityRepository cityRepository, DistrictService districtService, DistrictMapper districtMapper, CityMapper cityMapper, LocalityMapper localityMapper, LocationService locationService, LocalityRepository localityRepository) {
         this.cityRepository = cityRepository;
-        this.districtRepository = districtRepository;
-        this.localityRepository = localityRepository;
+        this.districtService = districtService;
         this.districtMapper = districtMapper;
         this.cityMapper = cityMapper;
         this.localityMapper = localityMapper;
+        this.locationService = locationService;
+        this.localityRepository = localityRepository;
     }
 
     public List<CityDTO> getAllCities() {
@@ -38,10 +41,18 @@ public class LocationService {
     }
 
     public List<DistrictDTO> getDistrictsByCityCode(int cityCode) {
-        return districtRepository.findByCityCode(cityCode).stream().map(districtMapper::toDTO).collect(Collectors.toList());
+        return districtService.findByCityCode(cityCode).stream().map(districtMapper::toDTO).collect(Collectors.toList());
     }
 
     public List<LocalityDTO> getLocalitiesByDistrictCode(long districtCode) {
-        return localityRepository.findByDistrictCode(districtCode).stream().map(localityMapper::toDTO).collect(Collectors.toList());
+        return locationService.findByDistrictCode(districtCode).stream().map(localityMapper::toDTO).collect(Collectors.toList());
+    }
+
+    public Locality findById(Long localityCode) {
+        return locationService.findById(localityCode);
+    }
+
+    public List<Locality> findByDistrictCode(long districtCode) {
+        return localityRepository.findByDistrictCode(districtCode);
     }
 }

@@ -43,7 +43,7 @@ public class SowingService {
     }
     public Sowing updateSowing(Long id, @Valid SowingDTO sowingDto) {
         Sowing existingSowing = sowingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sowing not found"));
+                .orElseThrow(() -> new RuntimeException("Ekim bulunamadı."));
 
         // Önceki ekim alanını alır.
         double oldSowingField = existingSowing.getSowingField();
@@ -54,7 +54,7 @@ public class SowingService {
 
         // Araziyi getir
         Land land = Optional.ofNullable(landService.findLandById(sowingDto.getLandId()))
-                .orElseThrow(() -> new RuntimeException("Land not found"));
+                .orElseThrow(() -> new RuntimeException("Arazi bulunamadı"));
 
         // Eğer fark pozitifse, ekilebilir alanı azaltır (subtractFromClayableLand), negatifse ekler (addToClayableLand).
         if (fieldDifference > 0) {
@@ -69,7 +69,7 @@ public class SowingService {
 
         if (sowingDto.getPlantId() != null) {
             Plant plant = Optional.ofNullable(plantService.findPlantById(sowingDto.getPlantId()))
-                    .orElseThrow(() -> new RuntimeException("Plant not found"));
+                    .orElseThrow(() -> new RuntimeException("Bitki bulunamadı."));
             existingSowing.setPlant(plant);
         }
 
@@ -77,7 +77,7 @@ public class SowingService {
     }
 
     public List<SowingDTO> getSowingsByUser(Long userId) {
-        List<Sowing> sowings = sowingRepository.findByUserId(userId);
+        List<Sowing> sowings = sowingRepository.findByLandUserId(userId);
         return sowings.stream()
                 .map(sowingMapper::toDto)
                 .collect(Collectors.toList());

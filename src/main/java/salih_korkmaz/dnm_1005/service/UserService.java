@@ -67,6 +67,8 @@ public class UserService {
         return findByEmail(email);
     }
 
-
-
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+    }
 }

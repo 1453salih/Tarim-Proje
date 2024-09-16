@@ -13,7 +13,7 @@ import salih_korkmaz.dnm_1005.repository.RecommendationRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+//! Burada Kayıt işlemi olduğundan bu repository'i kaldırmadım zaten kayıt  işleminde repository kullanılıyor o yüzden diğerlerinide service üzerinden yapmaya çalışmadım.
 @Service
 public class EvaluationService {
     private final HarvestService harvestService;
@@ -73,12 +73,12 @@ public class EvaluationService {
 
     public Evaluation findEvaluationById(Long evaluationId){
         return evaluationRepository.findById(evaluationId)
-                .orElseThrow(() -> new RuntimeException("Evaluation not found"));
+                .orElseThrow(() -> new RuntimeException("Değerlendirme bulunamadı."));
     }
 
     public EvaluationDTO findEvaluationByHarvestId(Long harvestId) {
         Evaluation evaluation = evaluationRepository.findByHarvestId(harvestId)
-                .orElseThrow(() -> new RuntimeException("Evaluation not found for Harvest ID: " + harvestId));
+                .orElseThrow(() -> new RuntimeException("Hasat Id'li değerlendirme bulunamadı: " + harvestId));
         return evaluationMapper.toDTO(evaluation);
     }
 
@@ -89,13 +89,13 @@ public class EvaluationService {
 
     public EvaluationDetailsDTO getEvaluationDetails(Long evaluationId) {
         Evaluation evaluation = evaluationRepository.findById(evaluationId)
-                .orElseThrow(() -> new RuntimeException("Evaluation not found"));
+                .orElseThrow(() -> new RuntimeException("Değerlendirme bulunamadı."));
         return evaluationDetailsMapper.toDto(evaluation);
     }
 
     public EvaluationDTO getEvaluation(Long evaluationId) {
         Evaluation evaluation = evaluationRepository.findById(evaluationId)
-                .orElseThrow(() -> new RuntimeException("Evaluation not found"));
+                .orElseThrow(() -> new RuntimeException("Değerlendirme bulunamadı."));
         return evaluationMapper.toDTO(evaluation);
     }
 

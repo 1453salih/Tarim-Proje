@@ -8,8 +8,5 @@ import salih_korkmaz.dnm_1005.entity.Sowing;
 import java.util.List;
 
 public interface SowingRepository extends JpaRepository<Sowing, Long> {
-
-    @Query("SELECT s FROM Sowing s WHERE s.land.user.id = :userId")
-    List<Sowing> findByUserId(@Param("userId") Long userId);
-
+    List<Sowing> findByLandUserId(Long userId);
 }

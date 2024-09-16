@@ -11,8 +11,6 @@ import salih_korkmaz.dnm_1005.entity.Locality;
 import salih_korkmaz.dnm_1005.entity.User;
 import salih_korkmaz.dnm_1005.mapper.LandMapper;
 import salih_korkmaz.dnm_1005.repository.LandRepository;
-import salih_korkmaz.dnm_1005.repository.LocalityRepository;
-import salih_korkmaz.dnm_1005.repository.UserRepository;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,27 +22,25 @@ import java.util.stream.Collectors;
 
 @Service
 public class LandService {
+    private final LocationService locationService;
     @Value("${file.upload-dir}")
     private String uploadDir;
     private final LandRepository landRepository;
-    private final UserRepository userRepository;
-    private final LocalityRepository localityRepository;
     private final LandMapper landMapper;
+    private final UserService userService;
 
-    public LandService(LandRepository landRepository, UserRepository userRepository, LocalityRepository localityRepository, LandMapper landMapper) {
+    public LandService(LandRepository landRepository, LandMapper landMapper, UserService userService, LocationService locationService) {
         this.landRepository = landRepository;
-        this.userRepository = userRepository;
-        this.localityRepository = localityRepository;
         this.landMapper = landMapper;
+        this.userService = userService;
+        this.locationService = locationService;
     }
 
     public Land saveLand(LandDTO landDto, MultipartFile imageFile) {
         // Kullanıcı ve locality bulunur.
-        User user = userRepository.findById(landDto.getUserId())
-                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı!"));
+        User user = userService.findById(landDto.getUserId());
 
-        Locality locality = localityRepository.findById(landDto.getLocalityId())
-                .orElseThrow(() -> new RuntimeException("Mahalle/Köy bulunamadı."));
+        Locality locality = locationService.findById(landDto.getLocalityId());
 
         // DTO'dan entity'ye dönüşüm.
         Land land = landMapper.toEntity(landDto, user, locality);
@@ -76,15 +72,13 @@ public class LandService {
 
         // Kullanıcıyı güncelleme işlemi
         if (landDto.getUserId() != null) {
-            User user = userRepository.findById(landDto.getUserId())
-                    .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+            User user = userService.findById(landDto.getUserId());
             existingLand.setUser(user);
         }
 
         // Yerleşimi güncelleme işlemi
         if (landDto.getLocalityId() != null) {
-            Locality locality = localityRepository.findById(landDto.getLocalityId())
-                    .orElseThrow(() -> new RuntimeException("Lokasyon bulunamadı"));
+            Locality locality = locationService.findById(landDto.getLocalityId());
             existingLand.setLocality(locality);
         }
 

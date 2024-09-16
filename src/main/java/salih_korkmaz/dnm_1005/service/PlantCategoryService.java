@@ -34,7 +34,7 @@ public class PlantCategoryService {
     }
 
     public PlantCategoryDTO getPlantCategoryByPlantId(Long plantId) {
-        PlantCategory plantCategory = plantCategoryRepository.findCategoryByPlantId(plantId)
+        PlantCategory plantCategory = plantCategoryRepository.findByPlant_Id(plantId)
                 .orElseThrow(() -> new RuntimeException("Bitki ID için Bitki Kategorisi Bulunamadı:" + plantId));
         return plantCategoryMapper.toDTO(plantCategory);
     }

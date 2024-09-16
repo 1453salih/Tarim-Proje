@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EvaluationRepository extends JpaRepository<Evaluation,Long> {
-    void deleteByHarvestId(Long harvestId);
     Optional<Evaluation> findByHarvestId(Long harvestId);
     List<Evaluation> findByHarvestSowingLandUserId(Long userId);
 }
