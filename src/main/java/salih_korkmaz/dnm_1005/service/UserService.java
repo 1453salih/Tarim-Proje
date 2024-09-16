@@ -10,7 +10,7 @@ import salih_korkmaz.dnm_1005.dto.LoginResponse;
 import salih_korkmaz.dnm_1005.entity.User;
 import salih_korkmaz.dnm_1005.exception.EmailAlreadyInUseException;
 import salih_korkmaz.dnm_1005.repository.UserRepository;
-import salih_korkmaz.dnm_1005.util.JwtUtil;
+import salih_korkmaz.dnm_1005.dto.util.JwtUtil;
 
 @Service
 public class UserService {

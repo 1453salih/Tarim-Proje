@@ -46,9 +46,6 @@ public class SowingController {
         return sowingService.saveSowing(sowingDto);
     }
 
-
-
-
     @GetMapping("/detail/{id}")
     public SowingDTO getSowingById(@PathVariable Long id) {
         return sowingService.getSowingById(id);

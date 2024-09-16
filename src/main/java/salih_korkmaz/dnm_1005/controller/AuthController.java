@@ -10,7 +10,7 @@ import salih_korkmaz.dnm_1005.dto.LoginRequest;
 import salih_korkmaz.dnm_1005.dto.LoginResponse;
 import salih_korkmaz.dnm_1005.exception.EmailAlreadyInUseException;
 import salih_korkmaz.dnm_1005.service.UserService;
-import salih_korkmaz.dnm_1005.util.JwtUtil;
+import salih_korkmaz.dnm_1005.dto.util.JwtUtil;
 
 import java.util.HashMap;
 import java.util.Map;
