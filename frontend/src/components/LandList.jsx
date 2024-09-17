@@ -90,35 +90,6 @@ const LandList = () => {
     }, []);
 
 
-    useEffect(() => {
-        let filteredData = lands.filter(land => {
-            const landNameMatch = land.name.toLowerCase().includes(filter.landName.toLowerCase());
-            const cityNameMatch = land.location.cityName.toLowerCase().includes(filter.cityName.toLowerCase());
-            const districtNameMatch = land.location.districtName.toLowerCase().includes(filter.districtName.toLowerCase());
-            const sizeMatch = (!filter.minSize || land.landSize >= parseFloat(filter.minSize)) &&
-                (!filter.maxSize || land.landSize <= parseFloat(filter.maxSize));
-
-            return landNameMatch && cityNameMatch && districtNameMatch && sizeMatch;
-        });
-
-        const sortedData = filteredData.sort((a, b) => {
-            const aValue = a[sortConfig.key];
-            const bValue = b[sortConfig.key];
-
-            if (typeof aValue === 'string' && typeof bValue === 'string') {
-                return sortConfig.direction === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-            } else if (typeof aValue === 'number' && typeof bValue === 'number') {
-                return sortConfig.direction === 'asc' ? aValue - bValue : bValue - aValue;
-            } else {
-                return 0;
-            }
-        });
-
-        const paginatedData = sortedData.slice((page - 1) * pageSize, page * pageSize);
-        setFilteredLands(paginatedData);
-        setTotalPages(Math.ceil(filteredData.length / pageSize));
-    }, [filter, lands, sortConfig, page, pageSize]);
-
     if (!isAuthenticated) {
         return (
             <Container maxWidth="md">
@@ -140,7 +111,9 @@ const LandList = () => {
             ...filter,
             [e.target.name]: e.target.value
         });
+        setPage(1); // Filtre değiştiğinde sayfayı ilk sayfaya sıfırla
     };
+
 
     const handleClearFilter = (name) => {
         setFilter({
@@ -158,6 +131,21 @@ const LandList = () => {
         setSelectedLand(land);
         setOpenDialog(true);
     };
+
+    const handlePageChange = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handlePageSizeChange = (event) => {
+        setPageSize(parseInt(event.target.value, 10));
+        setPage(1); // Sayfa boyutu değiştiğinde sayfayı başa sıfırlayın
+    };
+
+
+    useEffect(() => {
+        fetchFilteredLands(); // Filtreler veya sayfalama bilgisi değiştiğinde verileri yeniden çeker.
+    }, [filter, page, pageSize]);
+
 
     const handleDeleteConfirm = () => {
         if (selectedLand) {
@@ -279,6 +267,34 @@ const LandList = () => {
         </Accordion>
     );
 
+    const fetchFilteredLands = () => {
+        const queryParams = new URLSearchParams({
+            page: page - 1, // 0 tabanlı sayfa numarası
+            size: pageSize, // Sayfa başına gösterilecek kayıt sayısı
+            landName: filter.landName,
+            cityName: filter.cityName,
+            districtName: filter.districtName,
+            minSize: filter.minSize,
+            maxSize: filter.maxSize,
+        });
+
+        axios.get(`http://localhost:8080/lands?${queryParams.toString()}`, { withCredentials: true })
+            .then(response => {
+                console.log(response.data);  // Yanıtın içeriğini kontrol edin
+                const landData = response.data.content || response.data;
+                setLands(landData);
+                setFilteredLands(landData);
+                setTotalPages(response.data.totalPages);  // Toplam sayfa sayısını kontrol edin
+            })
+            .catch(error => {
+                console.error('Arazileri getirirken hata oluştu:', error);
+                if (error.response && error.response.status === 401) {
+                    setIsAuthenticated(false);
+                }
+            });
+
+    };
+
     return (
         <ThemeProvider theme={theme}>
             <Container maxWidth="xl" sx={{ marginBottom: "60px" }}>
@@ -360,7 +376,7 @@ const LandList = () => {
                         <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Select
                                 value={pageSize}
-                                onChange={(event) => setPageSize(parseInt(event.target.value, 10))}
+                                onChange={handlePageSizeChange}
                                 displayEmpty
                                 inputProps={{ 'aria-label': 'Gösterim Sayısı' }}
                             >
@@ -372,7 +388,7 @@ const LandList = () => {
                             <Pagination
                                 count={totalPages}
                                 page={page}
-                                onChange={(event, value) => setPage(value)}
+                                onChange={handlePageChange}
                                 color="primary"
                             />
                         </Box>
@@ -409,3 +425,4 @@ const LandList = () => {
 };
 
 export default LandList;
+

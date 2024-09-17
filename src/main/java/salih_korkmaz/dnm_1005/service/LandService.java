@@ -1,3 +1,4 @@
+
 package salih_korkmaz.dnm_1005.service;
 
 import jakarta.transaction.Transactional;
@@ -5,6 +6,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import salih_korkmaz.dnm_1005.dto.LandDTO;
@@ -13,6 +15,7 @@ import salih_korkmaz.dnm_1005.entity.Locality;
 import salih_korkmaz.dnm_1005.entity.User;
 import salih_korkmaz.dnm_1005.mapper.LandMapper;
 import salih_korkmaz.dnm_1005.repository.LandRepository;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -141,10 +144,6 @@ public class LandService {
         landRepository.save(land);
     }
 
-
-
-
-
     public LandDTO getLandById(Long id) {
         Land land = landRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Arazi bulunamadı"));
@@ -153,9 +152,25 @@ public class LandService {
     }
 
 
-    public Page<LandDTO> getLandsByUser(Long userId, Pageable pageable) {
-        Page<Land> lands = landRepository.findByUserId(userId,pageable);
-        return lands.map(landMapper::toDTO);
+    public Page<LandDTO> getFilteredLands(String landName, String cityName, String districtName, Double minSize, Double maxSize, Pageable pageable) {
+        Specification<Land> spec = Specification.where(null);
+
+        if (landName != null && !landName.isEmpty()) {
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("name")), "%" + landName.toLowerCase() + "%"));
+        }
+        if (cityName != null && !cityName.isEmpty()) {
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("location").get("cityName")), "%" + cityName.toLowerCase() + "%"));
+        }
+        if (districtName != null && !districtName.isEmpty()) {
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("location").get("districtName")), "%" + districtName.toLowerCase() + "%"));
+        }
+        if (minSize != null) {
+            spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("landSize"), minSize));
+        }
+        if (maxSize != null) {
+            spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("landSize"), maxSize));
+        }
+        return landRepository.findAll(spec, pageable).map(landMapper::toDTO);
     }
 
     public Land findLandById(Long id) {
@@ -168,6 +183,7 @@ public class LandService {
                 .map(Land::getLocality)
                 .orElseThrow(() -> new IllegalArgumentException("Geçersiz arazi ID: " + landId));
     }
+
     public String uploadImage(MultipartFile file) {
         try {
             String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename(); // Benzersiz dosya adı.
