@@ -1,5 +1,8 @@
 package salih_korkmaz.dnm_1005.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import salih_korkmaz.dnm_1005.dto.LandDTO;
@@ -56,13 +59,17 @@ public class SowingController {
         return sowingService.updateSowing(id, sowingDto);
     }
     @GetMapping
-    public List<SowingDTO> getSowingsByUser() {
+    public Page<SowingDTO> getSowingsByUser(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
         // UserService'den kullanıcıyı alır.
         User user = userService.getAuthenticatedUser();
 
-        // Kullanıcı ID'sine göre ekimleri getirir.
-        return sowingService.getSowingsByUser(user.getId());
+        Pageable pageable = PageRequest.of(page, size);
+
+        // Kullanıcı ID'sine göre ekimleri paginasyonla getirir.
+        return sowingService.getSowingsByUser(user.getId(), pageable);
     }
     @GetMapping("/{sowingId}/hasat-durumu")
     public ResponseEntity<Boolean> hasatDurumu(@PathVariable Long sowingId) {

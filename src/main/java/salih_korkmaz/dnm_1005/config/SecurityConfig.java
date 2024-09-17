@@ -1,6 +1,5 @@
 package salih_korkmaz.dnm_1005.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -52,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers("/evaluations/harvest/**").permitAll()
                         .requestMatchers("/harvests/delete-by-sowing/**").permitAll()
                         .requestMatchers("/auth/logout").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

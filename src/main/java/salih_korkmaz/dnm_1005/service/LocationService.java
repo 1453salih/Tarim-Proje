@@ -13,7 +13,6 @@ import salih_korkmaz.dnm_1005.repository.CityRepository;
 import salih_korkmaz.dnm_1005.repository.LocalityRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,7 +48,7 @@ public class LocationService {
 
     public Locality findById(Long localityCode) {
         return localityRepository.findById(localityCode)
-                .orElseThrow(() -> new EntityNotFoundException("Locality not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Lokasyon bulunamadı."));
     }
 
 

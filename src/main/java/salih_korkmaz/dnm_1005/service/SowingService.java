@@ -1,6 +1,8 @@
 package salih_korkmaz.dnm_1005.service;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import salih_korkmaz.dnm_1005.dto.SowingDTO;
 import salih_korkmaz.dnm_1005.entity.Land;
@@ -10,9 +12,8 @@ import salih_korkmaz.dnm_1005.mapper.SowingMapper;
 import salih_korkmaz.dnm_1005.repository.LandRepository;
 import salih_korkmaz.dnm_1005.repository.SowingRepository;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 
 @Service
@@ -76,11 +77,9 @@ public class SowingService {
         return sowingRepository.save(existingSowing);
     }
 
-    public List<SowingDTO> getSowingsByUser(Long userId) {
-        List<Sowing> sowings = sowingRepository.findByLandUserId(userId);
-        return sowings.stream()
-                .map(sowingMapper::toDto)
-                .collect(Collectors.toList());
+    public Page<SowingDTO> getSowingsByUser(Long userId, Pageable pageable) {
+        Page<Sowing> sowings = sowingRepository.findByLandUserId(userId,pageable);
+        return sowings.map(sowingMapper::toDto);
     }
 
     public SowingDTO getSowingById(Long id) {

@@ -21,7 +21,11 @@ import {
     Accordion,
     AccordionSummary,
     AccordionDetails,
-    useMediaQuery
+    useMediaQuery,
+    Pagination,
+    Select,
+    FormControl,
+    InputLabel
 } from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
@@ -36,6 +40,8 @@ import axios from 'axios';
 import BreadcrumbComponent from './BreadCrumb.jsx';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import NoResult from "./NoResults.jsx";
+import { TablePagination } from '@mui/material';
+
 
 const theme = createTheme({
     typography: {
@@ -127,16 +133,24 @@ const SowingList = () => {
         sowingFieldMax: '',
     });
     const [sortConfig, setSortConfig] = useState({key: 'landName', direction: 'asc'});
+
+    // Pagination
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [totalPages, setTotalPages] = useState(1);
+
     const navigate = useNavigate();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
     useEffect(() => {
-        axios.get('http://localhost:8080/sowings', {withCredentials: true})
+        // Fetch sowings with pagination
+        axios.get(`http://localhost:8080/sowings?page=${page - 1}&size=${pageSize}`, {withCredentials: true})
             .then(response => {
-                setSowings(response.data);
-                setFilteredSowings(response.data);
+                setSowings(response.data.content); // Data içeriği burada 'content' altında olabilir
+                setFilteredSowings(response.data.content); // Aynı veri burada da set ediliyor
+                setTotalPages(response.data.totalPages); // Total sayfayı set ediyoruz
 
-                response.data.forEach(sowing => {
+                response.data.content.forEach(sowing => {
                     axios.get(`http://localhost:8080/sowings/${sowing.id}/hasat-durumu`, {withCredentials: true})
                         .then(hasatResponse => {
                             if (hasatResponse.data) {
@@ -150,10 +164,10 @@ const SowingList = () => {
                     setIsAuthenticated(false);
                 }
             });
-    }, []);
+    }, [page, pageSize]); // page ve pageSize değiştikçe veriyi tekrar çeker
 
     useEffect(() => {
-        const filteredData = sowings.filter(sowing => {
+        const filteredData = Array.isArray(sowings) ? sowings.filter(sowing => {
             const sowingDateMatch = filter.sowingDate === null || dayjs(sowing.sowingDate).isSame(dayjs(filter.sowingDate), 'day');
             const sowingFieldMatch =
                 (filter.sowingFieldMin === '' || sowing.sowingField >= parseFloat(filter.sowingFieldMin)) &&
@@ -164,7 +178,7 @@ const SowingList = () => {
                 sowingDateMatch &&
                 (filter.landType === '' || sowing.landType === filter.landType) &&
                 sowingFieldMatch;
-        });
+        }) : [];
 
         const sortedData = filteredData.sort((a, b) => {
             const aValue = a[sortConfig.key];
@@ -211,6 +225,7 @@ const SowingList = () => {
     const handleDetail = (id) => {
         navigate(`/sowings/detail/${id}`);
     };
+
     const handleHarvest = (id) => {
         const harvestDto = {
             sowingId: id,
@@ -219,32 +234,22 @@ const SowingList = () => {
 
         axios.post('http://localhost:8080/harvests', harvestDto, { withCredentials: true })
             .then(response => {
-                console.log('Hasat işlemi başarılı:', response);
-                console.log('Cevap Verisi:', response.data);  // Tüm response.data içeriğini loglayalım
-
-                // Burada response.data.id kontrol ediliyor.
                 if (response.data && response.data.id) {
-                    const harvestId = response.data.id;  // Doğru ID'yi alıyoruz
-                    console.log('Oluşturulan hasat ID:', harvestId);
-
+                    const harvestId = response.data.id;
                     setSnackbarMessage('Hasat işlemi başarılı!');
                     setSnackbarSeverity('success');
                     setSnackbarOpen(true);
 
-                    // Hasat edilen ID'yi harvestedSowingIds listesine ekle
                     setHarvestedSowingIds(prevIds => [...prevIds, id]);
 
-                    // Yönlendirme işlemi harvestId ile
                     setTimeout(() => navigate(`/evaluation`, { state: { harvestId: harvestId } }), 1500);
                 } else {
-                    console.error('Hasat ID cevap verisinde eksik:', response);
                     setSnackbarMessage('Hasat işlemi başarılı, ancak Hasat ID alınamadı.');
                     setSnackbarSeverity('warning');
                     setSnackbarOpen(true);
                 }
             })
             .catch(error => {
-                console.error('Hasat işlemi sırasında hata oluştu:', error);
                 setSnackbarMessage('Hasat işlemi sırasında bir hata oluştu.');
                 setSnackbarSeverity('error');
                 setSnackbarOpen(true);
@@ -268,13 +273,13 @@ const SowingList = () => {
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <SearchIcon sx={{color: '#ff6305'}} />  {/* İkon turuncu */}
+                                    <SearchIcon sx={{color: '#ff6305'}} />
                                 </InputAdornment>
                             ),
                             endAdornment: filter.landName && (
                                 <InputAdornment position="end">
                                     <IconButton onClick={() => setFilter({...filter, landName: ''})}>
-                                        <ClearIcon sx={{color: '#ff6305'}} />  {/* Temizleme ikonu turuncu */}
+                                        <ClearIcon sx={{color: '#ff6305'}} />
                                     </IconButton>
                                 </InputAdornment>
                             ),
@@ -295,7 +300,7 @@ const SowingList = () => {
                             endAdornment: filter.plantName && (
                                 <InputAdornment position="end">
                                     <IconButton onClick={() => setFilter({...filter, plantName: ''})}>
-                                        <ClearIcon sx={{color: '#ff6305'}} />  {/* Temizleme ikonu turuncu */}
+                                        <ClearIcon sx={{color: '#ff6305'}} />
                                     </IconButton>
                                 </InputAdornment>
                             ),
@@ -318,7 +323,7 @@ const SowingList = () => {
                         />
                         {filter.sowingDate && (
                             <IconButton onClick={handleClearDate}>
-                                <ClearIcon sx={{color: '#ff6305'}} />  {/* Temizleme ikonu turuncu */}
+                                <ClearIcon sx={{color: '#ff6305'}} />
                             </IconButton>
                         )}
                     </Box>
@@ -378,6 +383,17 @@ const SowingList = () => {
         setSnackbarOpen(false);
     };
 
+    const handlePageChange = (event, newPage) => {
+        setPage(newPage + 1); // TablePagination, 0 tabanlı bir sayfa numarası kullanır, bu yüzden +1 yapıyoruz.
+    };
+
+    const handlePageSizeChange = (event) => {
+        setPageSize(parseInt(event.target.value, 10));
+        setPage(1); // Sayfa boyutu değiştiğinde sayfayı başa almak mantıklı
+    };
+
+
+
     return (
         <ThemeProvider theme={theme}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -436,14 +452,14 @@ const SowingList = () => {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {filteredSowings.length === 0 ? (
+                                        {Array.isArray(filteredSowings) && filteredSowings.length === 0 ? (
                                             <TableRow>
                                                 <TableCell colSpan={7}>
                                                     <NoResult />
                                                 </TableCell>
                                             </TableRow>
                                         ) : (
-                                            filteredSowings.map((sowing) => (
+                                            Array.isArray(filteredSowings) && filteredSowings.map((sowing) => (
                                                 <TableRow key={sowing.id}>
                                                     <TableCell align="center">{sowing.landName}</TableCell>
                                                     <TableCell align="center">{sowing.plantName}</TableCell>
@@ -472,6 +488,16 @@ const SowingList = () => {
                                         )}
                                     </TableBody>
                                 </Table>
+                                <TablePagination
+                                    component="div"
+                                    count={totalPages * pageSize} // Toplam veri sayısı
+                                    page={page - 1} // TablePagination, 0 tabanlı olduğu için -1
+                                    onPageChange={handlePageChange}
+                                    rowsPerPage={pageSize}
+                                    onRowsPerPageChange={handlePageSizeChange}
+                                    labelRowsPerPage="Gösterim"
+                                    rowsPerPageOptions={[10, 20, 50]} // Gösterilecek satır sayısı seçenekleri
+                                />
                             </TableContainer>
                         </Box>
                     </Box>
