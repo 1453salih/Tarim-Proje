@@ -3,6 +3,8 @@ package salih_korkmaz.dnm_1005.service;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import salih_korkmaz.dnm_1005.dto.LandDTO;
@@ -151,9 +153,9 @@ public class LandService {
     }
 
 
-    public List<LandDTO> getLandsByUser(Long userId) {
-        List<Land> lands = landRepository.findByUserId(userId);
-        return lands.stream().map(landMapper::toDTO).collect(Collectors.toList());
+    public Page<LandDTO> getLandsByUser(Long userId, Pageable pageable) {
+        Page<Land> lands = landRepository.findByUserId(userId,pageable);
+        return lands.map(landMapper::toDTO);
     }
 
     public Land findLandById(Long id) {

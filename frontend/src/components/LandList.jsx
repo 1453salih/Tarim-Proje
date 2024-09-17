@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, Grid, Card, CardContent, CardMedia, Button, Accordion, AccordionSummary, AccordionDetails, TextField, InputAdornment, IconButton, MenuItem, Select, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, useMediaQuery } from '@mui/material';
+import { Container, Typography, Box, Grid, Card, CardContent, CardMedia, Button, Accordion, AccordionSummary, AccordionDetails, TextField, InputAdornment, IconButton, MenuItem, Select, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, useMediaQuery, Pagination } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import BreadcrumbComponent from "./BreadCrumb.jsx";
@@ -15,20 +15,20 @@ const theme = createTheme({
     },
     palette: {
         primary: {
-            main: '#ff8d00', // Düzenle butonları için turuncu renk
+            main: '#ff8d00',
         },
         secondary: {
-            main: '#007a37', // Accordion başlığı için yeşil renk
+            main: '#007a37',
         },
         text: {
-            primary: '#000000', // Kart başlığı için siyah renk
+            primary: '#000000',
         }
     },
     components: {
         MuiAccordionSummary: {
             styleOverrides: {
                 root: {
-                    backgroundColor: '#007a37', // Accordion başlığı için yeşil
+                    backgroundColor: '#007a37',
                     color: 'white',
                     '& .MuiAccordionSummary-expandIconWrapper': {
                         color: 'white',
@@ -38,15 +38,15 @@ const theme = createTheme({
         },
         MuiButton: {
             styleOverrides: {
-                root:{
+                root: {
                     fontFamily: 'Poppins, sans-serif',
                     textTransform: 'none',
                 },
                 containedPrimary: {
-                    backgroundColor: '#ff8d00', // Düzenle butonları için turuncu
-                    color: '#ffffff', // Beyaz yazı
+                    backgroundColor: '#ff8d00',
+                    color: '#ffffff',
                     '&:hover': {
-                        backgroundColor: '#e67c00', // Hover rengi biraz daha koyu turuncu
+                        backgroundColor: '#e67c00',
                     },
                 },
             },
@@ -64,18 +64,22 @@ const LandList = () => {
         minSize: '',
         maxSize: '',
     });
-    const [sortConfig, setSortConfig] = useState({ key: 'landName', direction: 'asc' }); // Sıralama bilgileri
+    const [sortConfig, setSortConfig] = useState({ key: 'landName', direction: 'asc' });
     const [isAuthenticated, setIsAuthenticated] = useState(true);
-    const [openDialog, setOpenDialog] = useState(false); // Dialog (modal) kontrolü
-    const [selectedLand, setSelectedLand] = useState(null); // Silinecek arazi bilgisi
-    const isMobile = useMediaQuery(theme.breakpoints.down('md')); // Ekran boyutu kontrolü
+    const [openDialog, setOpenDialog] = useState(false);
+    const [selectedLand, setSelectedLand] = useState(null);
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(6);
+    const [totalPages, setTotalPages] = useState(1);
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const navigate = useNavigate();
 
     useEffect(() => {
         axios.get('http://localhost:8080/lands', { withCredentials: true })
             .then(response => {
-                setLands(response.data);
-                setFilteredLands(response.data); // İlk başta tüm arazileri göster
+                const landData = response.data.content || response.data; // Eğer veri `content` içindeyse onu kullan
+                setLands(landData);
+                setFilteredLands(landData);
             })
             .catch(error => {
                 console.error('Error fetching lands:', error);
@@ -84,6 +88,7 @@ const LandList = () => {
                 }
             });
     }, []);
+
 
     useEffect(() => {
         let filteredData = lands.filter(land => {
@@ -96,7 +101,7 @@ const LandList = () => {
             return landNameMatch && cityNameMatch && districtNameMatch && sizeMatch;
         });
 
-        filteredData = filteredData.sort((a, b) => {
+        const sortedData = filteredData.sort((a, b) => {
             const aValue = a[sortConfig.key];
             const bValue = b[sortConfig.key];
 
@@ -109,8 +114,10 @@ const LandList = () => {
             }
         });
 
-        setFilteredLands(filteredData);
-    }, [filter, lands, sortConfig]);
+        const paginatedData = sortedData.slice((page - 1) * pageSize, page * pageSize);
+        setFilteredLands(paginatedData);
+        setTotalPages(Math.ceil(filteredData.length / pageSize));
+    }, [filter, lands, sortConfig, page, pageSize]);
 
     if (!isAuthenticated) {
         return (
@@ -148,18 +155,17 @@ const LandList = () => {
     };
 
     const handleDeleteClick = (land) => {
-        setSelectedLand(land); // Silinecek araziyi belirle
-        setOpenDialog(true); // Modal'ı aç
+        setSelectedLand(land);
+        setOpenDialog(true);
     };
 
     const handleDeleteConfirm = () => {
-        console.log(selectedLand.id);
         if (selectedLand) {
             axios.delete(`http://localhost:8080/lands/delete/${selectedLand.id}`)
                 .then(() => {
-                    setLands(lands.filter(land => land.id !== selectedLand.id)); // Silinen araziyi listeden çıkar
-                    setOpenDialog(false); // Modal'ı kapat
-                    setSelectedLand(null); // Seçili araziyi sıfırla
+                    setLands(lands.filter(land => land.id !== selectedLand.id));
+                    setOpenDialog(false);
+                    setSelectedLand(null);
                 })
                 .catch(error => {
                     console.error('Error deleting land:', error);
@@ -298,7 +304,7 @@ const LandList = () => {
                             </Select>
                         </Box>
                         <Grid container spacing={3}>
-                            {filteredLands.map((land) => (
+                            {(Array.isArray(filteredLands) ? filteredLands : []).map((land) => (
                                 <Grid item xs={12} sm={6} md={4} key={land.id}>
                                     <Card
                                         sx={{
@@ -337,7 +343,7 @@ const LandList = () => {
                                                 Köy/Mahalle: {land.location.localityName || 'N/A'}
                                             </Typography>
                                         </CardContent>
-                                        <Box sx={{ display: 'flex', justifyContent: '',columnGap:2, mb: 2 }}>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                                             <Button variant="contained" color="primary" onClick={() => handleDetail(land.id)}>
                                                 Düzenle
                                             </Button>
@@ -349,6 +355,27 @@ const LandList = () => {
                                 </Grid>
                             ))}
                         </Grid>
+
+                        {/* Pagination ve Kart Sayısı Seçici */}
+                        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Select
+                                value={pageSize}
+                                onChange={(event) => setPageSize(parseInt(event.target.value, 10))}
+                                displayEmpty
+                                inputProps={{ 'aria-label': 'Gösterim Sayısı' }}
+                            >
+                                <MenuItem value={6}>6</MenuItem>
+                                <MenuItem value={12}>12</MenuItem>
+                                <MenuItem value={24}>24</MenuItem>
+                            </Select>
+
+                            <Pagination
+                                count={totalPages}
+                                page={page}
+                                onChange={(event, value) => setPage(value)}
+                                color="primary"
+                            />
+                        </Box>
                     </Box>
                 </Box>
 

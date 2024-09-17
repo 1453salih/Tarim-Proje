@@ -1,6 +1,9 @@
 package salih_korkmaz.dnm_1005.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,12 +49,17 @@ public class LandController {
 
 
     @GetMapping
-    public List<LandDTO> getLandsByUser() {
+    public Page<LandDTO> getLandsByUser(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size)
+    {
         // UserService'den oturum açmış kullanıcıyı alır.
         User user = userService.getAuthenticatedUser();
 
+        Pageable pageable = PageRequest.of(page,size);
+
         // Kullanıcı ID'sine göre arazileri getirir.
-        return landService.getLandsByUser(user.getId());
+        return landService.getLandsByUser(user.getId(),pageable);
     }
 
     @GetMapping("/detail/{id}")

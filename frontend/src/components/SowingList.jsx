@@ -146,9 +146,9 @@ const SowingList = () => {
         // Fetch sowings with pagination
         axios.get(`http://localhost:8080/sowings?page=${page - 1}&size=${pageSize}`, {withCredentials: true})
             .then(response => {
-                setSowings(response.data.content); // Data içeriği burada 'content' altında olabilir
-                setFilteredSowings(response.data.content); // Aynı veri burada da set ediliyor
-                setTotalPages(response.data.totalPages); // Total sayfayı set ediyoruz
+                setSowings(response.data.content);
+                setFilteredSowings(response.data.content);
+                setTotalPages(response.data.totalPages);
 
                 response.data.content.forEach(sowing => {
                     axios.get(`http://localhost:8080/sowings/${sowing.id}/hasat-durumu`, {withCredentials: true})
@@ -496,7 +496,7 @@ const SowingList = () => {
                                     rowsPerPage={pageSize}
                                     onRowsPerPageChange={handlePageSizeChange}
                                     labelRowsPerPage="Gösterim"
-                                    rowsPerPageOptions={[10, 20, 50]} // Gösterilecek satır sayısı seçenekleri
+                                    rowsPerPageOptions={[10, 20, 50]}
                                 />
                             </TableContainer>
                         </Box>

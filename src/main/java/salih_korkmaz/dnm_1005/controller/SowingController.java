@@ -71,11 +71,13 @@ public class SowingController {
         // Kullanıcı ID'sine göre ekimleri paginasyonla getirir.
         return sowingService.getSowingsByUser(user.getId(), pageable);
     }
+
     @GetMapping("/{sowingId}/hasat-durumu")
     public ResponseEntity<Boolean> hasatDurumu(@PathVariable Long sowingId) {
         boolean hasatEdildiMi = harvestService.existsBySowingId(sowingId);
         return ResponseEntity.ok(hasatEdildiMi);
     }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteSowing(@PathVariable Long id) {
         sowingService.deleteSowing(id);
