@@ -77,7 +77,7 @@ const LandList = () => {
     useEffect(() => {
         axios.get('http://localhost:8080/lands', { withCredentials: true })
             .then(response => {
-                const landData = response.data.content || response.data; // Eğer veri `content` içindeyse onu kullan
+                const landData = response.data.content || response.data; // Eğer veri `content` içindeyse onu kullanır.
                 setLands(landData);
                 setFilteredLands(landData);
             })
@@ -111,7 +111,7 @@ const LandList = () => {
             ...filter,
             [e.target.name]: e.target.value
         });
-        setPage(1); // Filtre değiştiğinde sayfayı ilk sayfaya sıfırla
+        setPage(1); // Filtre değiştiğinde sayfayı ilk sayfaya sıfırlar.
     };
 
 
@@ -280,11 +280,10 @@ const LandList = () => {
 
         axios.get(`http://localhost:8080/lands?${queryParams.toString()}`, { withCredentials: true })
             .then(response => {
-                console.log(response.data);  // Yanıtın içeriğini kontrol edin
                 const landData = response.data.content || response.data;
                 setLands(landData);
                 setFilteredLands(landData);
-                setTotalPages(response.data.totalPages);  // Toplam sayfa sayısını kontrol edin
+                setTotalPages(response.data.totalPages);
             })
             .catch(error => {
                 console.error('Arazileri getirirken hata oluştu:', error);
@@ -306,7 +305,20 @@ const LandList = () => {
                         {renderFilters()}
                     </Box>
                     <Box sx={{ width: isMobile ? '100%' : '75%' }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 ,columnGap:'15px'}}>
+                            <Select
+                                value={pageSize}
+                                onChange={handlePageSizeChange}
+                                displayEmpty
+                                inputProps={{ 'aria-label': 'Gösterim Sayısı' }}
+                                renderValue={(selected) => `Gösterim sayısı: ${selected}`}  // Burada seçilen değeri dinamik olarak yazıyoruz
+                            >
+                                <MenuItem value={6}>6</MenuItem>
+                                <MenuItem value={12}>12</MenuItem>
+                                <MenuItem value={24}>24</MenuItem>
+                            </Select>
+
+
                             <Select
                                 value={`${sortConfig.key}-${sortConfig.direction}`}
                                 onChange={handleSortChange}
@@ -373,18 +385,7 @@ const LandList = () => {
                         </Grid>
 
                         {/* Pagination ve Kart Sayısı Seçici */}
-                        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Select
-                                value={pageSize}
-                                onChange={handlePageSizeChange}
-                                displayEmpty
-                                inputProps={{ 'aria-label': 'Gösterim Sayısı' }}
-                            >
-                                <MenuItem value={6}>6</MenuItem>
-                                <MenuItem value={12}>12</MenuItem>
-                                <MenuItem value={24}>24</MenuItem>
-                            </Select>
-
+                        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <Pagination
                                 count={totalPages}
                                 page={page}
