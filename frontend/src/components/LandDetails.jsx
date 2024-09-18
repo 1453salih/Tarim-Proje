@@ -178,7 +178,7 @@ const LandDetails = () => {
                         />
                         <TextField
                             fullWidth
-                            label="Boyut (Hektar)"
+                            label="Arazi Alanı (m²)"
                             name="landSize"
                             value={land.landSize}
                             onChange={handleChange}

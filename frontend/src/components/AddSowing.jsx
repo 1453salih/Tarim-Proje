@@ -37,6 +37,9 @@ function AddSowing() {
     const [sowingFieldError, setSowingFieldError] = useState(false);
     const [availableLand, setAvailableLand] = useState(null);  //* Ekilebilir Alan
 
+
+
+
     useEffect(() => {
         if (landId) {
             const fetchAvailableLand = async () => {
@@ -87,7 +90,7 @@ function AddSowing() {
                     axios.get('http://localhost:8080/lands', { withCredentials: true })
                 ]);
                 setPlants(plantsResponse.data);
-                setLands(landsResponse.data);
+                setLands(landsResponse.data.content || []);  // Sayfalandırılmış yanıttan content dizisini çıkarır.
             } catch (error) {
                 console.error('Error fetching plants and lands:', error);
             }
@@ -218,23 +221,23 @@ function AddSowing() {
 
                             <TextField
                                 fullWidth
-                                label="Sowing Date"
+                                label="Ekim Tarihi"
                                 type="date"
                                 variant="outlined"
                                 margin="normal"
                                 value={sowingDate}
                                 onChange={(e) => setSowingDate(e.target.value)}
                                 error={sowingDateError}
-                                helperText={sowingDateError ? 'Please select a date.' : ''}
+                                helperText={sowingDateError ? 'Lütfen bir tarih seçiniz.' : ''}
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
                             />
 
                             <FormControl fullWidth margin="normal" error={landIdError}>
-                                <InputLabel>Land</InputLabel>
+                                <InputLabel>Arazi</InputLabel>
                                 <Select
-                                    label="Land"
+                                    label="Arazi"
                                     value={landId}
                                     onChange={(e) => setLandId(e.target.value)}
                                 >
@@ -249,13 +252,13 @@ function AddSowing() {
 
                             <TextField
                                 fullWidth
-                                label="Planted Area Size"
+                                label="Ekilmiş Alan"
                                 variant="outlined"
                                 type="number"
                                 value={sowingField}
                                 onChange={(e) => setSowingField(e.target.value)}
                                 error={sowingFieldError}
-                                helperText={sowingFieldError ? 'Please enter a valid size.' : ''}
+                                helperText={sowingFieldError ? 'Lütfen geçerli bir değer girin.' : ''}
                                 InputProps={{
                                     endAdornment: <InputAdornment position="end">m²</InputAdornment>,
                                 }}

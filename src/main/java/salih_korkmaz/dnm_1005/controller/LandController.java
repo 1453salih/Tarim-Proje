@@ -52,23 +52,19 @@ public class LandController {
     public Page<LandDTO> getLandsByUser(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            //! Filtre parametreleri
             @RequestParam(required = false) String landName,
             @RequestParam(required = false) String cityName,
             @RequestParam(required = false) String districtName,
+            @RequestParam(required = false) String localityName,  // Yeni eklenen filtre
             @RequestParam(required = false) Double minSize,
             @RequestParam(required = false) Double maxSize
     ) {
-        // Giriş yapmış kullanıcıyı alıyoruz
         User user = userService.getAuthenticatedUser();
-
-        // Sayfalama objesini oluşturuyoruz
         Pageable pageable = PageRequest.of(page, size);
-        System.out.println(page);
 
-        // LandService'teki filtreleme ve sayfalama metodunu çağırıyoruz
-        return landService.getFilteredLands(landName, cityName, districtName, minSize, maxSize, pageable);
+        return landService.getFilteredLands(landName, cityName, districtName, localityName, minSize, maxSize, pageable);
     }
+
 
 
     @GetMapping("/detail/{id}")

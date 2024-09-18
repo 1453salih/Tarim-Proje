@@ -152,17 +152,20 @@ public class LandService {
     }
 
 
-    public Page<LandDTO> getFilteredLands(String landName, String cityName, String districtName, Double minSize, Double maxSize, Pageable pageable) {
+    public Page<LandDTO> getFilteredLands(String landName, String cityName, String districtName, String localityName, Double minSize, Double maxSize, Pageable pageable) {
         Specification<Land> spec = Specification.where(null);
 
         if (landName != null && !landName.isEmpty()) {
             spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("name")), "%" + landName.toLowerCase() + "%"));
         }
         if (cityName != null && !cityName.isEmpty()) {
-            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("location").get("cityName")), "%" + cityName.toLowerCase() + "%"));
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("locality").get("district").get("city").get("name")), "%" + cityName.toLowerCase() + "%"));
         }
         if (districtName != null && !districtName.isEmpty()) {
-            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("location").get("districtName")), "%" + districtName.toLowerCase() + "%"));
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("locality").get("district").get("name")), "%" + districtName.toLowerCase() + "%"));
+        }
+        if (localityName != null && !localityName.isEmpty()) {
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("locality").get("name")), "%" + localityName.toLowerCase() + "%"));
         }
         if (minSize != null) {
             spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("landSize"), minSize));
@@ -170,8 +173,12 @@ public class LandService {
         if (maxSize != null) {
             spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("landSize"), maxSize));
         }
+
         return landRepository.findAll(spec, pageable).map(landMapper::toDTO);
     }
+
+
+
 
     public Land findLandById(Long id) {
         return landRepository.findById(id)

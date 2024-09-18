@@ -61,6 +61,7 @@ const LandList = () => {
         landName: '',
         cityName: '',
         districtName: '',
+        localityName: '',
         minSize: '',
         maxSize: '',
     });
@@ -162,7 +163,7 @@ const LandList = () => {
     };
 
     const renderFilters = () => (
-        <Accordion defaultExpanded>
+        <Accordion defaultExpanded sx={{border:'1px solid #007a37'}}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography>Filtrele</Typography>
             </AccordionSummary>
@@ -224,6 +225,24 @@ const LandList = () => {
                             ),
                         }}
                     />
+                    <TextField
+                        variant="outlined"
+                        name="localityName"
+                        value={filter.localityName}
+                        onChange={handleFilterChange}
+                        placeholder="Köy/Mahalle"
+                        label="Köy/Mahalle"
+                        InputProps={{
+                            endAdornment: filter.localityName && (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={() => handleClearFilter('localityName')}>
+                                        <ClearIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+
                     <Box sx={{ display: 'flex', gap: 2 }}>
                         <TextField
                             variant="outlined"
@@ -231,7 +250,7 @@ const LandList = () => {
                             value={filter.minSize}
                             onChange={handleFilterChange}
                             placeholder="Min Boyut"
-                            label="Min Boyut (hektar)"
+                            label="Min Boyut (m²)"
                             type="number"
                             InputProps={{
                                 endAdornment: filter.minSize && (
@@ -249,7 +268,7 @@ const LandList = () => {
                             value={filter.maxSize}
                             onChange={handleFilterChange}
                             placeholder="Max Boyut"
-                            label="Max Boyut (hektar)"
+                            label="Max Boyut (m²)"
                             type="number"
                             InputProps={{
                                 endAdornment: filter.maxSize && (
@@ -274,6 +293,7 @@ const LandList = () => {
             landName: filter.landName,
             cityName: filter.cityName,
             districtName: filter.districtName,
+            localityName: filter.localityName,
             minSize: filter.minSize,
             maxSize: filter.maxSize,
         });
@@ -305,32 +325,36 @@ const LandList = () => {
                         {renderFilters()}
                     </Box>
                     <Box sx={{ width: isMobile ? '100%' : '75%' }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 ,columnGap:'15px'}}>
-                            <Select
-                                value={pageSize}
-                                onChange={handlePageSizeChange}
-                                displayEmpty
-                                inputProps={{ 'aria-label': 'Gösterim Sayısı' }}
-                                renderValue={(selected) => `Gösterim sayısı: ${selected}`}  // Burada seçilen değeri dinamik olarak yazıyoruz
-                            >
-                                <MenuItem value={6}>6</MenuItem>
-                                <MenuItem value={12}>12</MenuItem>
-                                <MenuItem value={24}>24</MenuItem>
-                            </Select>
+                        <Container>
+
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 ,columnGap:'15px',}}>
+                                <Select
+                                    value={pageSize}
+                                    onChange={handlePageSizeChange}
+                                    displayEmpty
+                                    inputProps={{ 'aria-label': 'Gösterim Sayısı' }}
+                                    renderValue={(selected) => `Gösterim sayısı: ${selected}`}
+                                    sx={{overflow:'hidden'}}
+                                >
+                                    <MenuItem value={6}>6</MenuItem>
+                                    <MenuItem value={12}>12</MenuItem>
+                                    <MenuItem value={24}>24</MenuItem>
+                                </Select>
 
 
-                            <Select
-                                value={`${sortConfig.key}-${sortConfig.direction}`}
-                                onChange={handleSortChange}
-                                displayEmpty
-                                inputProps={{ 'aria-label': 'Sıralama' }}
-                            >
-                                <MenuItem value="landName-asc">Arazi Adı (A-Z)</MenuItem>
-                                <MenuItem value="landName-desc">Arazi Adı (Z-A)</MenuItem>
-                                <MenuItem value="landSize-asc">Boyut (Küçükten Büyüğe)</MenuItem>
-                                <MenuItem value="landSize-desc">Boyut (Büyükten Küçüğe)</MenuItem>
-                            </Select>
-                        </Box>
+                                <Select
+                                    value={`${sortConfig.key}-${sortConfig.direction}`}
+                                    onChange={handleSortChange}
+                                    displayEmpty
+                                    inputProps={{ 'aria-label': 'Sıralama' }}
+                                >
+                                    <MenuItem value="landName-asc">Arazi Adı (A-Z)</MenuItem>
+                                    <MenuItem value="landName-desc">Arazi Adı (Z-A)</MenuItem>
+                                    <MenuItem value="landSize-asc">Boyut (Küçükten Büyüğe)</MenuItem>
+                                    <MenuItem value="landSize-desc">Boyut (Büyükten Küçüğe)</MenuItem>
+                                </Select>
+                            </Box>
+                        </Container>
                         <Grid container spacing={3}>
                             {(Array.isArray(filteredLands) ? filteredLands : []).map((land) => (
                                 <Grid item xs={12} sm={6} md={4} key={land.id}>
@@ -359,7 +383,10 @@ const LandList = () => {
                                                 {land.name}
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
-                                                Boyut: {land.landSize} hektar
+                                                Arazi Alan: {land.landSize} m²
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary">
+                                                Ekilebilir Arazi Alanı: {land.clayableLand} m²
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
                                                 Şehir: {land.location.cityName}
