@@ -10,5 +10,4 @@ import java.util.List;
 
 
 public interface LandRepository extends JpaRepository<Land, Long>, JpaSpecificationExecutor<Land> {
-    Page<Land> findByUserId(Long userId, Pageable pageable);
 }

@@ -51,7 +51,7 @@ public class LandController {
     @GetMapping
     public Page<LandDTO> getLandsByUser(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "6") int size,
             @RequestParam(required = false) String landName,
             @RequestParam(required = false) String cityName,
             @RequestParam(required = false) String districtName,
