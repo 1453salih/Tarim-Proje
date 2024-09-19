@@ -99,5 +99,12 @@ public class LandController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/user/lands/count")
+    public ResponseEntity<Long> getLandCountByUser() {
+        User user = userService.getAuthenticatedUser();
 
+        long landCount = landService.getLandCountByUser(user.getId());
+
+        return new ResponseEntity<>(landCount, HttpStatus.OK);
+    }
 }

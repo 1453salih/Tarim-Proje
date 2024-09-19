@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
@@ -14,6 +14,9 @@ import card4 from '../assets/card4.webp';
 import card5 from '../assets/card5.webp';
 import card6 from '../assets/card6.jpg';
 
+// İkonları ekliyoruz
+import LandscapeIcon from '@mui/icons-material/Landscape';
+
 const cards = [
     { button: 'Arazi Ekle', link: '/add-land', image: card1 },
     { button: 'Arazilerimi Görüntüle', link: '/land-list', image: card2 },
@@ -24,9 +27,79 @@ const cards = [
 ];
 
 function Home() {
+    const [landCount, setLandCount] = useState(0);
+
+    // Arazi sayısını almak için useEffect
+    useEffect(() => {
+        const fetchLandCount = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/lands/user/lands/count'); // API URL'ini backend'e göre değiştirin
+                const data = await response.json();
+                setLandCount(data);
+            } catch (error) {
+                console.error('Arazi sayısı alınamadı:', error);
+            }
+        };
+
+        fetchLandCount();
+    }, []);
+
     return (
         <Container>
             <Grid container spacing={4} sx={{ marginTop: 4 }}>
+                {/* Kullanıcının toplam arazi sayısını gösteren kart */}
+                <Grid item xs={12} sm={6} md={4}>
+                    <Card
+                        sx={{
+                            position: 'relative',
+                            borderRadius: '20px',
+                            overflow: 'hidden',
+                            transition: 'transform 0.4s ease, box-shadow 0.4s ease',
+                            boxShadow: '0 10px 20px rgba(0, 0, 0, 0.15)',
+                            '&:hover': {
+                                transform: 'scale(1.05)',
+                                boxShadow: '0 15px 30px rgba(0, 0, 0, 0.3)',
+                            },
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '250px',
+                        }}
+                    >
+                        {/* İkon */}
+                        <LandscapeIcon
+                            sx={{
+                                fontSize: 50,
+                                color: '#3f51b5',
+                                marginBottom: '10px'
+                            }}
+                        />
+                        <Typography
+                            variant="h4"
+                            sx={{
+                                fontFamily: 'Poppins, sans-serif',
+                                fontWeight: 600,
+                                color: '#3f51b5',
+                            }}
+                        >
+                            {landCount}
+                        </Typography>
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                fontFamily: 'Poppins, sans-serif',
+                                fontWeight: 400,
+                                color: '#3f51b5',
+                                marginTop: '10px',
+                            }}
+                        >
+                            Toplam Arazi Sayısı
+                        </Typography>
+                    </Card>
+                </Grid>
+
+                {/* Mevcut kartlar */}
                 {cards.map((card, index) => (
                     <Grid item key={index} xs={12} sm={6} md={4}>
                         <Link to={card.link} style={{ textDecoration: 'none' }}>
