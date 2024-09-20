@@ -20,9 +20,11 @@
     "@mui/x-date-pickers": "^7.14.0",
     "axios": "^1.7.3",
     "bootstrap": "^5.3.3",
+    "chart.js": "^4.4.4",
     "dayjs": "^1.11.13",
     "js-cookie": "^3.0.5",
     "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
     "react-google-button": "^0.8.0",
     "react-router-dom": "^6.26.0"
