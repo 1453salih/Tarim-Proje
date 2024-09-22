@@ -1,5 +1,5 @@
 import React from 'react';
-import './Spinner.css'; // CSS dosyasını import ediyoruz
+import "./spinner.css";
 
 function Spinner() {
     return (

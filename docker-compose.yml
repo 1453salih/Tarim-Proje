@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 services:
   mysql:
     image: mysql:latest
@@ -10,5 +10,30 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+
+  app:
+    build:
+      context: ./  # backend klasörünü build context olarak ayarla
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/tkk_proje
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 1453
+    depends_on:
+      - mysql
+
+  frontend:
+    build:
+      context: ./frontend  # Frontend dosyasının doğru yolunu belirtin
+      dockerfile: Dockerfile  # Frontend klasöründeki Dockerfile kullanılmalı
+    ports:
+      - "5173:5173"  # Vite'nin varsayılan portu
+    depends_on:
+      - app
+    environment:
+      NODE_ENV: development
+
 volumes:
   mysql-data:

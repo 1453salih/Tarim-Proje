@@ -3,10 +3,14 @@ package salih_korkmaz.dnm_1005.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import salih_korkmaz.dnm_1005.dto.HarvestDTO;
+import salih_korkmaz.dnm_1005.entity.User;
 import salih_korkmaz.dnm_1005.repository.HarvestRepository;
 import salih_korkmaz.dnm_1005.service.HarvestService;
+import salih_korkmaz.dnm_1005.service.UserService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,9 +21,11 @@ import java.util.List;
 public class HarvestController {
 
     private final HarvestService harvestService;
+    private final UserService userService;
 
-    public HarvestController(HarvestService harvestService, HarvestRepository harvestRepository) {
+    public HarvestController(HarvestService harvestService, HarvestRepository harvestRepository, UserService userService) {
         this.harvestService = harvestService;
+        this.userService = userService;
     }
 
     @PostMapping
@@ -50,5 +56,13 @@ public class HarvestController {
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
         PageRequest pageable = PageRequest.of(page, size, sort);
         return harvestService.getFilteredHarvests(userId, plantName, landName, minArea, maxArea, startDate, endDate, pageable);
+    }
+
+    @GetMapping("/user/harvest/count")
+    public ResponseEntity<Long> getHarvestCountBySowingLandUser(){
+        User user = userService.getAuthenticatedUser();
+
+        long harvestCount = harvestService.getHarvestCountBySowingLandUser(user.getId());
+        return new ResponseEntity<>(harvestCount, HttpStatus.OK);
     }
 }

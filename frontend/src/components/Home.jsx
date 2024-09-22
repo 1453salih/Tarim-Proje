@@ -66,7 +66,7 @@ function Home() {
 
         const fetchCultivatedLandCount = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/lands/user/cultivated-lands/count', {
+                const response = await axios.get('http://localhost:8080/harvests/user/harvest/count', {
                     withCredentials: true,
                 });
                 setCultivatedLandCount(response.data);

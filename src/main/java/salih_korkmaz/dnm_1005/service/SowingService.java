@@ -109,7 +109,3 @@ public class SowingService {
         sowingRepository.delete(existingSowing);
     }
 }
-
-
-
-

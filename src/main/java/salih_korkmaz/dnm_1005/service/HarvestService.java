@@ -98,4 +98,9 @@ public class HarvestService {
 
         return harvestRepository.findAll(spec, pageable).map(harvestMapper::toDTO);
     }
+
+    public long getHarvestCountBySowingLandUser(Long userId){
+        return harvestRepository.countBySowingLandUserId(userId);
+    }
+
 }

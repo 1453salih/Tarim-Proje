@@ -209,6 +209,7 @@ public class LandService {
         Land land = landRepository.findById(id).orElseThrow(() -> new RuntimeException("Arazi bulunamadı"));
         landRepository.delete(land);  // Arazi silinir
     }
+
     public long getLandCountByUser(Long userId) {
         // Kullanıcı ID'sine göre arazi sayısını döner.
         return landRepository.countByUserId(userId);
