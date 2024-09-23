@@ -1,4 +1,4 @@
-package salih_korkmaz.dnm_1005.dto.util;
+package salih_korkmaz.dnm_1005.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

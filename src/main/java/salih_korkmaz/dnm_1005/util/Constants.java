@@ -1,4 +1,4 @@
-package salih_korkmaz.dnm_1005.dto.util;
+package salih_korkmaz.dnm_1005.util;
 
 /**
  * Prepared by ahmeterdem on 11.09.2024 for Project Tarim-Proje.

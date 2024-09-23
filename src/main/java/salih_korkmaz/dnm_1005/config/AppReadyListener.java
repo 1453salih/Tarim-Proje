@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import salih_korkmaz.dnm_1005.service.DbInitializer;
-import salih_korkmaz.dnm_1005.dto.util.Constants;
+import salih_korkmaz.dnm_1005.util.Constants;
 
 /**
  * Prepared by ahmeterdem on 11.09.2024 for Project Tarim-Proje.

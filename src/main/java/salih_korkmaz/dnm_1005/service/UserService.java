@@ -1,6 +1,5 @@
 package salih_korkmaz.dnm_1005.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -10,7 +9,7 @@ import salih_korkmaz.dnm_1005.dto.LoginResponse;
 import salih_korkmaz.dnm_1005.entity.User;
 import salih_korkmaz.dnm_1005.exception.EmailAlreadyInUseException;
 import salih_korkmaz.dnm_1005.repository.UserRepository;
-import salih_korkmaz.dnm_1005.dto.util.JwtUtil;
+import salih_korkmaz.dnm_1005.util.JwtUtil;
 
 @Service
 public class UserService {
