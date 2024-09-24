@@ -263,9 +263,21 @@ function Home() {
                                 data={harvestData}
                                 options={{
                                     maintainAspectRatio: false,
+                                    plugins: {
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function (tooltipItem) {
+                                                    const label = tooltipItem.label || '';
+                                                    const value = tooltipItem.raw || 0;
+                                                    return `${label}: Hasat ${value} kg`;
+                                                }
+                                            }
+                                        }
+                                    }
                                 }}
                                 style={{ height: '100%', width: '100%' }}
                             />
+
                         </Box>
                     </Card>
                 </Grid>
