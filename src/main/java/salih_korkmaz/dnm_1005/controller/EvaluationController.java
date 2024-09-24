@@ -3,6 +3,7 @@ package salih_korkmaz.dnm_1005.controller;
 
 import org.springframework.web.bind.annotation.*;
 import salih_korkmaz.dnm_1005.dto.EvaluationDTO;
+import salih_korkmaz.dnm_1005.dto.EvaluationDataDTO;
 import salih_korkmaz.dnm_1005.dto.EvaluationDetailsDTO;
 import salih_korkmaz.dnm_1005.entity.Evaluation;
 import salih_korkmaz.dnm_1005.entity.User;
@@ -58,6 +59,18 @@ public class EvaluationController {
     @PutMapping("/{id}")
     public Evaluation updateEvaluation(@PathVariable Long id, @RequestBody EvaluationDTO evaluationDto) {
         return evaluationService.updateEvaluation(id, evaluationDto);
+    }
+
+    @GetMapping("/products/kg")
+    public List<EvaluationDataDTO> getUserHarvestData() {
+        User user = userService.getAuthenticatedUser();
+        return evaluationService.getUserHarvestData(user.getId());
+    }
+
+    @GetMapping("/products/top")
+    public List<EvaluationDataDTO> getTopUserHarvestData() {
+        User user = userService.getAuthenticatedUser();
+        return evaluationService.getTopUserHarvests(user.getId());
     }
 
 }

@@ -16,7 +16,7 @@ services:
       context: ./  # backend klasörünü build context olarak ayarla
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8081:8080" # Backend Docker-Local (Dışarıda-içeride) Port Ayarı
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/tkk_proje
       SPRING_DATASOURCE_USERNAME: root
@@ -26,7 +26,7 @@ services:
 
   frontend:
     build:
-      context: ./frontend  # Frontend dosyasının doğru yolunu belirtin
+      context: ./frontend
       dockerfile: Dockerfile  # Frontend klasöründeki Dockerfile kullanılmalı
     ports:
       - "5173:5173"  # Vite'nin varsayılan portu

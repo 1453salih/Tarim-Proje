@@ -40,16 +40,16 @@ function Home() {
     const [landCount, setLandCount] = useState(0);
     const [cultivatedLandCount, setCultivatedLandCount] = useState(0); // Ekili arazi sayısı için state
     const [harvestData, setHarvestData] = useState({
-        labels: ['Ürün 1', 'Ürün 2', 'Ürün 3'], // Varsayılan etiketler
+        labels: [], // Varsayılan boş etiketler
         datasets: [
             {
-                label: 'Varsayılan Hasat Kilogramları',
-                data: [300, 50, 100], // Varsayılan veri
-                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-                hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+                label: 'Hasat Kilogramları', // Yeni etiket
+                data: [], // Varsayılan boş veri
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
+                hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40']
             }
         ]
-    }); // Pasta grafiği için varsayılan state
+    });
 
     // Arazi sayısını alır.
     useEffect(() => {
@@ -78,12 +78,12 @@ function Home() {
         // Hasat edilen ürünlerin kilogram verilerini alır.
         const fetchHarvestData = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/harvests/user/weights', {
+                const response = await axios.get('http://localhost:8080/evaluations/products/top', {
                     withCredentials: true,
                 });
-
-                const labels = response.data.map(item => item.productName);
-                const data = response.data.map(item => item.totalWeight);
+                console.log("Response:", response);
+                const labels = response.data.map(item => item.plantName); // Bitki isimleri
+                const data = response.data.map(item => item.productQuantity); // Ürün miktarları
 
                 if (labels.length && data.length) { // Eğer veri geldiyse state'i güncelle
                     setHarvestData({
@@ -113,7 +113,7 @@ function Home() {
                     });
                 }
             } catch (error) {
-                console.error('Hasat verileri alınamadı, varsayılan veriler gösteriliyor.', error);
+                console.error('Hasat verileri alınamadı:', error.response ? error.response.data : error.message);
             }
         };
 
@@ -227,6 +227,7 @@ function Home() {
                     </Card>
                 </Grid>
 
+                {/* Pasta Grafiği */}
                 <Grid item xs={12} sm={6} md={4}>
                     <Card
                         sx={{
@@ -262,11 +263,22 @@ function Home() {
                                 data={harvestData}
                                 options={{
                                     maintainAspectRatio: false,
+                                    plugins: {
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function (tooltipItem) {
+                                                    const label = tooltipItem.label || '';
+                                                    const value = tooltipItem.raw || 0;
+                                                    return `${label}: Hasat ${value} kg`;
+                                                }
+                                            }
+                                        }
+                                    }
                                 }}
                                 style={{ height: '100%', width: '100%' }}
                             />
-                        </Box>
 
+                        </Box>
                     </Card>
                 </Grid>
 

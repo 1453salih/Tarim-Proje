@@ -71,10 +71,6 @@ function App() {
         return <Spinner />;
     }
 
-
-
-
-
     return (
         <Router>
             <NavbarWrapper isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />

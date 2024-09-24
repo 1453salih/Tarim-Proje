@@ -1,12 +1,16 @@
 package salih_korkmaz.dnm_1005.service;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import salih_korkmaz.dnm_1005.dto.EvaluationDTO;
+import salih_korkmaz.dnm_1005.dto.EvaluationDataDTO;
 import salih_korkmaz.dnm_1005.dto.EvaluationDetailsDTO;
 import salih_korkmaz.dnm_1005.entity.*;
+import salih_korkmaz.dnm_1005.mapper.EvaluationDataMapper;
 import salih_korkmaz.dnm_1005.mapper.EvaluationDetailsMapper;
 import salih_korkmaz.dnm_1005.mapper.EvaluationMapper;
+import salih_korkmaz.dnm_1005.mapper.HarvestMapper;
 import salih_korkmaz.dnm_1005.repository.EvaluationRepository;
 import salih_korkmaz.dnm_1005.repository.RecommendationRepository;
 
@@ -22,14 +26,18 @@ public class EvaluationService {
     private final EvaluationDetailsMapper evaluationDetailsMapper;
     private final RecommendationRepository recommendationRepository;
     private final RecommendationService recommendationService;
+    private final HarvestMapper harvestMapper;
+    private final EvaluationDataMapper evaluationDataMapper;
 
-    public EvaluationService(HarvestService harvestService, EvaluationMapper evaluationMapper, EvaluationRepository evaluationRepository, EvaluationDetailsMapper evaluationDetailsMapper, RecommendationRepository recommendationRepository, RecommendationService recommendationService) {
+    public EvaluationService(HarvestService harvestService, EvaluationMapper evaluationMapper, EvaluationRepository evaluationRepository, EvaluationDetailsMapper evaluationDetailsMapper, RecommendationRepository recommendationRepository, RecommendationService recommendationService, HarvestMapper harvestMapper, EvaluationDataMapper evaluationDataMapper) {
         this.harvestService = harvestService;
         this.evaluationMapper = evaluationMapper;
         this.evaluationRepository = evaluationRepository;
         this.evaluationDetailsMapper = evaluationDetailsMapper;
         this.recommendationRepository = recommendationRepository;
         this.recommendationService = recommendationService;
+        this.harvestMapper = harvestMapper;
+        this.evaluationDataMapper = evaluationDataMapper;
     }
 
     public EvaluationDTO saveEvaluation(EvaluationDTO evaluationDTO) {
@@ -106,6 +114,22 @@ public class EvaluationService {
         List<Evaluation> evaluations = evaluationRepository.findByHarvestSowingLandUserId(userId);
         return evaluations.stream()
                 .map(evaluationDetailsMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<EvaluationDataDTO> getUserHarvestData(Long userId) {
+        List<Evaluation> evaluations =evaluationRepository.findByHarvestSowingLandUserId(userId);
+        return evaluations.stream()
+                .map(evaluationDataMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<EvaluationDataDTO> getTopUserHarvests(Long userId) {
+        // Kullanıcının en yüksek 5 hasatını alır.
+        List<Evaluation> evaluations = evaluationRepository.findTopHarvestsByUserId(userId, PageRequest.of(0, 5));
+        System.out.println("Evaluation count: " + evaluations.size());
+        return evaluations.stream()
+                .map(evaluationDataMapper::toDTO)
                 .collect(Collectors.toList());
     }
 }
