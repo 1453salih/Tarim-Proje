@@ -7,12 +7,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
-import salih_korkmaz.dnm_1005.entity.City;
-import salih_korkmaz.dnm_1005.entity.District;
-import salih_korkmaz.dnm_1005.entity.Locality;
-import salih_korkmaz.dnm_1005.repository.CityRepository;
-import salih_korkmaz.dnm_1005.repository.DistrictRepository;
-import salih_korkmaz.dnm_1005.repository.LocalityRepository;
+import salih_korkmaz.dnm_1005.entity.*;
+import salih_korkmaz.dnm_1005.repository.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,12 +25,17 @@ public class DbInitializer {
 
 
     private final ResourceLoader resourceLoader;
+    private final PlantCategoryRepository plantCategoryRepository;
+    private final PlantRepository plantRepository;
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void initialize() throws IOException {
         addCities();
         addDistricts();
         addLocalities();
+        addPlantCategories();
+        addPlants();
+
     }
 
 
@@ -178,6 +179,93 @@ public class DbInitializer {
                 }
             }
             catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+    private void addPlantCategories() throws IOException {
+        List<PlantCategory> categoryList = plantCategoryRepository.findAll();
+        if (categoryList.isEmpty()) {
+            Resource resource = resourceLoader.getResource("classpath:" + "db\\plantCategory.xlsx");
+            try (InputStream inputStream = resource.getInputStream();
+                 Workbook workbook = new XSSFWorkbook(inputStream)) {
+
+                Sheet sheet = workbook.getSheetAt(0);
+                for (Row row : sheet) {
+                    String categoryName = row.getCell(1).getStringCellValue();
+
+                    PlantCategory category = new PlantCategory();
+                    category.setCategoryName(categoryName);
+
+                    plantCategoryRepository.save(category);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void addPlants() throws IOException {
+        List<Plant> plantList = plantRepository.findAll();
+        if (plantList.isEmpty()) {
+            Resource resource = resourceLoader.getResource("classpath:" + "db\\plants.xlsx");
+            try (InputStream inputStream = resource.getInputStream();
+                 Workbook workbook = new XSSFWorkbook(inputStream)) {
+
+                Sheet sheet = workbook.getSheetAt(0);
+
+                for (Row row : sheet) {
+                    try {
+                        // Hücre 2: Bitkinin adı (String)
+                        String plantName = row.getCell(2).getStringCellValue();
+
+                        // Hücre 1: Resim (String)
+                        String image = row.getCell(1).getStringCellValue();
+
+                        // Hücre 3: Verim değeri (Numeric)
+                        double yieldPerSquareMeter;
+                        if (row.getCell(3).getCellType() == CellType.NUMERIC) {
+                            yieldPerSquareMeter = row.getCell(3).getNumericCellValue();
+                        } else if (row.getCell(3).getCellType() == CellType.STRING) {
+                            yieldPerSquareMeter = Double.parseDouble(row.getCell(3).getStringCellValue());
+                        } else {
+                            System.err.println("Hatalı veri tipi: yieldPerSquareMeter");
+                            continue;
+                        }
+
+                        // Hücre 4: Kategori ID (Numeric)
+                        long categoryId;
+                        if (row.getCell(4).getCellType() == CellType.NUMERIC) {
+                            categoryId = (long) row.getCell(4).getNumericCellValue();
+                        } else if (row.getCell(4).getCellType() == CellType.STRING) {
+                            categoryId = Long.parseLong(row.getCell(4).getStringCellValue());
+                        } else {
+                            System.err.println("Hatalı veri tipi: categoryId");
+                            continue;
+                        }
+
+                        // İlgili kategoriyi bul
+                        PlantCategory category = plantCategoryRepository.findById(categoryId).orElse(null);
+                        if (category == null) {
+                            System.err.println("Kategori bulunamadı: ID = " + categoryId);
+                            continue; // Kategori bulunamazsa bitkiyi kaydetme
+                        }
+
+                        // Yeni Plant oluştur
+                        Plant plant = new Plant();
+                        plant.setName(plantName);
+                        plant.setImage(image);
+                        plant.setYieldPerSquareMeter(yieldPerSquareMeter);
+                        plant.setPlantCategory(category); // Kategori ile ilişkilendir
+
+                        // Veritabanına kaydet
+                        plantRepository.save(plant);
+                        System.out.println("Bitki kaydedildi: " + plantName);
+                    } catch (Exception e) {
+                        System.err.println("Satır işlenirken hata oluştu: " + e.getMessage());
+                    }
+                }
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }

@@ -70,17 +70,18 @@ const SowingDetails = () => {
         const fetchPlantsAndLands = async () => {
             try {
                 const [plantsResponse, landsResponse] = await Promise.all([
-                    axios.get('http://localhost:8080/plants', {withCredentials: true}),
-                    axios.get('http://localhost:8080/lands', {withCredentials: true})
+                    axios.get('http://localhost:8080/plants', { withCredentials: true }),
+                    axios.get('http://localhost:8080/lands', { withCredentials: true })
                 ]);
                 setPlants(plantsResponse.data);
-                setLands(landsResponse.data);
+                setLands(landsResponse.data.content);  // content dizisini alıyoruz
             } catch (error) {
-                console.error('Error fetching plants and lands:', error);
+                console.error('Bitki ve arazi verileri çekilirken hata oluştu:', error);
             }
         };
         fetchPlantsAndLands();
     }, []);
+
 
     // Seçilen bitkinin kategori bilgisini getir ve kategori dropdown'ına ata
     useEffect(() => {

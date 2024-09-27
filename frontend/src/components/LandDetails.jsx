@@ -44,14 +44,14 @@ const LandDetails = () => {
                     .then(response => response.json())
                     .then(updatedData => {
                         setLand(updatedData);
-                        setSnackbarMessage('Land updated successfully!');
+                        setSnackbarMessage('Arazi Başarıyla Güncellendi.');
                         setSnackbarSeverity('success');
                         setOpenSnackbar(true);
                     });
             })
             .catch(error => {
-                console.error('Error updating land details:', error);
-                setSnackbarMessage('Failed to update the Land.');
+                console.error('Arazi bilgileri güncellenirken hata oluştu:', error);
+                setSnackbarMessage('Arazi güncellenemedi.');
                 setSnackbarSeverity('error');
                 setOpenSnackbar(true);
             });
@@ -63,20 +63,20 @@ const LandDetails = () => {
         })
             .then(response => {
                 if (response.ok) {
-                    setSnackbarMessage('Land deleted successfully!');
+                    setSnackbarMessage('Arazi başarıyla silindi!');
                     setSnackbarSeverity('success');
                     setOpenSnackbar(true);
                     setOpenDeleteDialog(false);
                     navigate('/lands');
                 } else {
-                    setSnackbarMessage('Failed to delete the Land.');
+                    setSnackbarMessage('Arazi silinemedi.');
                     setSnackbarSeverity('error');
                     setOpenSnackbar(true);
                 }
             })
             .catch(error => {
-                console.error('Error deleting land:', error);
-                setSnackbarMessage('Failed to delete the Land.');
+                console.error('Arazi silinirken hata oluştu:', error);
+                setSnackbarMessage('Arazi silinemedi.');
                 setSnackbarSeverity('error');
                 setOpenSnackbar(true);
             });
@@ -98,7 +98,7 @@ const LandDetails = () => {
     useEffect(() => {
         axios.get('http://localhost:8080/api/locations/cities')
             .then(response => setCities(response.data))
-            .catch(error => console.error("Error fetching cities:", error));
+            .catch(error => console.error("Şehirler getirilirken hata oluştu:", error));
     }, []);
 
     useEffect(() => {
@@ -107,7 +107,7 @@ const LandDetails = () => {
                 .then(response => {
                     setDistricts(response.data);
                 })
-                .catch(error => console.error("Error fetching districts:", error));
+                .catch(error => console.error("Bölgeler getirilirken hata oluştu:", error));
         }
     }, [selectedIl]);
 
@@ -117,7 +117,7 @@ const LandDetails = () => {
                 .then(response => {
                     setVillages(response.data);
                 })
-                .catch(error => console.error("Error fetching localities:", error));
+                .catch(error => console.error("Yerleşim yerleri getirilirken hata oluştu:", error));
         }
     }, [selectedIlce]);
 
@@ -144,7 +144,7 @@ const LandDetails = () => {
                         });
                 }
             })
-            .catch(error => console.error('Error fetching land details:', error));
+            .catch(error => console.error('Arazi detayları alınırken hata oluştu:', error));
     }, [id]);
 
     if (!land) {
