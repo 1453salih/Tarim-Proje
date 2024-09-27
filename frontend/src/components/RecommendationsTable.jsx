@@ -10,10 +10,10 @@ import {
     TableBody,
     Paper,
     Box,
-    CircularProgress
+    Skeleton
 } from "@mui/material";
 import axios from "axios";
-import {orange} from "@mui/material/colors";
+import { orange } from "@mui/material/colors";
 
 const RecommendationsTable = ({ landId }) => {
     const [recommendations, setRecommendations] = useState([]);
@@ -79,14 +79,12 @@ const RecommendationsTable = ({ landId }) => {
                                     <TableRow key={index}>
                                         <TableCell sx={{ borderRight: '1px solid #ddd', position: 'relative' }}>
                                             {imageLoading[index] && (
-                                                <CircularProgress
-                                                    size={24}
+                                                <Skeleton
+                                                    variant="rectangular"
+                                                    width={50}
+                                                    height={50}
                                                     sx={{
-                                                        position: 'absolute',
-                                                        top: '50%',
-                                                        left: '50%',
-                                                        marginTop: '-12px',
-                                                        marginLeft: '-12px',
+                                                        borderRadius: '10px'
                                                     }}
                                                 />
                                             )}

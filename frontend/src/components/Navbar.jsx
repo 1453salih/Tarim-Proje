@@ -13,20 +13,39 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Logo from '../assets/logo.png'; // Logo dosyasının yolu
+import Logo from '../assets/logo.png';
+import card1 from "../assets/card1.webp";
+import card2 from "../assets/card2.webp";
+import card4 from "../assets/card4.webp";
+import card5 from "../assets/card5.webp";
+import card6 from "../assets/card6.jpg";
+import card3 from "../assets/card3.webp"; // Logo dosyasının yolu
 
-const pages = ['Add Land', 'Land List'];
+const pages = [
+    { link: '/add-land', title: 'Arazi Ekle' },
+    { link: '/land-list', title: 'Arazilerimi Görüntüle' },
+    { link: '/sowings', title: 'Ekim Yap' },
+    { link: '/sowing-list', title: 'Ekimlerim' },
+    { link: '/harvest-list', title: 'Hasatlarım' },
+    { link: '/evaluation-list', title: 'Verim Degerlendir' },
+];
 
-const Navbar = ({ isLoggedIn, setIsLoggedIn }) => { // setIsLoggedIn'i burada alıyoruz
+const Navbar = ({ isLoggedIn, setIsLoggedIn }) => {
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
-    const navigate = useNavigate(); // useNavigate hook'u ile yönlendirme
+    const [anchorElDropdown, setAnchorElDropdown] = React.useState(null); // Dropdown için yeni state
+    const navigate = useNavigate();
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
     };
+
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
+    };
+
+    const handleOpenDropdown = (event) => {
+        setAnchorElDropdown(event.currentTarget); // Dropdown menüyü aç
     };
 
     const handleCloseNavMenu = () => {
@@ -35,6 +54,10 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => { // setIsLoggedIn'i burada al
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
+    };
+
+    const handleCloseDropdown = () => {
+        setAnchorElDropdown(null); // Dropdown menüyü kapat
     };
 
     const handleLogout = async () => {
@@ -47,7 +70,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => { // setIsLoggedIn'i burada al
             console.error('Logout failed:', error);
         }
     };
-
 
     return (
         <AppBar position="static" sx={{ backgroundColor: '#007a37' }}>
@@ -71,7 +93,6 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => { // setIsLoggedIn'i burada al
                             textDecoration: 'none',
                             color: 'white',
                             fontFamily: 'Poppins, sans-serif',
-
                         }}
                     >
                         Ekim Rehberi
@@ -102,41 +123,50 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => { // setIsLoggedIn'i burada al
                             }}
                             open={Boolean(anchorElNav)}
                             onClose={handleCloseNavMenu}
-                            sx={{
-                                display: { xs: 'block', md: 'none' },
-                                fontSize:'100px'
+                        >
+                            <MenuItem onClick={handleCloseNavMenu}>
+                                <Typography textAlign="center" sx={{ fontFamily: 'Poppins, sans-serif' }}>
+                                    <Link to="/home" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                        Home
+                                    </Link>
+                                </Typography>
+                            </MenuItem>
+                        </Menu>
+                    </Box>
+
+                    {/* Dropdown menü ekleme */}
+                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                        <Button
+                            onClick={handleOpenDropdown}
+                            sx={{ my: 2, color: 'white', display: 'block', fontFamily: 'Poppins, sans-serif' }}
+                        >
+                            İşlemler
+                        </Button>
+                        <Menu
+                            id="dropdown-menu"
+                            anchorEl={anchorElDropdown}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
                             }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'left',
+                            }}
+                            open={Boolean(anchorElDropdown)}
+                            onClose={handleCloseDropdown}
                         >
                             {pages.map((page) => (
-                                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                                    <Typography textAlign="center" sx={{ fontFamily: 'Poppins, sans-serif'}}>
-                                        <Link to={`/${page.toLowerCase().replace(/ /g, '-')}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                            {page}
+                                <MenuItem key={page.title} onClick={handleCloseDropdown}>
+                                    <Typography textAlign="center" sx={{ fontFamily: 'Poppins, sans-serif' }}>
+                                        <Link to={page.link} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                            {page.title}
                                         </Link>
                                     </Typography>
                                 </MenuItem>
                             ))}
                         </Menu>
-                    </Box>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="div"
-                        sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' }, color: 'white', fontFamily: 'Poppins, sans-serif' }}
-                    >
-                        Ekim Rehberi
-                    </Typography>
-                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        {pages.map((page) => (
-                            <Button
-                                key={page}
-                                onClick={handleCloseNavMenu}
-                                sx={{ my: 2, color: 'white', display: 'block', fontFamily: 'Poppins, sans-serif' }}
-                                component={Link} to={`/${page.toLowerCase().replace(/ /g, '-')}`}
-                            >
-                                {page}
-                            </Button>
-                        ))}
                     </Box>
 
                     <Box sx={{ flexGrow: 0 }}>
@@ -146,9 +176,7 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => { // setIsLoggedIn'i burada al
                             </IconButton>
                         </Tooltip>
                         <Menu
-                            sx={{ mt: '45px' ,
-
-                            }}
+                            sx={{ mt: '45px' }}
                             id="menu-appbar"
                             anchorEl={anchorElUser}
                             anchorOrigin={{
@@ -189,4 +217,5 @@ const Navbar = ({ isLoggedIn, setIsLoggedIn }) => { // setIsLoggedIn'i burada al
         </AppBar>
     );
 };
+
 export default Navbar;

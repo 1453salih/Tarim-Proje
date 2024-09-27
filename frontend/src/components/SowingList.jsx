@@ -395,13 +395,13 @@ const SowingList = () => {
 
 
     return (
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={theme} >
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <Container maxWidth="xl">
                     <Box>
                         <BreadcrumbComponent pageName="Ekimlerim"/>
                     </Box>
-                    <Box sx={{mt: 3, display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 3}}>
+                    <Box sx={{mt: 3, display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 3 ,mb:5}}>
                         <Box sx={{width: isMobile ? '100%' : '25%'}}>
                             {renderFilters()}
                         </Box>
@@ -468,20 +468,28 @@ const SowingList = () => {
                                                     <TableCell align="center">{sowing.landType}</TableCell>
                                                     <TableCell align="center">{dayjs(sowing.sowingDate).format('DD/MM/YYYY')}</TableCell>
                                                     <TableCell align="center" style={{
-                                                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center'
                                                     }}>
-                                                        <Button variant="contained" color="primary" onClick={() => handleDetail(sowing.id)} style={{ marginBottom: '8px' }}>
-                                                            Düzenle
-                                                        </Button>
-                                                        {harvestedSowingIds.includes(sowing.id) ? (
-                                                            <Button variant="contained" color="secondary" disabled>
-                                                                Hasat Yapıldı
+                                                        <div
+                                                            style={{display: 'flex', gap: '10px', marginBottom: '8px'}}>
+                                                            <Button variant="contained" color="primary"
+                                                                    onClick={() => handleDetail(sowing.id)}>
+                                                                Düzenle
                                                             </Button>
-                                                        ) : (
-                                                            <Button variant="contained" color="warning" onClick={() => handleHarvest(sowing.id)}>
-                                                                Hasat Et
-                                                            </Button>
-                                                        )}
+                                                            {harvestedSowingIds.includes(sowing.id) ? (
+                                                                <Button variant="contained" color="secondary" disabled>
+                                                                    Hasat Yapıldı
+                                                                </Button>
+                                                            ) : (
+                                                                <Button variant="contained" color="warning"
+                                                                        onClick={() => handleHarvest(sowing.id)}>
+                                                                    Hasat Et
+                                                                </Button>
+                                                            )}
+                                                        </div>
                                                     </TableCell>
                                                 </TableRow>
                                             ))

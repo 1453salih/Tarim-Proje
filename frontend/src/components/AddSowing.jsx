@@ -45,10 +45,10 @@ function AddSowing() {
             const fetchAvailableLand = async () => {
                 try {
                     const response = await axios.get(`http://localhost:8080/lands/detail/${landId}`, { withCredentials: true });
-                    console.log("Available Land:", response.data.clayableLand); // Hata kontorl.
+                    console.log("Ekilebilir Alan:", response.data.clayableLand);//kontrol
                     setAvailableLand(response.data.clayableLand); // Ekilebilir alanı ayarlıyoruz.
                 } catch (error) {
-                    console.error('Error fetching available land:', error);
+                    console.error('Mevcut araziyi alırken hata oluştu.:', error);
                 }
             };
             fetchAvailableLand();
@@ -75,7 +75,7 @@ function AddSowing() {
                     const response = await axios.get(`http://localhost:8080/plants/by-category?categoryId=${selectedCategory}`, { withCredentials: true });
                     setPlants(response.data);
                 } catch (error) {
-                    console.error("Error Fetching Plants", error);
+                    console.error("Bitkiler Alınamadı.", error);
                 }
             };
             fetchPlantsByCategory();
@@ -92,7 +92,7 @@ function AddSowing() {
                 setPlants(plantsResponse.data);
                 setLands(landsResponse.data.content || []);  // Sayfalandırılmış yanıttan content dizisini çıkarır.
             } catch (error) {
-                console.error('Error fetching plants and lands:', error);
+                console.error('Bitkiler ve araziler getirilirken hata oluştu:', error);
             }
         };
         fetchPlantsAndLands();
@@ -160,7 +160,7 @@ function AddSowing() {
                 setSowingField('');
                 setTimeout(() => navigate('/sowing-list'), 3000);
             } else {
-                setSnackbar({ open: true, message: 'Failed to save the Sowing.', severity: 'error' });
+                setSnackbar({ open: true, message: 'Ekim kaydedilemedi.', severity: 'error' });
             }
         } catch (error) {
             setSnackbar({ open: true, message: 'Error: ' + error.message, severity: 'error' });
@@ -186,6 +186,21 @@ function AddSowing() {
                             <Typography variant="h5" component="h3" gutterBottom>
                                 Ekim Yap
                             </Typography>
+                            <FormControl fullWidth margin="normal" error={landIdError}>
+                                <InputLabel>Arazi</InputLabel>
+                                <Select
+                                    label="Arazi"
+                                    value={landId}
+                                    onChange={(e) => setLandId(e.target.value)}
+                                >
+                                    {lands.map((land) => (
+                                        <MenuItem key={land.id} value={land.id}>
+                                            {land.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                                {landIdError && <Typography color="error">Please select a land.</Typography>}
+                            </FormControl>
 
                             <FormControl fullWidth margin="normal" error={plantIdError}>
                                 <InputLabel>Kategori</InputLabel>
@@ -234,21 +249,7 @@ function AddSowing() {
                                 }}
                             />
 
-                            <FormControl fullWidth margin="normal" error={landIdError}>
-                                <InputLabel>Arazi</InputLabel>
-                                <Select
-                                    label="Arazi"
-                                    value={landId}
-                                    onChange={(e) => setLandId(e.target.value)}
-                                >
-                                    {lands.map((land) => (
-                                        <MenuItem key={land.id} value={land.id}>
-                                            {land.name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                                {landIdError && <Typography color="error">Please select a land.</Typography>}
-                            </FormControl>
+
 
                             <TextField
                                 fullWidth
