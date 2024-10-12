@@ -37,7 +37,7 @@
 
    ```bash
    git clone https://github.com/1453salih/Tarim-Proje1.git
-   cd ekim-rehberi
+   cd Tarim-Proje1
 
 
 2. **Docker Container'larını Başlatın:**
