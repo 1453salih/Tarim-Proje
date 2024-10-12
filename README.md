@@ -57,7 +57,7 @@
 6. **Veritabanı Ayarları**
    Projede Mysql kullanıldı isteğe göre değişebilir fakat docker-compose.yml dosyası ve aplication.properties dosya içerlerindeki veritabanı ayarları yapılandırılmalı.
    
-   Mysql kullanmak isteyenler için eğer Mysql mevcut değilse indiriniz([Mysql Workbench İndirme Liki](https://dev.mysql.com/downlo]ads/mysql/).
+   Mysql kullanmak isteyenler için eğer Mysql mevcut değilse indiriniz([Mysql Workbench İndirme Linki](https://dev.mysql.com/downlo]ads/mysql/).
 
    İndirdikten sonra docker-compose.yml dosyası ve aplication.properties içerisindeki kullanıcı adı şifre veritabanı adı gibi bilgileri kendi kullandıklarınız ile güncelleyiniz.
 
