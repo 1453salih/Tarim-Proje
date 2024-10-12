@@ -89,7 +89,7 @@ const RecommendationsTable = ({ landId }) => {
                                                 />
                                             )}
                                             <img
-                                                src={`../../${recommendation.plantImage}`}
+                                                src={`/images/${recommendation.plantImage}`}
                                                 alt={recommendation.plantName}
                                                 style={{
                                                     width: '50px',

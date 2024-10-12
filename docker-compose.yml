@@ -16,7 +16,7 @@ services:
       context: ./  # backend klasörünü build context olarak ayarla
       dockerfile: Dockerfile
     ports:
-      - "8081:8080" # Backend Docker-Local (Dışarıda-içeride) Port Ayarı
+      - "8080:8080" # Backend Docker-Local (Dışarıda-içeride) Port Ayarı
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/tkk_proje
       SPRING_DATASOURCE_USERNAME: root
@@ -37,3 +37,7 @@ services:
 
 volumes:
   mysql-data:
+
+
+# Çift şeklinde yazan port ayarlarından birincisi local proje portu ikincisi ise docker'ın portu burdan istediğiniz portu ayarlayabilirsiniz.
+# Frontend portu için projenin frontend klasörü içindeki docker dosyasından ayarlanabilir.

@@ -327,7 +327,7 @@ const LandList = () => {
                     <Box sx={{ width: isMobile ? '100%' : '75%' }}>
                         <Container>
 
-                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 ,columnGap:'15px',}}>
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 ,mt:1 ,columnGap:'15px',}}>
                                 <Select
                                     value={pageSize}
                                     onChange={handlePageSizeChange}
