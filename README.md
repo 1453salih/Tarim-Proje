@@ -23,3 +23,18 @@
 - **Back-End:** Java Spring Framework
 - **Front-End:** React + Material UI
 - **Frontend Server:** Vite (Dinamik, hızlı ve performanslı işlemler için kullanıldı.)
+
+
+## Kurulum
+
+### Gereksinimler:
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+### Kurulum Adımları:
+
+1. **Projeyi Klonlayın:**
+
+   ```bash
+   git clone https://github.com/kullanici_adi/ekim-rehberi.git
+   cd ekim-rehberi
