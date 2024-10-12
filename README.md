@@ -38,3 +38,15 @@
    ```bash
    git clone https://github.com/kullanici_adi/ekim-rehberi.git
    cd ekim-rehberi
+
+
+2. ## Docker Container'larını Başlatın: ##
+   ```bash
+   docker-compose up --build
+
+3. ## Uygulamayı Çalıştırma ##
+
+   Backend, varsayılan olarak http://localhost:8080 adresinde, Frontend ise http://localhost:3000 adresinde çalışacaktır.
+
+
+
