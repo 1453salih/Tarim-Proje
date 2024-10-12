@@ -48,7 +48,7 @@
 
    Backend, varsayılan olarak http://localhost:8080 adresinde, Frontend ise http://localhost:3000 adresinde çalışacaktır.
    
-4. ** Uygulamayı Durdurma **
+4. **Uygulamayı Durdurma**
 
    ```bash
    docker-compose down
