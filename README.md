@@ -36,7 +36,7 @@
 1. **Projeyi Klonlayın:**
 
    ```bash
-   git clone https://github.com/1453salih/Tarim-Proje1.git
+   git clone https://github.com/1453salih/Tarim-Proje.git
    cd Tarim-Proje1
 
 
