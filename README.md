@@ -1,23 +1,23 @@
-<h1>Proje Kurulumu </h1>
+# Proje Kurulumu
 
-Ekim Rehberi projemde ekim yapacak olan kişi ekim yapmadan önce arazisini uygulamamıza kaydedip uygulamamızda kaydetdiği lokasyonda başka ekim yapanların ekimlerinin değerlendirme sonuçlarını puanlayan algoritma aracılığyla bir öneri tablosu gelir.Tabloda bitki ve başarı puanı yer alır başarı puanı o bölgede ekim yapmış kullanıcıların değerlendirmeleri üzerine belirlenir.
+**Ekim Rehberi** projesinde, ekim yapacak olan kullanıcı, ekim işleminden önce arazisini uygulamamıza kaydedip, o lokasyonda daha önce ekim yapmış kullanıcıların değerlendirme sonuçlarına göre bir öneri tablosu alır. Bu tabloda bitkiler ve başarı puanları yer alır. Başarı puanı, o bölgede ekim yapmış kullanıcıların değerlendirmelerine dayanarak belirlenir.
 
-Projede yapılabilecekler:
-• Kayıt Olma
-• Giriş Yapma
-• Arazi ekleme
-• Arazileri Görüntüleme
-• Arazileri Filtreleme
-• Arazileri Güncelleme
-• Ekim Yapma (Mevcut arazileri seçip ekim yapabiliriz. Ekim yaparken bir arazinin belirli bir miktarı ekilebilir kalan miktarı ayrı bir bitki olarakda ekebiliriz yani arazi ekilmemiş alanının takibi yapılabilir.)
-• Ekim Güncelleme
-• Ekim Silme
-• Hasat Etme 
-• Hasat İptal
-• Hasat Değerlendirme
-• Öneri Alma (Ekim yapmadan önce seçilen araziye göre hangi bitkinin sizin alanda başarılı olduğunun önerisi yapılır.)
+## Projede Yapılabilecekler:
+- Kayıt Olma
+- Giriş Yapma
+- Arazi Ekleme
+- Arazileri Görüntüleme
+- Arazileri Filtreleme
+- Arazileri Güncelleme
+- Ekim Yapma (Mevcut araziler seçilerek ekim yapılabilir. Ekim sırasında bir arazinin belirli bir miktarı ekilebilir ve kalan miktar farklı bir bitki için kullanılabilir. Böylece arazi üzerindeki ekilmemiş alanın takibi yapılabilir.)
+- Ekim Güncelleme
+- Ekim Silme
+- Hasat Etme
+- Hasat İptal
+- Hasat Değerlendirme
+- Öneri Alma (Ekim yapmadan önce seçilen araziye göre hangi bitkinin başarılı olacağına dair öneri yapılır.)
 
-
-Projemde Back-End tarafında Java Spring Frameork kullanıldı.
-Front-End tarafında ise React kullandım Material UI kütüphanesi ile arayüz tasarlandı.
-Frontend server tarafında ise Vite kullanarka işlemleri dinamik ,hızlı ve performanslı yapmayı sağladım.
+## Teknolojiler:
+- **Back-End:** Java Spring Framework
+- **Front-End:** React + Material UI
+- **Frontend Server:** Vite (Dinamik, hızlı ve performanslı işlemler için kullanıldı.)
