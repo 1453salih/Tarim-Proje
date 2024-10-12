@@ -1,5 +1,7 @@
 # Proje Kurulumu
 
+
+## Proje Tanıtımı:
 **Ekim Rehberi** projesinde, ekim yapacak olan kullanıcı, ekim işleminden önce arazisini uygulamamıza kaydedip, o lokasyonda daha önce ekim yapmış kullanıcıların değerlendirme sonuçlarına göre bir öneri tablosu alır. Bu tabloda bitkiler ve başarı puanları yer alır. Başarı puanı, o bölgede ekim yapmış kullanıcıların değerlendirmelerine dayanarak belirlenir.
 
 ## Projede Yapılabilecekler:
