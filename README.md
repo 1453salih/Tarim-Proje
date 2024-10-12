@@ -41,15 +41,25 @@
 
 
 2. **Docker Container'larını Başlatın:**
+3. 
    ```bash
    docker-compose up --build
 
-3. **Uygulamayı Çalıştırma**
+4. **Uygulamayı Çalıştırma**
 
    Backend, varsayılan olarak http://localhost:8080 adresinde, Frontend ise http://localhost:5173 adresinde çalışacaktır.
    
-4. **Uygulamayı Durdurma**
+5. **Uygulamayı Durdurma**
 
    ```bash
    docker-compose down
 
+6. **Veritabanı Ayarları**
+   Projede Mysql kullanıldı isteğe göre değişebilir fakat docker-compose.yml dosyası ve aplication.properties dosya içerlerindeki veritabanı ayarları yapılandırılmalı.
+   
+   Mysql kullanmak isteyenler için eğer Mysql mevcut değilse indiriniz(Mysql Workbench İndirme Liki(https://dev.mysql.com/downloads/mysql/).
+
+   İndirdikten sonra docker-compose.yml dosyası ve aplication.properties içerisindeki kullanıcı adı şifre veritabanı adı gibi bilgileri kendi kullandıklarınız ile güncelleyiniz.
+
+   
+   
