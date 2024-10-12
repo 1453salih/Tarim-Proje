@@ -40,13 +40,18 @@
    cd ekim-rehberi
 
 
-2. ## Docker Container'larını Başlatın: ##
+2. **Docker Container'larını Başlatın:**
    ```bash
    docker-compose up --build
 
-3. ## Uygulamayı Çalıştırma ##
+3. **Uygulamayı Çalıştırma**
 
    Backend, varsayılan olarak http://localhost:8080 adresinde, Frontend ise http://localhost:3000 adresinde çalışacaktır.
+
+4.**Uygulamayı Durdurma**
+
+   ```bash
+   docker-compose down
 
 
 
